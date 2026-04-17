@@ -20,14 +20,15 @@ must_haves:
     - "User opens CLAUDE.md and reads business-planning-domain language: 'business planner', 'OBJECTIVES.md', 'workstreams', 'audience'"
     - "User opens README.md and sees BRIEF-branded content (no 'Get Shit Done' in Hero/intro; no 'code review'/'TDD'/'deployment'/'security audit' as primary commands)"
     - "User reads `.planning/ASSUMPTIONS.md` and sees A1 verified (package.json dependencies empty) with timestamp and command evidence"
-    - "User reads `.planning/ASSUMPTIONS.md` and sees FND-06 verification note confirming INSTRUCTION_FILE + text_mode detection code survived the rename"
+    - "User reads `.planning/ASSUMPTIONS.md` and sees FND-06 verification note confirming INSTRUCTION_FILE (in brief/workflows/, not brief/bin/lib/) + text_mode (in brief/bin/lib/) detection code survived the rename — TWO separate detection sites"
     - "User runs `grep -ci 'code review\\|TDD\\|deployment\\|security audit\\|unit test' CLAUDE.md README.md` and gets 0 (or a very low number with each match explicitly explained in Plan 06's SUMMARY)"
     - "User runs `grep -ci 'business planner\\|OBJECTIVES.md\\|workstream\\|audience' CLAUDE.md README.md` and gets a positive count on both files"
     - "User runs `node -e \"console.log(Object.keys(require('./package.json').dependencies||{}).length)\"` and gets `0`"
+    - "User runs `grep -i 'spec-driven\\|get-shit-done\\|gsd-build' package.json` and gets 0 matches (checker WARNING #6 closure)"
   artifacts:
     - path: ".planning/ASSUMPTIONS.md"
       provides: "Phase 1 verification log for A1 (zero-deps) and FND-06 (multi-runtime detection)"
-      contains: "A1 VERIFIED entry with command + output + timestamp; FND-06 entry with grep results"
+      contains: "A1 VERIFIED entry with command + output + timestamp; FND-06 entry describing BOTH detection sites (INSTRUCTION_FILE in workflow markdown + text_mode in lib JS) with grep results"
     - path: "CLAUDE.md"
       provides: "BRIEF-domain project instructions in the targeted-delta sections (Project, Workflow, Skills/Commands, Stack)"
       contains: "BRIEF Project section, DEFINE→DISCOVER→DESIGN→DELIVER workflow, /brief-* command listing, Marp/zero-deps stack notes"
@@ -43,21 +44,29 @@ must_haves:
       to: "package.json dependencies field"
       via: "documented verification command"
       pattern: "ASSUMPTIONS.md contains the exact inspection step a user can re-run"
+    - from: ".planning/ASSUMPTIONS.md FND-06 entry"
+      to: "brief/workflows/new-project.md (INSTRUCTION_FILE) + brief/bin/lib/{core,config,init}.cjs (text_mode)"
+      via: "dual-site grep verification with hard-fail guards"
+      pattern: "FND-06 entry names both sites explicitly and reports non-zero counts for each"
 ---
 
 <objective>
 Execute commit 6 (the verification + documentation commit) closing Phase 1. This plan performs three anchored verifications and two documentation rewrites:
 
 1. **FND-04 (A1 zero-deps):** Run the documented inspection step, record result in `.planning/ASSUMPTIONS.md` with timestamp.
-2. **FND-06 (multi-runtime detection survives rename):** Grep `brief/bin/lib/` for `INSTRUCTION_FILE` and `text_mode` detection code; confirm no hard-coded `get-shit-done/` paths remain in these code paths; record outcome in ASSUMPTIONS.md. Note per <fnd_06_verification_hint>: actual cross-runtime smoke testing across Codex/Gemini/OpenCode is Phase 9 HRD-01 scope.
-3. **FND-07 (domain language):** Apply targeted-delta rewrites to CLAUDE.md (per D-12) and README.md (per D-14). Verify business-planning-domain vocabulary dominates; software-development vocabulary is absent from the primary narrative.
+2. **FND-06 (multi-runtime detection survives rename):** Grep TWO SITES for detection code — (a) `brief/workflows/` for `INSTRUCTION_FILE` (runtime-dispatch env var, lives in workflow markdown — planner verified 8 refs in `brief/workflows/new-project.md` at planning time), and (b) `brief/bin/lib/` for `text_mode` (non-AskUserQuestion fallback flag, lives in lib JS — planner verified 6 refs across core.cjs/config.cjs/init.cjs at planning time). Confirm no hard-coded `get-shit-done/` paths remain in brief/bin/lib; record outcome in ASSUMPTIONS.md naming both sites. Note per <fnd_06_verification_hint>: actual cross-runtime smoke testing across Codex/Gemini/OpenCode is Phase 9 HRD-01 scope.
+3. **FND-07 (domain language):** Apply targeted-delta rewrites to CLAUDE.md (per D-12) and README.md (per D-14). Verify business-planning-domain vocabulary dominates; software-development vocabulary is absent from the primary narrative. Also verify package.json has no residual GSD-domain content (checker WARNING #6 closure — the actual field updates happen in Plan 04 Task 2, but Plan 06's FND-07 verification confirms the surface-level result).
 
 Purpose: Close Phase 1 Success Criteria #4, #5, #6 (ROADMAP.md lines 35–37) and complete the Phase 1 milestone. After commit 6, the user can:
 - Read CLAUDE.md / README.md and see BRIEF's identity
 - Run the documented A1 inspection step and get `0`
-- Confirm (via grep) that runtime-detection code survived the Plan 03–05 rename
+- Confirm (via grep) that runtime-detection code survived the Plan 03–05 rename in BOTH of its known sites
 
 Output: Updated CLAUDE.md, updated README.md, a populated `.planning/ASSUMPTIONS.md`, one atomic commit closing Phase 1.
+
+**Revision note (addresses checker BLOCKER):** The pre-revision Plan 06 Task 1 grepped `brief/bin/lib/` for `INSTRUCTION_FILE`. That identifier does not live in `brief/bin/lib/` — it lives in `brief/workflows/new-project.md` (8 refs verified at planning time). The previous plan only emitted a WARN on zero matches, then recorded `VERIFIED: INSTRUCTION_FILE refs=0` in ASSUMPTIONS.md — a logical contradiction. The revised Task 1 below greps the correct path and HARD FAILS on zero, preventing silent VERIFIED-for-zero entries.
+
+**Revision note (addresses checker WARNING #6):** Plan 04 Task 2 (post-revision) now updates package.json descriptive fields. Plan 06 FND-07 verification adds a grep-for-residues sanity check so any future regression is caught.
 </objective>
 
 <execution_context>
@@ -105,21 +114,27 @@ Output: Updated CLAUDE.md, updated README.md, a populated `.planning/ASSUMPTIONS
 <!-- Localized READMEs (ko-KR, ja-JP, pt-BR, zh-CN): flag as deferred to Phase 9 per Plan 05's intentional-residuals list -->
 
 <!-- Assumptions.md: does not exist yet (per planning-time check). Plan 06 CREATES it. -->
+
+<!-- FND-06 detection-code locations (verified at planning time — BLOCKER fix): -->
+<!--   INSTRUCTION_FILE: lives in brief/workflows/new-project.md (8 refs). NOT present in brief/bin/lib/. -->
+<!--   text_mode: lives in brief/bin/lib/core.cjs (3 refs), config.cjs (2 refs), init.cjs (1 ref) = 6 total. -->
+<!-- Zero count at either site = REAL REGRESSION (hard fail), not an acceptable state. -->
 </interfaces>
 </context>
 
 <tasks>
 
 <task type="auto">
-  <name>Task 1: Verify FND-04 (A1 zero-deps) and FND-06 (runtime detection survives), write .planning/ASSUMPTIONS.md</name>
+  <name>Task 1: Verify FND-04 (A1 zero-deps) and FND-06 (runtime detection survives across BOTH sites), write .planning/ASSUMPTIONS.md</name>
   <files>
     .planning/ASSUMPTIONS.md
   </files>
   <read_first>
     - package.json (current state after Plan 04 — name=brief-cc, bin=brief-cc, files includes "brief")
-    - brief/bin/lib/core.cjs (where text_mode lives — planner located these at lines 259, 379, 415)
-    - brief/bin/lib/config.cjs (where text_mode lives — planner located these at lines 21, 165)
-    - brief/bin/lib/init.cjs (contains INSTRUCTION_FILE detection code)
+    - brief/bin/lib/core.cjs (where text_mode lives — planner verified 3 refs at planning time)
+    - brief/bin/lib/config.cjs (where text_mode lives — planner verified 2 refs at planning time)
+    - brief/bin/lib/init.cjs (where text_mode lives — planner verified 1 ref at planning time)
+    - brief/workflows/new-project.md (where INSTRUCTION_FILE is documented — planner verified 8 refs at planning time; NOT in brief/bin/lib/)
     - .planning/ROADMAP.md (Success Criteria #4, #5, lines 35–36)
     - .planning/REQUIREMENTS.md (FND-04, FND-06)
   </read_first>
@@ -135,24 +150,37 @@ TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 echo "A1: $DEP_COUNT prod deps, $DEV_DEP_COUNT dev deps: $DEV_DEPS_LIST"
 ```
 
-2. Perform FND-06 (runtime-detection survives rename) grep:
-```bash
-# Confirm INSTRUCTION_FILE detection code exists in the renamed lib
-INST_HITS=$(grep -rc "INSTRUCTION_FILE" brief/bin/lib/ 2>/dev/null | awk -F: '{s+=$2} END {print s}')
-echo "INSTRUCTION_FILE refs in brief/bin/lib/: $INST_HITS"
+2. Perform FND-06 (runtime-detection survives rename) grep. **Detection lives in TWO separate places (planner verified at planning time; checker BLOCKER corrected the original single-path grep):**
+   - `INSTRUCTION_FILE` environment variable — referenced in `brief/workflows/new-project.md` (the workflow markdown that dispatches into runtime-specific instructions). **NOT** present in `brief/bin/lib/`. A zero count at this site is a REAL REGRESSION.
+   - `text_mode` — fallback flag for non-AskUserQuestion runtimes. Lives in `brief/bin/lib/core.cjs` + `config.cjs` + `init.cjs`. A zero count at this site is also a REAL REGRESSION.
 
-# Confirm text_mode code exists
-TM_HITS=$(grep -rc "text_mode" brief/bin/lib/ 2>/dev/null | awk -F: '{s+=$2} END {print s}')
+```bash
+# INSTRUCTION_FILE detection — lives in WORKFLOW MARKDOWN, not lib JS
+INST_HITS=$(grep -rc "INSTRUCTION_FILE" brief/workflows/ 2>/dev/null | awk -F: '{s+=$2} END {print s+0}')
+echo "INSTRUCTION_FILE refs in brief/workflows/: $INST_HITS"
+# HARD FAIL on zero — detection cannot have been lost silently
+[ "$INST_HITS" -ge 1 ] || { echo "FAIL (BLOCKER): INSTRUCTION_FILE detection missing from brief/workflows/; runtime dispatch is broken"; grep -rn "INSTRUCTION_FILE" brief/ 2>/dev/null | head -10; exit 1; }
+
+# Sanity: INSTRUCTION_FILE should NOT appear in brief/bin/lib/ (it lives in workflow markdown, not JS)
+INST_IN_LIB=$(grep -rc "INSTRUCTION_FILE" brief/bin/lib/ 2>/dev/null | awk -F: '{s+=$2} END {print s+0}')
+echo "INSTRUCTION_FILE refs in brief/bin/lib/: $INST_IN_LIB (expected 0 — detection is workflow-layer, not lib-layer)"
+
+# text_mode fallback — lives in brief/bin/lib/ JS
+TM_HITS=$(grep -rc "text_mode" brief/bin/lib/ 2>/dev/null | awk -F: '{s+=$2} END {print s+0}')
 echo "text_mode refs in brief/bin/lib/: $TM_HITS"
+# HARD FAIL on zero — fallback cannot have been lost silently
+[ "$TM_HITS" -ge 1 ] || { echo "FAIL (BLOCKER): text_mode fallback missing from brief/bin/lib/; non-AskUserQuestion runtimes will break"; grep -rn "text_mode" brief/ 2>/dev/null | head -10; exit 1; }
 
 # Confirm NO hard-coded "get-shit-done/" paths remain in brief/bin/lib/*.cjs
-GSD_HITS=$(grep -rc "get-shit-done" brief/bin/lib/ 2>/dev/null | awk -F: '{s+=$2} END {print s}')
+GSD_HITS=$(grep -rc "get-shit-done" brief/bin/lib/ 2>/dev/null | awk -F: '{s+=$2} END {print s+0}')
 echo "get-shit-done refs in brief/bin/lib/: $GSD_HITS (should be 0)"
 [ "$GSD_HITS" = "0" ] || { echo "FAIL: runtime-detection code still has get-shit-done paths"; grep -n "get-shit-done" brief/bin/lib/*.cjs; exit 1; }
 
-# Minimum expectations per the planner's pre-research (CONTEXT.md verified these counts)
-[ "$INST_HITS" -ge 1 ] || { echo "WARN: INSTRUCTION_FILE detection may have regressed — inspect brief/bin/lib/init.cjs"; }
-[ "$TM_HITS" -ge 5 ] || { echo "WARN: text_mode references count $TM_HITS is lower than expected 5+; inspect core.cjs/config.cjs"; }
+# Minimum expectations per planner pre-research (verified at planning time):
+#   INSTRUCTION_FILE should be ~8 refs in brief/workflows/new-project.md
+#   text_mode should be ~6 refs across brief/bin/lib/core.cjs, config.cjs, init.cjs
+[ "$INST_HITS" -ge 5 ] || echo "WARN: INSTRUCTION_FILE count $INST_HITS below expected ~8 in brief/workflows/; inspect new-project.md"
+[ "$TM_HITS" -ge 5 ] || echo "WARN: text_mode count $TM_HITS below expected ~6 in brief/bin/lib/; inspect core.cjs/config.cjs/init.cjs"
 ```
 
 3. Create (or append to) `.planning/ASSUMPTIONS.md`:
@@ -200,25 +228,32 @@ node -e "console.log(Object.keys(require('./package.json').dependencies||{}).len
 
 ### FND-06 — Multi-runtime detection survived Plan 03–05 rename
 
-**Status:** VERIFIED (detection code intact; actual cross-runtime smoke is Phase 9 HRD-01)
+**Status:** VERIFIED (detection code intact at BOTH known sites; actual cross-runtime smoke is Phase 9 HRD-01)
 **Timestamp:** ${TS}
 **Phase:** 01-foundation-fork-hygiene-removal-rename
 **Requirement:** FND-06 (ROADMAP.md Success Criterion #5)
 
+**Detection has two separate sites (planner verified before Phase 1 began):**
+
+1. **\`INSTRUCTION_FILE\`** — runtime-dispatch env var consumed by the workflow markdown (Claude Code / Codex / Gemini / OpenCode all read this). Lives in \`brief/workflows/new-project.md\`. NOT present in \`brief/bin/lib/\` (not a lib-layer concern).
+2. **\`text_mode\`** — non-AskUserQuestion fallback flag consumed by lib JS. Lives in \`brief/bin/lib/core.cjs\` + \`config.cjs\` + \`init.cjs\`.
+
 **Verification commands + results:**
 \`\`\`
-grep -rc "INSTRUCTION_FILE" brief/bin/lib/  →  ${INST_HITS} total refs
-grep -rc "text_mode" brief/bin/lib/         →  ${TM_HITS} total refs
-grep -rc "get-shit-done" brief/bin/lib/     →  ${GSD_HITS} total refs (must be 0)
+grep -rc "INSTRUCTION_FILE" brief/workflows/  →  ${INST_HITS} total refs  (hard-fail gate if 0; expected ~8)
+grep -rc "INSTRUCTION_FILE" brief/bin/lib/    →  ${INST_IN_LIB} refs       (expected 0 — not a lib-layer identifier)
+grep -rc "text_mode" brief/bin/lib/           →  ${TM_HITS} total refs     (hard-fail gate if 0; expected ~6)
+grep -rc "get-shit-done" brief/bin/lib/       →  ${GSD_HITS} total refs    (must be 0 — post-rename residue check)
 \`\`\`
 
 **Interpretation:**
-- INSTRUCTION_FILE detection and text_mode fallback code paths exist in the renamed lib layer.
+- The \`INSTRUCTION_FILE\` workflow-dispatch env var is referenced ${INST_HITS} times in \`brief/workflows/\` (primarily \`new-project.md\`). The workflow-markdown layer still directs Codex/Gemini/OpenCode runtimes into the correct instruction stream.
+- The \`text_mode\` non-AskUserQuestion fallback is referenced ${TM_HITS} times across \`brief/bin/lib/core.cjs\`, \`config.cjs\`, and \`init.cjs\`. Non-Claude runtimes can still write decisions through the text-prompt path.
 - Zero \`get-shit-done\` path references remain in any \`brief/bin/lib/*.cjs\` file — the rename did not introduce broken absolute paths in the runtime-detection code.
-- Actual smoke testing BRIEF across Claude Code / Codex / Gemini / OpenCode is deferred to Phase 9 (HRD-01) per the cross-runtime smoke-test milestone. Phase 1 verifies only that the detection CODE survived the rename intact.
+- Actual smoke testing BRIEF across Claude Code / Codex / Gemini / OpenCode is deferred to Phase 9 (HRD-01) per the cross-runtime smoke-test milestone. Phase 1 verifies only that the detection CODE survived the rename intact at both sites.
 
 EOF
-cat "$ASSUMPTIONS" | tail -30
+cat "$ASSUMPTIONS" | tail -40
 ```
 
 4. Sanity-check that the file is a valid markdown:
@@ -239,24 +274,31 @@ grep -q "^### A1 " .planning/ASSUMPTIONS.md || { echo "FAIL: A1 section missing"
 grep -q "Status:.*VERIFIED" .planning/ASSUMPTIONS.md || { echo "FAIL: no VERIFIED status"; exit 1; }
 # Contains FND-06 marker
 grep -q "^### FND-06" .planning/ASSUMPTIONS.md || { echo "FAIL: FND-06 section missing"; exit 1; }
+# FND-06 entry names BOTH sites (dual-site requirement per BLOCKER fix)
+grep -q "brief/workflows/" .planning/ASSUMPTIONS.md || { echo "FAIL: FND-06 entry does not name workflows site"; exit 1; }
+grep -q "brief/bin/lib/" .planning/ASSUMPTIONS.md || { echo "FAIL: FND-06 entry does not name lib site"; exit 1; }
 # Deps really zero
 DEPS=$(node -e "console.log(Object.keys(require(\"./package.json\").dependencies||{}).length)")
 [ "$DEPS" = "0" ] || { echo "FAIL: deps=$DEPS"; exit 1; }
-# Lib detection code intact
-grep -rq "INSTRUCTION_FILE" brief/bin/lib/ || { echo "FAIL: INSTRUCTION_FILE missing from lib"; exit 1; }
-grep -rq "text_mode" brief/bin/lib/ || { echo "FAIL: text_mode missing from lib"; exit 1; }
+# INSTRUCTION_FILE lives in brief/workflows/ (not in lib)
+grep -rq "INSTRUCTION_FILE" brief/workflows/ || { echo "FAIL: INSTRUCTION_FILE missing from brief/workflows/"; exit 1; }
+# text_mode lives in brief/bin/lib/
+grep -rq "text_mode" brief/bin/lib/ || { echo "FAIL: text_mode missing from brief/bin/lib/"; exit 1; }
 # No lingering get-shit-done paths in lib
-! grep -rq "get-shit-done" brief/bin/lib/ || { echo "FAIL: get-shit-done still in lib"; exit 1; }
-echo "OK: Task 1 verified"
+! grep -rq "get-shit-done" brief/bin/lib/ || { echo "FAIL: get-shit-done still in brief/bin/lib/"; exit 1; }
+echo "OK: Task 1 verified (dual-site FND-06 detection)"
 '
     </automated>
   </verify>
   <done>
     - `.planning/ASSUMPTIONS.md` exists with both `### A1` and `### FND-06` sections
     - A1 entry documents: command, expected output (0), actual output (0), timestamp, dev-dependencies list
-    - FND-06 entry documents: INSTRUCTION_FILE + text_mode grep counts, get-shit-done grep count (0), and Phase 9 handoff
+    - FND-06 entry documents BOTH detection sites explicitly: `INSTRUCTION_FILE` in `brief/workflows/` (8 refs expected), `text_mode` in `brief/bin/lib/` (6 refs expected), `get-shit-done` residue count (0), and Phase 9 handoff
+    - Hard-fail guards in the grep block: zero-count at either FND-06 site aborts the plan (BLOCKER fix)
     - Actual `Object.keys(deps).length === 0`
-    - `brief/bin/lib/` grep confirms detection code intact and no old paths linger
+    - `brief/workflows/` grep confirms INSTRUCTION_FILE detection code intact
+    - `brief/bin/lib/` grep confirms text_mode fallback code intact
+    - No old `get-shit-done/` paths linger in `brief/bin/lib/`
   </done>
 </task>
 
@@ -315,7 +357,7 @@ If it shows the 4-phase narrative and Core Value, leave it. If not, update it to
 
 - **Runtime dependencies:** Zero (verified via `node -e "console.log(Object.keys(require('./package.json').dependencies||{}).length)"` → 0). New supporting libraries (gray-matter, ajv, @marp-team/marp-cli) are invoked via `npx --yes` rather than added to `dependencies` — preserves the GSD-inherited zero-runtime-deps property.
 - **Marp CLI:** Invoked via `npx --yes @marp-team/marp-cli@4.3.1` during Phase 8 (DELIVER Type B decks). Users need Chrome/Edge (for rendering) and optionally LibreOffice Impress (for editable PPTX). No npm install.
-- **Multi-runtime detection:** Preserved unchanged (`INSTRUCTION_FILE` + `text_mode` fallback in `brief/bin/lib/core.cjs` / `config.cjs` / `init.cjs`).
+- **Multi-runtime detection:** Preserved unchanged. The `INSTRUCTION_FILE` env var dispatch lives in `brief/workflows/new-project.md`; the `text_mode` non-AskUserQuestion fallback lives in `brief/bin/lib/core.cjs` / `config.cjs` / `init.cjs`.
 ```
 
 5. Validate the resulting CLAUDE.md is structurally sound:
@@ -354,7 +396,7 @@ echo "OK: Task 2 verified"
   </verify>
   <done>
     - CLAUDE.md `## GSD Workflow Enforcement` section rewritten to `## BRIEF Workflow Enforcement` with BRIEF-appropriate commands and Phase 1 caveat
-    - `## Technology Stack` section has BRIEF-specific notes appended (zero deps, Marp via npx, multi-runtime preserved)
+    - `## Technology Stack` section has BRIEF-specific notes appended (zero deps, Marp via npx, multi-runtime preserved with BOTH detection sites named)
     - Sentinel comments (`BRIEF:*-start` / `BRIEF:*-end`) remain balanced
     - `grep -qi "business planner\|OBJECTIVES.md\|workstream\|audience" CLAUDE.md` matches
     - `grep -ci "code review\|TDD\|deployment\|security audit\|unit test" CLAUDE.md` returns ≤3 (any residuals documented in this plan's SUMMARY as intentional/benign)
@@ -546,6 +588,7 @@ echo "OK: Task 3 verified"
   <read_first>
     - Staged changes from Tasks 1, 2, 3
     - .planning/ROADMAP.md (Phase 1 Success Criteria #6 — line 37)
+    - package.json (post-Plan-04; descriptive fields updated per Plan 04 Task 2; Plan 06 verifies no residues remain)
   </read_first>
   <action>
 From repo root `/Users/agent/GSD-for-Business`:
@@ -565,6 +608,15 @@ DEV=$(grep -ci "code review\|TDD\|deployment\|security audit\|unit test" CLAUDE.
 echo "Dev vocab (CLAUDE.md + README.md): $DEV (should be 0 or low with explanation)"
 # Also record where matches live
 grep -i "code review\|TDD\|deployment\|security audit\|unit test" CLAUDE.md README.md | head -10 > /tmp/plan06-devmatches.txt
+
+# package.json residue check (checker WARNING #6 closure — Plan 04 Task 2 updates the fields; Plan 06 confirms no residue)
+PKG_RESIDUE=$(grep -ci "spec-driven\|get-shit-done\|gsd-build" package.json)
+echo "GSD-domain residue in package.json: $PKG_RESIDUE (should be 0)"
+if [ "$PKG_RESIDUE" != "0" ]; then
+  echo "FAIL: package.json still contains GSD-domain content"
+  grep -in "spec-driven\|get-shit-done\|gsd-build" package.json
+  exit 1
+fi
 ```
 
 2. Append an FND-07 verification section to `.planning/ASSUMPTIONS.md`:
@@ -572,7 +624,7 @@ grep -i "code review\|TDD\|deployment\|security audit\|unit test" CLAUDE.md READ
 TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 cat >> .planning/ASSUMPTIONS.md <<EOF
 
-### FND-07 — Business-planning-domain language in CLAUDE.md + README.md
+### FND-07 — Business-planning-domain language in CLAUDE.md + README.md + package.json
 
 **Status:** VERIFIED
 **Timestamp:** ${TS}
@@ -587,11 +639,15 @@ grep -ci 'business planner\\|OBJECTIVES.md\\|workstream\\|audience' README.md  �
 
 # Software-development vocabulary (should be 0 or low)
 grep -ci 'code review\\|TDD\\|deployment\\|security audit\\|unit test' CLAUDE.md + README.md  →  ${DEV}
+
+# package.json GSD-domain residue (must be 0 per checker WARNING #6)
+grep -ci 'spec-driven\\|get-shit-done\\|gsd-build' package.json  →  ${PKG_RESIDUE}
 \`\`\`
 
 **Interpretation:**
 - Business-planning domain language (business planner, OBJECTIVES, workstream, audience) appears ${CLAUDE_BIZ} times in CLAUDE.md and ${README_BIZ} times in README.md — both files read as BRIEF documents.
 - Software-development language count: ${DEV}.$([ "$DEV" -gt 0 ] && echo " Residual matches are documented in this commit's SUMMARY as intentional (e.g., Configuration section describing workflow agents, Security section explaining hardening — content that survives as inherited infrastructure documentation and is not primary BRIEF narrative).") If any residual appears in the hero or primary-narrative sections (first 300 lines of README.md), it's a Phase 9 polish task, not a Phase 1 blocker.
+- package.json GSD-domain residue: ${PKG_RESIDUE} (descriptive fields were rewritten in Plan 04 Task 2; this Plan 06 check confirms no regression).
 
 EOF
 ```
@@ -636,6 +692,13 @@ git log -1 --format="%s" | grep -qE "docs\(01\).*targeted delta.*Phase 1" || { e
 grep -q "^### A1 " .planning/ASSUMPTIONS.md || { echo "FAIL: A1"; exit 1; }
 grep -q "^### FND-06" .planning/ASSUMPTIONS.md || { echo "FAIL: FND-06"; exit 1; }
 grep -q "^### FND-07" .planning/ASSUMPTIONS.md || { echo "FAIL: FND-07"; exit 1; }
+# FND-06 entry specifically mentions BOTH detection sites
+grep -q "brief/workflows/" .planning/ASSUMPTIONS.md || { echo "FAIL: FND-06 missing workflows site"; exit 1; }
+grep -q "brief/bin/lib/" .planning/ASSUMPTIONS.md || { echo "FAIL: FND-06 missing lib site"; exit 1; }
+# FND-07 entry includes package.json residue check
+grep -q "package.json" .planning/ASSUMPTIONS.md || { echo "FAIL: FND-07 missing package.json check"; exit 1; }
+# package.json has no GSD residue (checker WARNING #6)
+! grep -qi "spec-driven\|get-shit-done\|gsd-build" package.json || { echo "FAIL: package.json GSD residue"; exit 1; }
 # Lib loads
 node -e "require(\"./brief/bin/lib/core.cjs\");" || { echo "FAIL: lib broken"; exit 1; }
 # Deps zero
@@ -651,6 +714,9 @@ echo "OK: Task 4 verified — Phase 1 complete"
   </verify>
   <done>
     - FND-04 (A1), FND-06, FND-07 all documented as VERIFIED in `.planning/ASSUMPTIONS.md` with timestamps and command evidence
+    - FND-06 entry explicitly names BOTH detection sites (workflows/ for INSTRUCTION_FILE, bin/lib/ for text_mode) per BLOCKER fix
+    - FND-07 entry includes the package.json-residue check (per WARNING #6)
+    - `grep -i 'spec-driven\|get-shit-done\|gsd-build' package.json` returns 0 matches
     - Exactly one new commit on `main` with message `docs(01): CLAUDE.md + README.md targeted delta, ASSUMPTIONS.md A1+FND-06+FND-07 (closes Phase 1)`
     - Lib layer still loads
     - `package.json dependencies` still empty
@@ -668,6 +734,7 @@ echo "OK: Task 4 verified — Phase 1 complete"
 |----------|-------------|
 | Documentation text ↔ user expectations | CLAUDE.md and README.md set expectations for what BRIEF CAN do today. Overclaiming risks user frustration. Plan 06 documents "Phase 1 status" and "Phases 3–8 coming" explicitly to set accurate expectations. |
 | ASSUMPTIONS.md ↔ audit trail | `ASSUMPTIONS.md` is the user-facing audit log for verification decisions. It must be accurate (real commands, real outputs, real timestamps). |
+| FND-06 detection grep ↔ dual-site reality | Detection lives in TWO sites (workflows/ for INSTRUCTION_FILE, bin/lib/ for text_mode). A single-path grep (as in the pre-revision plan) would wrongly record VERIFIED-for-zero on the wrong site. Hard-fail guards at BOTH sites prevent this. |
 
 ## STRIDE Threat Register
 
@@ -676,31 +743,35 @@ echo "OK: Task 4 verified — Phase 1 complete"
 | T-01-13 | I (Information Disclosure) | ASSUMPTIONS.md is committed publicly (visible in git history); exposes internal dependency counts | accept | Zero deps IS the selling point. No sensitive information in A1/FND-06/FND-07 entries. |
 | T-01-14 | R (Repudiation) | Without timestamps, future readers can't tell when A1 was verified | mitigate | Each ASSUMPTIONS.md entry includes an ISO-8601 UTC timestamp from `date -u +%Y-%m-%dT%H:%M:%SZ`. |
 | T-01-15 | T (Tampering) | A user could edit ASSUMPTIONS.md post-hoc to assert wrong status; ASSUMPTIONS.md is a pure markdown file | accept | Protection via git history (commit in this plan). If ASSUMPTIONS.md is edited later, the diff is visible in git log. No additional hardening warranted for Phase 1. |
+| T-01-22 | T (Tampering) | FND-06 grep returns 0 because it targets the wrong path; "VERIFIED: refs=0" recorded as a contradiction | mitigate | BLOCKER fix: Task 1 greps brief/workflows/ for INSTRUCTION_FILE (correct path, expected ~8 refs) AND brief/bin/lib/ for text_mode (correct path, expected ~6 refs). Both sites have hard-fail-on-zero guards. ASSUMPTIONS.md entry names each site with its expected count. |
 
 Phase 1 still adds zero new attack surface.
 </threat_model>
 
 <verification>
 1. `.planning/ASSUMPTIONS.md` exists with sections `### A1`, `### FND-06`, `### FND-07`, all marked `Status: VERIFIED`.
-2. `grep -ci "business planner\|OBJECTIVES.md\|workstream\|audience" CLAUDE.md` returns ≥2.
-3. `grep -ci "business planner\|OBJECTIVES.md\|workstream\|audience" README.md` returns ≥5.
-4. `grep -ci "code review\|TDD\|deployment\|security audit\|unit test" CLAUDE.md README.md` returns low (≤3 with each match explained in SUMMARY).
-5. `node -e "require('./brief/bin/lib/core.cjs')"` exits 0.
-6. `node -e "console.log(Object.keys(require('./package.json').dependencies||{}).length)"` prints 0.
-7. `grep -rq "INSTRUCTION_FILE" brief/bin/lib/` exits 0.
-8. `grep -rq "text_mode" brief/bin/lib/` exits 0.
-9. `! grep -rq "get-shit-done" brief/bin/lib/` exits 0 (no legacy paths).
-10. Commit message: `docs(01): CLAUDE.md + README.md targeted delta, ASSUMPTIONS.md A1+FND-06+FND-07 (closes Phase 1)`.
-11. Phase 1 commits on main: 5–6.
+2. FND-06 entry explicitly names both detection sites: `brief/workflows/` (INSTRUCTION_FILE) + `brief/bin/lib/` (text_mode).
+3. `grep -ci "business planner\|OBJECTIVES.md\|workstream\|audience" CLAUDE.md` returns ≥2.
+4. `grep -ci "business planner\|OBJECTIVES.md\|workstream\|audience" README.md` returns ≥5.
+5. `grep -ci "code review\|TDD\|deployment\|security audit\|unit test" CLAUDE.md README.md` returns low (≤3 with each match explained in SUMMARY).
+6. `node -e "require('./brief/bin/lib/core.cjs')"` exits 0.
+7. `node -e "console.log(Object.keys(require('./package.json').dependencies||{}).length)"` prints 0.
+8. `grep -rq "INSTRUCTION_FILE" brief/workflows/` exits 0 (BLOCKER fix: correct path).
+9. `grep -rq "text_mode" brief/bin/lib/` exits 0.
+10. `! grep -rq "get-shit-done" brief/bin/lib/` exits 0 (no legacy paths).
+11. `! grep -qi "spec-driven\|get-shit-done\|gsd-build" package.json` exits 0 (WARNING #6 closure).
+12. Commit message: `docs(01): CLAUDE.md + README.md targeted delta, ASSUMPTIONS.md A1+FND-06+FND-07 (closes Phase 1)`.
+13. Phase 1 commits on main: 5–6.
 </verification>
 
 <success_criteria>
 - [ ] `.planning/ASSUMPTIONS.md` created with A1, FND-06, FND-07 VERIFIED entries + timestamps + commands + outputs
+- [ ] FND-06 entry names BOTH detection sites explicitly (BLOCKER fix): `brief/workflows/` for INSTRUCTION_FILE + `brief/bin/lib/` for text_mode
 - [ ] CLAUDE.md targeted-delta applied per D-12: Project, Workflow, Stack sections updated; Conventions/Architecture/Skills/Profile unchanged per D-13
 - [ ] README.md targeted-delta applied per D-14: hero rebranded, Core Value present, Four Phases listed, install is `npx brief-cc`, Localized READMEs deferred to Phase 9
 - [ ] FND-04 success criterion met (user can run documented inspection step, gets 0)
-- [ ] FND-06 success criterion met at the code-level (detection code survived rename; actual cross-runtime smoke is Phase 9 HRD-01)
-- [ ] FND-07 success criterion met (business-planning vocab dominant; dev vocab ≤3)
+- [ ] FND-06 success criterion met at the code-level (detection code survived rename at BOTH sites; actual cross-runtime smoke is Phase 9 HRD-01)
+- [ ] FND-07 success criterion met (business-planning vocab dominant; dev vocab ≤3; package.json has 0 GSD-domain residue per WARNING #6)
 - [ ] Exactly one atomic commit for this plan
 - [ ] Phase 1 complete: all 6 ROADMAP.md success criteria (lines 32–37) met
 </success_criteria>
@@ -709,6 +780,9 @@ Phase 1 still adds zero new attack surface.
 After completion, create `.planning/phases/01-foundation-fork-hygiene-removal-rename/01-06-SUMMARY.md` including:
 - Final Phase 1 commit hashes (6 of them)
 - ASSUMPTIONS.md excerpts confirming A1/FND-06/FND-07 status
+- Note that FND-06 verification used dual-site grep (workflows + lib) per checker BLOCKER fix
+- Note that package.json descriptive fields were rebranded in Plan 04 Task 2 per checker WARNING #6
 - Count of dev-vocab residuals in CLAUDE.md+README.md and an explanation for each
 - A one-paragraph "Phase 1 complete" note that summarizes exactly what changed and what remains for Phase 2 (stable seam, A4 verification, workstream-as-yaml, caps)
 </output>
+</content>
