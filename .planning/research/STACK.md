@@ -1,0 +1,280 @@
+# Stack Research — BRIEF
+
+**Domain:** Meta-prompting framework for business/strategy planning (forked from GSD)
+**Researched:** 2026-04-17
+**Confidence:** HIGH (core inheritance + slide tools), MEDIUM (peer-framework patterns), LOW (Korean-specific tooling — verified absent rather than verified present)
+
+## Summary
+
+BRIEF is a thin business-domain layer on top of GSD's already-mature meta-prompting infrastructure. The stack splits cleanly into three tiers:
+
+1. **Inherited core (no decision needed)** — Node.js 22+, CommonJS, `node:test`, c8, esbuild, vitest, the GSD context engine, runtime detection. These are constraints, not choices.
+2. **Patterns to absorb (no runtime dependency)** — gstack's `office-hours` and `plan-ceo-review` skills (Push Twice, Language Precision, Dream State Mapping, Platonic Ideal), Anthropic's superpowers 5-phase discipline (clarify→design→plan→code→verify), and the Sequoia/YC pitch-deck structure for DELIVER Type B artifacts.
+3. **New runtime tooling for the business layer** — `@marp-team/marp-cli` for Type B deck generation (PPTX-friendly, corporate-distribution-friendly), `gray-matter` for the audience-guard frontmatter parser, and `ajv` for ALIGN/AUDIENCE/COMPLIANCE gate schema validation. These are the only genuine *new* runtime additions, and even then we should verify the GSD bin layer's "zero external runtime dependencies" rule first — these tools may need to live as `optionalDependencies` or be invoked through `npx --yes`.
+
+**Primary recommendation:** Stay almost entirely within GSD's existing stack. The business-domain differentiation lives in **prompts and command surfaces**, not in new libraries. The single high-value runtime addition is `@marp-team/marp-cli` for the DELIVER phase — and even that should be invoked via `npx --yes` rather than declared as a dependency, mirroring the way GSD already invokes `ctx7` for Context7 fallback.
+
+## Architectural Responsibility Map
+
+| Capability | Primary Tier | Secondary Tier | Rationale |
+|------------|-------------|----------------|-----------|
+| Slash command dispatch | Inherited GSD core (`commands/*.md`) | — | GSD already routes `/gsd-*` prompts; rename to `/brief-*` is a string substitution, not architecture |
+| Multi-agent orchestration | Inherited GSD core (`agents/*.md`) | — | The orchestrator/researcher/planner/checker pattern is exactly what BRIEF needs; only agent identities change |
+| State lock + atomic commits | Inherited GSD core (`STATE.md`, `gsd-tools.cjs`) | — | Constraint: must not re-architect |
+| Runtime detection (Claude/Codex/Gemini/OpenCode) | Inherited GSD core (`INSTRUCTION_FILE`, `text_mode`) | — | Constraint: must keep working |
+| Audience guard (frontmatter on every artifact) | New BRIEF layer (parser via `gray-matter`) | Inherited GSD hooks | Frontmatter parsing is too lightweight to justify a new architecture; piggyback on existing hook system |
+| ALIGN gate (objectives match) | New BRIEF agent (`brief-align-checker`) | Inherited GSD agent-spawn pattern | Mirrors `gsd-plan-checker`: a verifier agent that reads artifacts and writes findings |
+| Compliance checker (region+industry-aware) | New BRIEF agent (`brief-compliance-checker`) | Inherited GSD agent-spawn pattern | Same shape as ALIGN — verifier agent with reference library |
+| Type B deck generation (DELIVER) | New BRIEF skill + `marp-cli` (via `npx`) | Pandoc fallback | Markdown-in/PPTX-out is a single CLI invocation, not a runtime dependency |
+| Type A artifact generation (PRODUCT-BRIEF, etc.) | New BRIEF prompts (markdown templates) | Inherited GSD planner pattern | Pure prompt engineering; no new tooling needed |
+| Compliance reference library (Korea + global) | New BRIEF static data (markdown reference files) | — | Just markdown files in `references/compliance/` — no library, no schema engine |
+
+## Recommended Stack
+
+### Core Technologies (INHERITED — do not change)
+
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| Node.js | >=22.0.0 | Runtime | GSD constraint. Node 22 LTS is current. `[VERIFIED: package.json engines field]` |
+| CommonJS (`.cjs`) | — | Module system for bin layer | GSD constraint. ESM is "default in new frameworks" in 2026 per industry trend, but CommonJS remains fully supported (Node 25.8.1 explicitly fixed CJS-in-type:module edge cases in 2026). For a fork, breaking the module convention would invite friction with no payoff. `[CITED: nodejs.org docs, Node 25.8.1 release notes]` |
+| `node:test` | built-in | Test runner | GSD constraint. Built-in, zero install, ships with Node. `[VERIFIED: GSD package.json scripts.test]` |
+| `c8` | ^11.0.0 (current 11.0.0) | V8-native coverage | GSD constraint. Native V8 coverage is faster and more accurate than Istanbul/nyc. Already used at 70% line threshold. `[VERIFIED: npm view c8 version → 11.0.0]` |
+| `esbuild` | ^0.24.0 (current 0.28.0) | Hook bundling | GSD constraint. Used only by `scripts/build-hooks.js`. Version drift from 0.24→0.28 is fine; not a breaking change in the hook bundling path. `[VERIFIED: npm view esbuild version → 0.28.0]` |
+| `vitest` | ^4.1.2 (current 4.1.4) | TypeScript SDK tests | GSD constraint, only for `sdk/`. Test runner split between `node:test` (bin layer) and vitest (TS SDK) is intentional and inherited. `[VERIFIED: npm view vitest version → 4.1.4]` |
+
+### Supporting Libraries (NEW — minimum viable additions)
+
+| Library | Version | Purpose | When to Use |
+|---------|---------|---------|-------------|
+| `@marp-team/marp-cli` | ^4.3.1 (released 2026-03-16) | Markdown→PPTX/PDF/HTML for DELIVER Type B decks | Invoke via `npx --yes @marp-team/marp-cli@4.3.1` from a BRIEF skill — do NOT add to `dependencies`. Mirrors GSD's `npx --yes ctx7@latest` pattern for Context7 fallback. `[VERIFIED: npm view @marp-team/marp-cli version + time.modified]` |
+| `gray-matter` | ^4.0.3 | YAML frontmatter parsing for audience-guard | Audience guard reads `audience:`, `confidentiality:`, `voice:` from artifact frontmatter. `gray-matter` is the de-facto standard (used by Jekyll, Hugo, Astro, Next.js MDX, Gatsby). Zero-config, well-maintained. `[VERIFIED: npm view gray-matter version → 4.0.3]` |
+| `js-yaml` | ^4.1.1 | OBJECTIVES.md and reference-library YAML parsing | If `gray-matter` is already pulled in, it transitively provides js-yaml — avoid declaring twice. Use directly only if a non-frontmatter YAML file (e.g., `references/compliance/iso-27001.yaml`) needs parsing. `[VERIFIED: npm view js-yaml version → 4.1.1]` |
+| `ajv` | ^8.18.0 | JSON Schema validation for ALIGN/AUDIENCE/COMPLIANCE gate outputs | Gates produce structured findings (severity, location, rule_id). Validating against a schema keeps gate output consumable by downstream agents. `ajv` is the standard JSON Schema validator in Node. `[VERIFIED: npm view ajv version → 8.18.0]` |
+
+**CRITICAL:** Before adding ANY of these to `package.json`, verify the GSD bin layer's "zero external runtime dependencies" rule. Inspect `package.json` `dependencies` field — if empty (which it is at the time of this research; only `devDependencies` exist), then BRIEF should preserve that property by:
+
+1. Invoking CLIs via `npx --yes` (Marp, optionally Pandoc)
+2. Implementing minimal YAML parsing inline (50 lines of regex for frontmatter is enough for the audience-guard subset)
+3. Implementing schema validation as plain CommonJS guards (no ajv) — the audience-guard frontmatter is a closed-set vocabulary
+
+The "zero external runtime dependencies" property is one of GSD's most important architectural commitments and the dominant reason it works cleanly across Claude Code / Codex / Gemini / OpenCode. **Do not break it.** `[ASSUMED — verify by inspecting package.json dependencies key during DESIGN phase]`
+
+### Patterns to Absorb (NO runtime dependency — concept only)
+
+| Source | Pattern | How BRIEF Uses It |
+|--------|---------|-------------------|
+| gstack `office-hours` | Push Twice (real answer comes after the 2nd or 3rd push); Language Precision (force definition of vague terms); Reframing as Clarification ("Let me restate what I think you're building"); Dream State Mapping (hypothetical vs. real-behavior detection); output saved as design document, never code | Phase 0 DEFINE — `brief-define-intent` agent prompts implement these techniques verbatim. No imports from gstack. `[CITED: github.com/garrytan/gstack/blob/main/office-hours/SKILL.md]` |
+| gstack `plan-ceo-review` | Four operating modes (SCOPE EXPANSION / SELECTIVE / HOLD / REDUCTION); Platonic Ideal ("if the best engineer had unlimited time…"); Prime Directives ("Zero silent failures", "Optimize for the 6-month future"); Outside Voice independent second opinion; 11 review sections | Phase 2 DESIGN — `brief-design-review` agent uses the same mode selection + Platonic Ideal framing, adapted from "best engineer" to "best founder/operator/strategist for this audience". Independent voice = the ALIGN/AUDIENCE/COMPLIANCE gate trio. `[CITED: github.com/garrytan/gstack/blob/main/plan-ceo-review/SKILL.md]` |
+| Anthropic Superpowers (Jesse Vincent, obra) | 5-phase clarify→design→plan→code→verify discipline; "deletes code written before tests exist" enforcement; mandatory dispatcher routes to relevant skills | BRIEF's 5-phase shape (DEFINE→DISCOVER→DESIGN→DELIVER + continuous ALIGN) is the business-domain analog. Software-development specifics (TDD enforcement, subagent dev, code review) are intentionally dropped — they don't translate. **Rejected as runtime dependency** because superpowers' skills are SWE-coupled. `[CITED: github.com/obra/superpowers]` |
+| Sequoia / Y Combinator pitch-deck format | 10-slide structure (Company Purpose / Problem / Solution / Why Now / Market Size / Competition / Product / Business Model / Team / Financials); one-core-idea-per-slide; black-on-white default | DELIVER Type B `INVESTOR-IR` and `EXEC-SUMMARY` artifact templates use this structure as the default schema. Override via frontmatter `audience:` selector. `[CITED: ycombinator.com Library, slideshare/sequoia-capital-pitchdecktemplate]` |
+| Strategyzer Business Model Canvas | 9-block canonical structure (Customer Segments / Value Proposition / Channels / Customer Relationships / Revenue Streams / Key Resources / Key Partners / Key Activities / Cost Structure); Creative Commons license | DESIGN workstream `business-model.md` template uses the 9-block structure as section headers. CC license means we can ship the template structure without attribution problems. `[CITED: strategyzer.com/library/the-business-model-canvas]` |
+| Lean Canvas (Ash Maurya) | 9-block lean variant of BMC (replaces Key Partners/Activities/Resources/Customer Relationships with Problem / Solution / Key Metrics / Unfair Advantage); markdown templates in active community use (planvas, paper-forms) | Alternative DESIGN template offered via frontmatter `business_model_canvas_variant: lean` toggle. Useful for early-stage / single-founder cases. `[CITED: leanstack.com Lean-Canvas.pdf, github.com/shermanhuman/planvas]` |
+
+### Development Tools (INHERITED + 1 addition)
+
+| Tool | Purpose | Notes |
+|------|---------|-------|
+| `node scripts/run-tests.cjs` | Test entry | Inherited — extend with BRIEF-specific test files under `tests/brief-*.test.cjs` |
+| `c8` (with 70% line threshold) | Coverage | Inherited threshold is appropriate for the new business-layer code paths. Don't lower. |
+| `esbuild` | Hook bundling | Inherited — only relevant if BRIEF adds new hooks; existing hooks work as-is after the rename |
+| **`marp` (via `npx --yes`)** | Slide deck generation in DELIVER | NEW. Invoke from a BRIEF skill, not a runtime dependency. Use `npx --yes @marp-team/marp-cli@4.3.1 input.md -o output.pptx --pdf --html` |
+
+## Installation
+
+**For BRIEF runtime:** Nothing new. Run the existing `npm install` flow.
+
+**For users producing DELIVER Type B artifacts (decks):**
+```bash
+# Marp is invoked via npx; users do NOT need to install it explicitly.
+# However, PPTX export with editable contents requires LibreOffice Impress installed.
+# Document this in BRIEF's CLAUDE.md as an optional environment dependency.
+brew install --cask libreoffice  # macOS, optional, for editable PPTX
+```
+
+**For BRIEF developers (already covered by GSD's setup):**
+```bash
+npm install              # installs c8, esbuild, vitest devDependencies
+npm test                 # runs node:test
+npm run test:coverage    # c8 with 70% threshold
+```
+
+## Alternatives Considered
+
+| Recommended | Alternative | When to Use Alternative |
+|-------------|-------------|-------------------------|
+| **Marp CLI** for decks | **Slidev** (`@slidev/cli` 52.14.2) | If BRIEF later adds developer/technical-audience deck templates with live code, charts, or interactive demos. Slidev is Vue-powered and excels at live coding. For business audiences (investor IR, exec summary, internal deck), Slidev is overkill — Marp's PPTX export is what corporate audiences want. `[VERIFIED: npm view @slidev/cli version → 52.14.2]` |
+| **Marp CLI** for decks | **Reveal.js** (10.2.3) | If BRIEF needs an HTML-only browser-presented deck with custom plugins. Reveal is the most customizable but doesn't ship native PPTX export. Skip unless a user explicitly requests browser-only delivery. `[VERIFIED: npm view reveal.js version → 10.2.3]` |
+| **Marp CLI** for decks | **Spectacle** (6.0.1, React) | Skip. React + JSX is wrong language paradigm for a markdown-driven framework. `[VERIFIED: npm view spectacle version → 6.0.1]` |
+| **Marp CLI** for decks | **Pandoc** (`pandoc input.md -o output.pptx`) | Fallback if Marp is unavailable. Pandoc is more universal but produces less polished slides. Document as fallback in DELIVER skill prompt. |
+| **Inline frontmatter parsing** (regex) | **gray-matter** library | If frontmatter complexity grows beyond simple key-value (nested objects, arrays, multi-line strings), switch to `gray-matter`. Start inline; promote only if needed. |
+| **CommonJS** | **ESM** | ESM is the 2026 default for new Node.js projects, but BRIEF is a fork constrained to GSD's CJS core. A future v2 could migrate, but v1 must preserve compatibility with the inherited bin layer. `[CITED: medium.com/@raveenpanditha mastering-modern-node-js-in-2026]` |
+| **`node:test`** | **vitest** for everything | vitest is excellent but adds an install. GSD already uses vitest only for the TS SDK; replicate that split in BRIEF. |
+| **OBJECTIVES.md as markdown** | **YAML-only OKR file** (e.g., openproject schema) | Markdown allows free-form goal narrative + a structured OKR table. A pure YAML file is more machine-parseable but less editable by business planners. The hybrid markdown+frontmatter+optional YAML-block approach (used by Astro, Eleventy) gives both. `[CITED: github.com/oslokommune/okr-tracker, openproject.org/okr-software]` |
+| **Custom audience-guard schema** | **JSON Schema + ajv** | If audience/confidentiality vocabulary stays under ~10 enum values per field, a closed-set CJS validator (50 lines) is simpler and dependency-free. Promote to ajv only if vocabulary grows. |
+
+## Korea-Specific Tooling (LOW confidence — verified absent)
+
+I searched explicitly for Korean-market business planning tools (BMC tools, OKR services, Notion templates, mydata-aware compliance libraries). **Findings:**
+
+- **No dedicated Korean OKR SaaS surfaced as obviously dominant.** Mooncamp/Tability/Asana lead the OKR space globally. Korean teams generally use Notion templates or international SaaS. `[CITED: mooncamp.com, okrstool.com — searches returned international tools only]`
+- **No standardized markdown/YAML schema for Korean BMC artifacts exists.** Korean BMC content is largely Notion templates, Miro boards, or PDF case studies (Toss, Kakao analyses). `[CITED: kbizplan.com Toss BMC analysis, kakao page BMC content]`
+- **PIPA / ISMS-P amendments (Feb 2026) are major.** ISMS-P certification becomes mandatory for certain data controllers from **July 2027**. CEO is now personally liable for breaches. Penalty ceiling raised to **10% of total turnover**. The 2026 amendment also introduces a probabilistic incident-notification trigger and a CPO-independence requirement. **This is the most actionable Korean-specific finding for BRIEF's compliance reference library.** `[CITED: practiceguides.chambers.com, iapp.org Korea PIPA, captaincompliance.com]`
+- **MyData expanded to energy, education, employment, culture, and leisure in 2026.** Beyond the original finance/healthcare/communications scope. Compliance reference library should include MyData domain expansions. `[CITED: practiceguides.chambers.com Data Protection 2026 South Korea]`
+
+**Implication for BRIEF stack:** No Korean tool to depend on or interoperate with. The leverage is entirely in the **compliance reference library** (`references/compliance/korea-pipa-2026.md`, `references/compliance/korea-isms-p.md`, `references/compliance/korea-mydata-2026.md`). These are static markdown files, not a library. The compliance-checker agent reads them at runtime.
+
+## What NOT to Use
+
+| Avoid | Why | Use Instead |
+|-------|-----|-------------|
+| **superpowers as a runtime dependency** | Software-development-coupled. TDD enforcement, subagent code review, browser automation skills don't translate to business planning. Listed as "rejected" in PROJECT.md key decisions. | Absorb the 5-phase concept; build BRIEF's own DEFINE→DISCOVER→DESIGN→DELIVER agents. `[CITED: github.com/obra/superpowers, PROJECT.md Key Decisions]` |
+| **gstack as a runtime dependency** | Designed for the "founder-engineer wearing multiple hats" persona. Includes /qa, /ship, /deploy, /benchmark, /browse, /canary, /retro — all software-engineering activities. Pulling in gstack would re-introduce the dev-centric surfaces BRIEF explicitly removes (per PROJECT.md "Out of Scope"). | Absorb `office-hours` and `plan-ceo-review` patterns into BRIEF's own DEFINE and DESIGN agents. Document as "inspiration, not dependency" per PROJECT.md Context. `[CITED: github.com/garrytan/gstack, PROJECT.md Context]` |
+| **Adding any package to `dependencies`** without verifying GSD's "zero external runtime dependencies" rule first | If GSD's bin layer ships with empty `dependencies`, BRIEF must preserve that. Adding even one runtime dep changes the install profile and breaks the lightness promise that lets GSD ride into Codex/Gemini/OpenCode without friction. | `npx --yes` for CLIs, inline implementations for trivial parsing/validation. `[ASSUMED — verify by inspecting GSD package.json `dependencies` key]` |
+| **Backwards-compatibility shims for `gsd-*` → `brief-*` rename** | Aliases create dual-vocabulary confusion in agent prompts. PROJECT.md key decision: "Hard rename, no aliases". | One-shot global rename via grep+sed (or a guarded migration script). Backup branch is the rollback story. `[CITED: PROJECT.md Key Decisions]` |
+| **A formal codebase-mapping artifact** of the source GSD | PROJECT.md explicitly notes "already analyzed in design conversation; no value in formal mapping artifact". Out of scope. | Trust the design conversation; document only the renames and new files. `[CITED: PROJECT.md Out of Scope]` |
+| **Plugin distribution model** (alongside the fork) | Explored and rejected: coupling to GSD's release cadence would constrain BRIEF's domain-specific evolution. | Hard fork only. `backup/original-gsd` branch as reference. `[CITED: PROJECT.md Out of Scope]` |
+| **Heavy programmatic verification cycle** | GSD's verifier loop is dev-cycle-shaped (build/test/lint pass-fail). Business artifacts can't pass-fail the same way. | Replaced by ALIGN + AUDIENCE + COMPLIANCE gates that emit human-reviewable findings. `[CITED: PROJECT.md Out of Scope]` |
+| **`/brief-new-milestone` (multi-cycle restart)** in v1 | Single-cycle is enough for v1. Multi-cycle adds complexity without demonstrated demand. | Defer to v2. `[CITED: PROJECT.md Out of Scope]` |
+| **Heavy schema validation engines** (e.g., `joi`, `yup` for frontmatter) | Adds dependency weight. Audience-guard frontmatter has ~5 fields with closed enums. | A 30-line CJS validator suffices. Promote to `ajv` only if schema grows. |
+| **JSX/React-based slide tools** (Spectacle, mdx-deck) | Wrong paradigm for a markdown-first framework. Adds React + Babel + JSX to the dep tree just for slides. | Marp (markdown-native) or Slidev (Vue, but lighter than React for slide-only use). |
+| **Framework-coupled OKR tooling** (e.g., openproject backend, Firebase OKR-tracker) | Adds web-app dependencies. BRIEF is file-and-prompt only. | Markdown OBJECTIVES.md with optional YAML frontmatter for KR scoring. Static; no runtime. `[CITED: github.com/oslokommune/okr-tracker, openproject.org/okr-software]` |
+
+## Stack Patterns by Variant
+
+**If a user wants a quick investor IR deck (DELIVER Type B):**
+- Use Marp template `templates/deliver/investor-ir.md` based on the Sequoia 10-slide structure.
+- Export PPTX via `npx --yes @marp-team/marp-cli@4.3.1 investor-ir.md -o investor-ir.pptx`.
+- Why: Investors expect PPTX for forwarding/comments; HTML decks don't survive corporate email.
+
+**If a user wants an internal strategy deck (DELIVER Type B):**
+- Use Marp template `templates/deliver/internal-deck.md` with `audience: internal`, `confidentiality: internal-only`.
+- Audience guard blocks export if `confidentiality: internal-only` and target format is being sent externally.
+- Why: Internal decks include strategy detail that must not leak.
+
+**If a user is in Korea and the business is fintech / mydata-relevant:**
+- Compliance checker auto-loads `references/compliance/korea-pipa-2026.md`, `references/compliance/korea-isms-p.md`, `references/compliance/korea-mydata-2026.md` based on `region: korea` + `industry: fintech` frontmatter on OBJECTIVES.md.
+- Surface the **July 2027 mandatory ISMS-P deadline** and **CEO personal liability** as high-severity findings if controls aren't documented.
+- Why: These are 2026 regulatory shifts that smaller startups frequently miss. `[CITED: iapp.org Korea PIPA overhaul, captaincompliance.com Korea CEO liability]`
+
+**If a user is preparing a B2B vs B2C plan:**
+- B2B/B2C context injector adds the appropriate lens to every spawned agent's system prompt.
+- BMC template variant changes: B2B emphasizes Channels (sales motion) and Customer Relationships (account management); B2C emphasizes Customer Segments (personas) and Value Proposition (jobs-to-be-done).
+- Why: Same advice means different things in B2B vs B2C — explicit injection prevents drift. `[CITED: PROJECT.md Active Requirements]`
+
+**If a user wants the lean variant of BMC instead of full Strategyzer BMC:**
+- Frontmatter toggle `business_model_canvas_variant: lean` swaps the template to Ash Maurya's 9-block lean version (Problem / Solution / Key Metrics / Unfair Advantage replace Key Partners/Activities/Resources/Customer Relationships).
+- Why: Early-stage and single-founder cases benefit from the lean variant's problem/solution focus. `[CITED: leanstack.com Lean-Canvas.pdf]`
+
+## Version Compatibility
+
+| Package A | Compatible With | Notes |
+|-----------|-----------------|-------|
+| `node@>=22` | All listed packages | Constraint from GSD `package.json engines.node` |
+| `@marp-team/marp-cli@4.3.1` | Node 18+ (per Marp docs) | Compatible with Node 22. Editable PPTX requires LibreOffice Impress AND a compatible browser (Chrome/Edge). HTML/PDF/non-editable PPTX work without LibreOffice. `[CITED: github.com/marp-team/marp-cli README]` |
+| `gray-matter@4.0.3` | Node 22 | Pulls in `js-yaml` transitively — don't double-declare. |
+| `c8@11` + `node:test` | Node 22 | GSD already validates this combination at 70% threshold. |
+| `vitest@4` | Node 22, TypeScript SDK only | Don't use vitest for the bin layer — keep `node:test`. |
+| `esbuild@0.28` | Node 22 | Used only by `scripts/build-hooks.js`. Drift from declared `^0.24` to current `0.28` is non-breaking for hook bundling. |
+
+## What's Already Done For Us (the inherited infrastructure)
+
+This is a deliberate non-table list because the inheritance is the most important fact about BRIEF's stack:
+
+- **Slash command dispatcher** — `commands/*.md` already provides the prompt-routing surface. Rename `gsd-*.md` → `brief-*.md`.
+- **Multi-agent orchestration** — `agents/*.md` defines specialist agent personas. Replace dev-specific agents (gsd-code-reviewer, gsd-ui-checker, gsd-tdd-runner, gsd-security-auditor, gsd-debug-runner, gsd-ai-eval) with business agents (brief-define-intent, brief-domain-researcher, brief-align-checker, brief-audience-guard, brief-compliance-checker, brief-deck-generator).
+- **State management** — `STATE.md` lock + atomic commit infrastructure works as-is. No business-domain reason to change it.
+- **Context engine** — `gsd-tools.cjs init` produces the structured context blocks consumed by agents. Same shape, same usage.
+- **Runtime detection** — `INSTRUCTION_FILE` env + `text_mode` fallback for non-AskUserQuestion runtimes. Critical for Codex/Gemini/OpenCode support; preserved unchanged.
+- **Hooks system** — `hooks/` provides the hook injection points. Audience guard can register as a `PostToolUse` hook on Write tool calls.
+- **Test infrastructure** — `node:test` + `c8` + `npm test` scripts. Add `tests/brief-*.test.cjs` files; everything else is already wired.
+- **Distribution** — `bin/install.js` pattern. Rename to `bin/install.js` (already there) but change package name to `brief-cc` and update install destinations.
+
+The corollary: **BRIEF's build effort goes into prompts, templates, and reference libraries — not infrastructure.** This is the entire reason for the fork.
+
+## Sources
+
+### Primary (HIGH confidence)
+- **GSD codebase** (`/Users/agent/GSD-for-Business/package.json`, `.planning/PROJECT.md`, `.planning/config.json`) — verified current dependencies, constraints, naming, decisions.
+- **npm registry** (live `npm view` calls) — verified current versions of @marp-team/marp-cli (4.3.1, published 2026-03-16), @slidev/cli (52.14.2), reveal.js (10.2.3), spectacle (6.0.1), gray-matter (4.0.3), js-yaml (4.1.1), ajv (8.18.0), c8 (11.0.0), vitest (4.1.4), esbuild (0.28.0), zod (4.3.6), chalk (5.6.2), commander (14.0.3).
+- **github.com/garrytan/gstack** (office-hours/SKILL.md, plan-ceo-review/SKILL.md, README.md) — verified the actual techniques (Push Twice, Language Precision, Reframing, Dream State Mapping, Platonic Ideal, four operating modes, Prime Directives) and skill file structure.
+- **github.com/obra/superpowers** — verified the 5-phase discipline and Anthropic marketplace acceptance (Jan 15, 2026).
+- **github.com/marp-team/marp-cli** + marp.app — verified Marp's PPTX/PDF/HTML export, frontmatter, themes, LibreOffice editable-PPTX caveat.
+- **strategyzer.com/library/the-business-model-canvas** + Wikipedia BMC entry — verified canonical 9-block structure and Creative Commons license.
+- **leanstack.com Lean-Canvas.pdf** — verified Ash Maurya's lean variant 9-block structure.
+
+### Secondary (MEDIUM confidence)
+- **medium.com/@tentenco "Superpowers, GSD, and gstack: What Each Claude Code Framework Actually Constrains"** (April 2026) — independent comparison framing each framework's constraint surface. Aligns with my read of the official READMEs.
+- **practiceguides.chambers.com / iapp.org / captaincompliance.com / korea.acclime.com** — Korea PIPA Feb 2026 amendment, ISMS-P 2027 deadline, CEO personal liability, MyData 2026 expansion. Multiple legal sources agree.
+- **ycombinator.com Library + slideshare/sequoia-capital-pitchdecktemplate** — pitch deck structures. Well-established conventions; multiple sources agree on slide ordering.
+- **dasroot.net + pkgpulse.com Slidev/Marp/Reveal comparison (2026)** — corroborates Marp-for-corporate-PPTX, Slidev-for-developer-decks, Reveal-for-customization split.
+
+### Tertiary (LOW confidence — verified absent rather than verified present)
+- **Korean OKR/BMC tooling search** — searched in both English and Korean; found only Notion templates and PDF case studies, no dominant Korean SaaS or open-source tool to depend on or interop with. Marking LOW because absence of evidence is not strong evidence of absence; a Korean-native tool may exist that simply isn't surfaced by general web search.
+- **OKR YAML/JSON schema standards search** — no dominant standardized schema; OpenProject's work-package model and Oslo Kommune's okr-tracker Firebase model are the closest to "schemas in use", but neither is an industry standard. Markdown+frontmatter remains the right call for OBJECTIVES.md.
+
+## Assumptions Log
+
+| # | Claim | Section | Risk if Wrong |
+|---|-------|---------|---------------|
+| A1 | GSD's bin layer ships with empty `dependencies` (only `devDependencies`) — i.e., the "zero external runtime dependencies" rule is a verifiable property of the current package.json, not just an aspiration | Supporting Libraries; What NOT to Use | If GSD already has runtime deps, the "preserve zero-deps" advice is moot and BRIEF can freely add `gray-matter`/`ajv` to dependencies. **Verify in DESIGN phase by inspecting `package.json` `dependencies` field.** |
+| A2 | The frontmatter audience-guard vocabulary will stay small enough (~5 fields, closed enums) that an inline 30-line CJS validator beats `ajv` on cost/benefit | Supporting Libraries | If audience/confidentiality/voice frontmatter grows nested or open-ended, ajv becomes worth the dep. Re-evaluate after writing 3-5 artifact templates. |
+| A3 | Existing GSD test infrastructure (`node scripts/run-tests.cjs` + `c8` 70% threshold) is appropriate for BRIEF's new business-layer code paths without modification | Development Tools | If business-layer code has fundamentally different testability characteristics (e.g., harder to unit-test prompt outputs), the threshold may need adjustment. Likely fine; prompts are tested via fixture-based snapshot tests. |
+| A4 | Marp's `npx --yes` invocation pattern works reliably across Claude Code / Codex / Gemini / OpenCode runtime sandboxes | Stack Patterns by Variant | If a runtime sandbox blocks `npx` network calls, decks can't be generated. Document as known limitation; offer an explicit `npm install -g @marp-team/marp-cli` fallback. |
+| A5 | Korean PIPA Feb 2026 amendments and ISMS-P July 2027 deadline are accurate as of research date (2026-04-17) | Korea-Specific Tooling; Stack Patterns by Variant | Regulatory dates shift. Compliance reference library must include "as of" dates and a refresh discipline. Don't hard-code; cite source on every claim. |
+| A6 | The audience-guard hook can register as a `PostToolUse` hook on Write tool calls within GSD's existing hook system | What's Already Done For Us | If the hook system doesn't support PostToolUse on Write, the audience guard needs a different injection point (e.g., a separate verifier agent run after every milestone). Verify hook surface during DESIGN phase. |
+
+## Open Questions
+
+1. **Should BRIEF support markdown→Notion export for OBJECTIVES.md and DESIGN artifacts?**
+   - What we know: Korean and global startups frequently use Notion as their working canvas. Notion's API is mature.
+   - What's unclear: Whether Notion export is a v1 requirement or v2.
+   - Recommendation: Defer. v1 ships markdown. Add Notion export as a v2 BRIEF skill if user demand surfaces.
+
+2. **Should the compliance reference library be committed to the BRIEF repo or downloaded from a separate `brief-compliance-references` repo?**
+   - What we know: Regulatory content shifts (Feb 2026 PIPA amendment proves this). Embedding in the main repo couples regulatory updates to framework releases.
+   - What's unclear: Whether users will tolerate a network dep for compliance refs.
+   - Recommendation: Start embedded (simpler), refactor to separate repo only if update cadence becomes painful.
+
+3. **Korean BMC tools — should we spec out interop even though no dominant tool exists?**
+   - What we know: User is Korea-first. No dominant Korean BMC SaaS surfaced.
+   - What's unclear: Whether users will want to import/export to Korean Notion templates specifically.
+   - Recommendation: Skip in v1. Markdown is the lingua franca; users can paste markdown into Notion manually.
+
+4. **Slidev as a fallback for "developer-leaning" investor decks (e.g., dev-tool startups pitching to technical investors)?**
+   - What we know: Slidev shines for live-code demos. Some pitch decks include code samples (Stripe, Vercel, Snyk).
+   - What's unclear: Whether BRIEF's audience overlaps with that need.
+   - Recommendation: Defer to v2. Marp covers 95% of cases. Add Slidev template only if user requests it.
+
+5. **Audience-guard rule expression: declarative (YAML) or procedural (CJS)?**
+   - What we know: GSD's hooks are CJS. Audience-guard rules are simple ("internal-only artifacts cannot be exported as PPTX with `audience: external`").
+   - What's unclear: Whether non-developer users will eventually want to author rules themselves.
+   - Recommendation: Start with CJS rules (matches GSD pattern). Add YAML rule expression in v2 if business planners ask for it.
+
+## Environment Availability
+
+| Dependency | Required By | Available | Version | Fallback |
+|------------|-------------|-----------|---------|----------|
+| Node.js | Everything | ✓ | (verify locally — must be >=22) | None — hard requirement |
+| npm | Install + npx invocations | ✓ | (ships with Node) | None |
+| `git` | Atomic-commit infrastructure (inherited) | ✓ (assumed; GSD requires) | — | None |
+| `npx` | Marp CLI invocation | ✓ (ships with npm) | — | Manual `npm install -g @marp-team/marp-cli` |
+| LibreOffice Impress | **Editable** PPTX export from Marp | ✗ (likely missing) | — | Non-editable PPTX (still readable, less editable for end-user) — Marp default mode |
+| Chrome/Edge browser | Marp PPTX export (any mode) | likely ✓ | — | None — required for Marp's PPTX renderer |
+| Pandoc | Optional fallback if Marp unavailable | likely ✗ | — | Skip; Marp covers the use case |
+
+**Missing dependencies with no fallback:** None for v1 if we accept non-editable PPTX as default.
+
+**Missing dependencies with fallback:** LibreOffice Impress — document the editable-PPTX limitation in the DELIVER skill prompt; offer install instructions; default to non-editable export.
+
+## Confidence Breakdown
+
+- **Inherited core (Node 22, CJS, node:test, c8, esbuild, vitest):** HIGH — directly verified from GSD `package.json` and config.
+- **Marp CLI for decks:** HIGH — verified version, recent 2026-03-16 release, multiple comparison sources confirm Marp's PPTX-export advantage for corporate use.
+- **gstack and superpowers as patterns-not-deps:** HIGH — verified from PROJECT.md decisions and the actual SKILL.md files of both projects.
+- **gray-matter / ajv as supporting libs:** MEDIUM — verified versions, but the "should we add them at all vs. inline" decision depends on assumption A1 (GSD's zero-runtime-deps rule).
+- **Korean compliance regulatory dates (PIPA Feb 2026, ISMS-P July 2027, CEO liability):** MEDIUM — multiple legal sources agree, but regulatory dates can shift; cite-with-date-stamps in references.
+- **Korean tooling absence:** LOW — verified absent in general web search; a Korean-native BMC/OKR tool may exist that wasn't surfaced.
+
+---
+*Stack research for: BRIEF — Business Research, Insight & Execution Framework*
+*Researched: 2026-04-17*
