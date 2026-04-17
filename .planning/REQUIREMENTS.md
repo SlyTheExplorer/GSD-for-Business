@@ -159,14 +159,84 @@ Explicitly excluded. Documented to prevent scope creep.
 
 Which phases cover which requirements. Updated during roadmap creation.
 
-(To be filled by gsd-roadmapper.)
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| FND-01 | Phase 1 (Foundation — Fork Hygiene, Removal, Rename) | Pending |
+| FND-02 | Phase 1 (Foundation — Fork Hygiene, Removal, Rename) | Pending |
+| FND-03 | Phase 1 (Foundation — Fork Hygiene, Removal, Rename) | Pending |
+| FND-04 | Phase 1 (Foundation — Fork Hygiene, Removal, Rename) | Pending |
+| FND-05 | Phase 2 (Stable Seam — Anchor Schema, Caps, Workstream-as-Config) | Pending |
+| FND-06 | Phase 1 (Foundation — Fork Hygiene, Removal, Rename) | Pending |
+| FND-07 | Phase 1 (Foundation — Fork Hygiene, Removal, Rename) | Pending |
+| FND-08 | Phase 2 (Stable Seam — Anchor Schema, Caps, Workstream-as-Config) | Pending |
+| FND-09 | Phase 2 (Stable Seam — Anchor Schema, Caps, Workstream-as-Config) | Pending |
+| FND-10 | Phase 2 (Stable Seam — Anchor Schema, Caps, Workstream-as-Config) | Pending |
+| DEF-01 | Phase 3 (DEFINE Canary — Phase 0 End-to-End) | Pending |
+| DEF-02 | Phase 3 (DEFINE Canary — Phase 0 End-to-End) | Pending |
+| DEF-03 | Phase 3 (DEFINE Canary — Phase 0 End-to-End) | Pending |
+| DEF-04 | Phase 3 (DEFINE Canary — Phase 0 End-to-End) | Pending |
+| DEF-05 | Phase 3 (DEFINE Canary — Phase 0 End-to-End) | Pending |
+| DEF-06 | Phase 3 (DEFINE Canary — Phase 0 End-to-End) | Pending |
+| DSC-01 | Phase 5 (DISCOVER — Parallel Research with Provenance) | Pending |
+| DSC-02 | Phase 5 (DISCOVER — Parallel Research with Provenance) | Pending |
+| DSC-03 | Phase 5 (DISCOVER — Parallel Research with Provenance) | Pending |
+| DSC-04 | Phase 5 (DISCOVER — Parallel Research with Provenance) | Pending |
+| DSC-05 | Phase 5 (DISCOVER — Parallel Research with Provenance) | Pending |
+| DSC-06 | Phase 5 (DISCOVER — Parallel Research with Provenance) | Pending |
+| DSC-07 | Phase 5 (DISCOVER — Parallel Research with Provenance) | Pending |
+| DSG-01 | Phase 7 (DESIGN — Workstream Orchestration + COMPLIANCE Checker) | Pending |
+| DSG-02 | Phase 7 (DESIGN — Workstream Orchestration + COMPLIANCE Checker) | Pending |
+| DSG-03 | Phase 7 (DESIGN — Workstream Orchestration + COMPLIANCE Checker) | Pending |
+| DSG-04 | Phase 7 (DESIGN — Workstream Orchestration + COMPLIANCE Checker) | Pending |
+| DSG-05 | Phase 7 (DESIGN — Workstream Orchestration + COMPLIANCE Checker) | Pending |
+| DSG-06 | Phase 7 (DESIGN — Workstream Orchestration + COMPLIANCE Checker) | Pending |
+| DSG-07 | Phase 7 (DESIGN — Workstream Orchestration + COMPLIANCE Checker) | Pending |
+| DSG-08 | Phase 7 (DESIGN — Workstream Orchestration + COMPLIANCE Checker) | Pending |
+| DSG-09 | Phase 7 (DESIGN — Workstream Orchestration + COMPLIANCE Checker) | Pending |
+| DSG-10 | Phase 7 (DESIGN — Workstream Orchestration + COMPLIANCE Checker) | Pending |
+| DSG-11 | Phase 6 (Bidirectional Foundation — Phase 1↔2 Return Stack) | Pending |
+| DSG-12 | Phase 4 (First Gate — ALIGN Pattern Established) | Pending |
+| DSG-13 | Phase 5 (DISCOVER — Parallel Research with Provenance) | Pending |
+| DSG-14 | Phase 6 (Bidirectional Foundation — Phase 1↔2 Return Stack) | Pending |
+| DLV-01 | Phase 8 (DELIVER — Type A + Type B + AUDIENCE Enforcement) | Pending |
+| DLV-02 | Phase 8 (DELIVER — Type A + Type B + AUDIENCE Enforcement) | Pending |
+| DLV-03 | Phase 8 (DELIVER — Type A + Type B + AUDIENCE Enforcement) | Pending |
+| DLV-04 | Phase 8 (DELIVER — Type A + Type B + AUDIENCE Enforcement) | Pending |
+| DLV-05 | Phase 8 (DELIVER — Type A + Type B + AUDIENCE Enforcement) | Pending |
+| DLV-06 | Phase 8 (DELIVER — Type A + Type B + AUDIENCE Enforcement) | Pending |
+| DLV-07 | Phase 8 (DELIVER — Type A + Type B + AUDIENCE Enforcement) | Pending |
+| DLV-08 | Phase 8 (DELIVER — Type A + Type B + AUDIENCE Enforcement) | Pending |
+| DLV-09 | Phase 8 (DELIVER — Type A + Type B + AUDIENCE Enforcement) | Pending |
+| CC-01 | Phase 7 (DESIGN — Workstream Orchestration + COMPLIANCE Checker) | Pending |
+| CC-02 | Phase 5 (DISCOVER — Parallel Research with Provenance) | Pending |
+| CC-03 | Phase 8 (DELIVER — Type A + Type B + AUDIENCE Enforcement) | Pending |
+| CC-04 | Phase 5 (DISCOVER — Parallel Research with Provenance) | Pending |
+| HRD-01 | Phase 9 (Hardening — Cross-Runtime + Pilot) | Pending |
+| HRD-02 | Phase 9 (Hardening — Cross-Runtime + Pilot) | Pending |
+| HRD-03 | Phase 9 (Hardening — Cross-Runtime + Pilot) | Pending |
+| HRD-04 | Phase 9 (Hardening — Cross-Runtime + Pilot) | Pending |
 
 **Coverage:**
 
-- v1 requirements: 47 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 47 ⚠️
+- v1 requirements: 54 total (note: REQUIREMENTS.md initial metadata stated 47; actual count is 54 across the listed FND/DEF/DSC/DSG/DLV/CC/HRD items)
+- Mapped to phases: 54 ✓
+- Unmapped: 0 ✓
+
+**Per-phase requirement counts:**
+
+| Phase | Requirements | Count |
+|-------|--------------|-------|
+| Phase 1 (Foundation) | FND-01, FND-02, FND-03, FND-04, FND-06, FND-07 | 6 |
+| Phase 2 (Stable Seam) | FND-05, FND-08, FND-09, FND-10 | 4 |
+| Phase 3 (DEFINE Canary) | DEF-01, DEF-02, DEF-03, DEF-04, DEF-05, DEF-06 | 6 |
+| Phase 4 (ALIGN First Gate) | DSG-12 | 1 |
+| Phase 5 (DISCOVER) | DSC-01, DSC-02, DSC-03, DSC-04, DSC-05, DSC-06, DSC-07, DSG-13, CC-02, CC-04 | 10 |
+| Phase 6 (Bidirectional Foundation) | DSG-11, DSG-14 | 2 |
+| Phase 7 (DESIGN) | DSG-01, DSG-02, DSG-03, DSG-04, DSG-05, DSG-06, DSG-07, DSG-08, DSG-09, DSG-10, CC-01 | 11 |
+| Phase 8 (DELIVER) | DLV-01..09, CC-03 | 10 |
+| Phase 9 (Hardening) | HRD-01, HRD-02, HRD-03, HRD-04 | 4 |
+| **Total** | | **54** |
 
 ---
 *Requirements defined: 2026-04-18*
-*Last updated: 2026-04-18 after initial definition*
+*Last updated: 2026-04-17 after roadmap creation (54 requirements mapped to 9 phases)*
