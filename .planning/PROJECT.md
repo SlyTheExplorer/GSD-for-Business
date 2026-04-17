@@ -1,0 +1,118 @@
+# BRIEF — Business Research, Insight & Execution Framework
+
+## What This Is
+
+BRIEF is a meta-prompting framework for business and product strategy planning, hard-forked from GSD (Get Shit Done). It guides a business planner through four phases — DEFINE (extract true intent), DISCOVER (broad domain research), DESIGN (concrete business plan), DELIVER (high-level product/service policy + stakeholder communication artifacts) — all of which occur BEFORE engineering's PRD work begins. The output of BRIEF can hand off cleanly into a PRD that GSD itself can then execute.
+
+## Core Value
+
+A business planner can transform a fuzzy idea into well-researched, audience-correct, compliance-aware deliverables — without already knowing what they want when they start.
+
+## Requirements
+
+### Validated
+
+(None yet — ship to validate)
+
+### Active
+
+<!-- Hypotheses for v1. Grouped by capability area. Detailed per-requirement breakdown lives in REQUIREMENTS.md. -->
+
+**Phase 0 — DEFINE (intent extraction)**
+- [ ] Conversational intent extractor that uses Push Twice + Language Precision techniques
+- [ ] Dream State Mapping (now → 3 months → 12 months) to anchor objectives
+- [ ] OBJECTIVES.md as the single anchor document referenced by all downstream phases
+
+**Phase 1 — DISCOVER (broad research)**
+- [ ] 6–8 parallel domain researcher agents (market, competitors, customers, regulation, tech, trends, cases)
+- [ ] Research outputs auto-tagged with business_model + region context for retrieval
+- [ ] Bidirectional flow: Phase 2 can trigger return-to-Phase-1 to fill detected research gaps
+
+**Phase 2 — DESIGN (business plan)**
+- [ ] Built-in workstreams: Business Model Canvas, GTM, Financial Model, Operations, Compliance & Legal, Roadmap
+- [ ] Dynamic workstream addition (`/brief-add-workstream`) with gsd-new-milestone flow pattern
+- [ ] Continuous ALIGN gate: every milestone output is checked against OBJECTIVES.md
+- [ ] Audience guard: every artifact carries audience/confidentiality/voice frontmatter; leakage is blocked
+- [ ] Compliance checker: industry+region-aware (Korea ISMS-P/PIPA + global SOC 2/GDPR/HIPAA + domain-specific)
+- [ ] B2B/B2C context injector: every spawned agent inherits the right business model lens
+
+**Phase 3 — DELIVER (final artifacts)**
+- [ ] Type A — Product/service policy artifacts: PRODUCT-BRIEF, SERVICE-POLICY, HIGH-LEVEL-SPEC, FEATURE-MAP (PRD inputs)
+- [ ] Type B — Communication artifacts: INTERNAL-DECK, PROPOSAL-DECK, INVESTOR-IR, EXEC-SUMMARY, DECISION-MEMO
+- [ ] Audience guard runs on every Type B artifact (confidentiality + voice fit)
+
+**Cross-cutting**
+- [ ] All GSD development-specific surfaces (code review, UI, AI eval, TDD, security audit) removed
+- [ ] All `gsd-*` identifiers renamed to `brief-*` (commands, agents, prefixes)
+- [ ] Reuses GSD core: state lock, multi-agent orchestration, context engine, atomic commits, runtime detection (Claude/Codex/Gemini/OpenCode)
+- [ ] CLAUDE.md / README rewritten for the business planning domain
+
+### Out of Scope
+
+- **Code review, test, UI design, AI eval, TDD, security audit, debug agents** — GSD development-specific. Removed entirely; not replaced.
+- **`/brief-new-milestone` (full v2 cycle restart)** — explicitly deferred. Single-cycle tool for v1; multi-cycle (v1→v2→v3) is a future need, not now.
+- **Codebase mapping of source GSD** — already analyzed in design conversation; no value in formal mapping artifact.
+- **Backwards compatibility with GSD commands** — hard fork, no aliases. `backup/original-gsd` branch retained for reference, not for shim.
+- **Heavy programmatic verification cycle** — replaced by ALIGN + AUDIENCE + COMPLIANCE gates that produce human-reviewable findings, not automated pass/fail.
+- **Plugin form (in addition to fork)** — explored and rejected in design conversation; coupling to GSD upgrade cycle would constrain the business domain too much.
+
+## Context
+
+- **Origin**: Forked from GSD (`get-shit-done-cc`). The user already has GSD installed and has used it for development work; the current directory `/Users/agent/GSD-for-Business` is the fork base.
+- **Inspiration absorbed (not depended upon)**: gstack's `office-hours` (forcing questions, push-twice, reframing techniques) and `plan-ceo-review` (Dream State Mapping, Platonic Ideal). Patterns absorbed; no runtime dependency.
+- **Inspiration considered and rejected**: `superpowers` plugin — useful 5-phase clarify→design→plan→code→verify discipline, but software-development-centric. Concept absorbed (BRIEF's 5-phase flow), runtime dependency rejected.
+- **Target users**: business and product planners; PMs preparing PRD inputs; founders preparing investor and stakeholder material; strategy consultants.
+- **Geographic and regulatory scope**: Korea-first with global support. Compliance reference library covers Korea (ISMS-P, PIPA, e-금융업, mydata, 의료기기법) and global (GDPR, CCPA, SOC 2, HIPAA, PCI-DSS).
+- **Dogfooding**: this project itself is being built using GSD, so the .planning/ directory will document where GSD breaks for business-domain work — feeding BRIEF's design.
+
+## Constraints
+
+- **Tech stack**: Inherited from GSD. Node.js 22+, CommonJS-only core (`.cjs`), zero external runtime dependencies for the bin layer. TypeScript SDK retained.
+- **Architecture**: Must preserve GSD's atomic-commit + STATE.md file lock + agent prompt context engine. No re-architecture of these primitives.
+- **Multi-runtime**: Must keep working across Claude Code, OpenAI Codex, Gemini CLI, OpenCode (same as GSD). `INSTRUCTION_FILE` detection and `text_mode` fallback for non-AskUserQuestion runtimes preserved.
+- **Backward compatibility**: NONE. Hard fork. The `backup/original-gsd` branch is for reference only — no compatibility shims, aliases, or migration tooling.
+- **Naming**: `gsd-*` → `brief-*` is a one-shot global rename. No transitional period.
+- **Testing**: `node:test` (not Jest), c8 coverage, cross-platform (Mac/Windows/Linux) — same as GSD.
+- **Distribution**: npm package, similar `bin/install.js` pattern. Likely package name `brief-cc` or similar.
+
+## Key Decisions
+
+| Decision | Rationale | Outcome |
+|----------|-----------|---------|
+| Hard fork (not plugin) | GSD coupling too tight; business-planning paradigm differs fundamentally from dev cycle. Plugin would constrain BRIEF to GSD's release cadence. | — Pending |
+| Name: BRIEF | Sales/strategy deliverables are all "briefs" in the field. Acronym (Business Research, Insight & Execution Framework) reinforces the meaning. | — Pending |
+| 5-phase: DEFINE → DISCOVER → DESIGN → DELIVER + continuous ALIGN | Replaces GSD's plan/execute/verify cycle with research-heavy flow. ALIGN runs at every milestone, not once at end. | — Pending |
+| Phase 0 (DEFINE) is mandatory and lightweight (~30 min) | Business planners often don't know what they want when starting. Forcing a structured intent extraction up-front prevents drift later. | — Pending |
+| OBJECTIVES.md as the anchor document | Every downstream agent reads it. ALIGN gate measures every output against it. Single source of truth for "what we're trying to do". | — Pending |
+| Continuous ALIGN at every milestone | Better than once-at-end. Catches drift while cost of correction is small. | — Pending |
+| Built-in Compliance & Legal milestone + automatic compliance checker on every milestone | Compliance is too important to leave to user discretion. Two-layer defense (formal milestone + auto-checker on every other output). | — Pending |
+| Audience guard: mandatory frontmatter on every artifact | Leakage of internal strategy to external audiences is the #1 deliverable failure mode. Frontmatter forces explicit declaration; checker enforces it. | — Pending |
+| B2B/B2C context injection on every spawned agent | Same advice (e.g., GTM strategy) means very different things for B2B vs B2C. Inject business model into every prompt. | — Pending |
+| Bidirectional Phase 1 ↔ Phase 2 flow with auto gap detection | Discovery gaps inevitably surface during design. Forcing closure (with user approval) keeps the design well-grounded. | — Pending |
+| Dynamic workstream addition (`/brief-add-workstream`) using gsd-new-milestone flow | Pattern is mature in GSD; reuse it. User pattern: "oh, certifications got missed — add a workstream". | — Pending |
+| Defer `/brief-new-milestone` (v2 cycle restart) | Single-cycle is enough for v1. Multi-cycle adds complexity without clear demand. | — Pending |
+| Reuse GSD core (state lock, multi-agent orchestration, context engine, runtime detection) | Don't reinvent infrastructure. Focus all build effort on the business-domain layer. | — Pending |
+| In-place transformation with `backup/original-gsd` safety branch | Avoids code duplication. Backup branch gives one-command rollback. | — Pending |
+| Build BRIEF using GSD itself (dogfooding) | Live experience reveals exactly where GSD breaks for business work — those breakage points become BRIEF's differentiation list. | — Pending |
+| Korea-first + global compliance reference library | User is in Korea; Korea SaaS/fintech/healthcare reference library is high-leverage. Global packs added for export. | — Pending |
+| Hard rename `gsd-*` → `brief-*` (no aliases) | Aliases create dual-vocabulary confusion. Clean break is better. | — Pending |
+
+## Evolution
+
+This document evolves at phase transitions and milestone boundaries.
+
+**After each phase transition** (via `/gsd-transition`):
+1. Requirements invalidated? → Move to Out of Scope with reason
+2. Requirements validated? → Move to Validated with phase reference
+3. New requirements emerged? → Add to Active
+4. Decisions to log? → Add to Key Decisions
+5. "What This Is" still accurate? → Update if drifted
+
+**After each milestone** (via `/gsd-complete-milestone`):
+1. Full review of all sections
+2. Core Value check — still the right priority?
+3. Audit Out of Scope — reasons still valid?
+4. Update Context with current state
+
+---
+*Last updated: 2026-04-18 after initialization*

@@ -24,7 +24,7 @@ animation/
 # Internal planning documents
 reports/
 RAILROAD_ARCHITECTURE.md
-.planning/
+# .planning/ — UNIGNORED for BRIEF: dogfooding evidence is a first-class artifact
 analysis/
 docs/GSD-MASTER-ARCHITECTURE.md
 docs/GSD-RUST-IMPLEMENTATION-GUIDE.md
