@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-04-18)
 
 Phase: 1 of 9 (Foundation — Fork Hygiene, Removal, Rename)
 Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-04-17 — Roadmap created, requirements mapped to 9 phases (54/54 coverage)
+Status: Context gathered — ready for /gsd-plan-phase 1
+Last activity: 2026-04-18 — Phase 1 CONTEXT.md captured (Aggressive rename, recursive removal, brief-cc, targeted CLAUDE.md delta)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -45,6 +45,11 @@ Recent decisions affecting current work:
 - Roadmap creation: 9-phase structure (fine granularity), foundation split into Phase 1 (hygiene + rename + A1 verification) and Phase 2 (stable seam + A4 verification + workstream-as-yaml + caps) for risk isolation
 - Roadmap creation: Bidirectional Phase 1↔2 return-stack built BEFORE designers (Phase 6 before Phase 7) so designers are written aware of it from day one
 - Roadmap creation: ALIGN gate (Phase 4) built BEFORE AUDIENCE (Phase 5) and COMPLIANCE (Phase 7) so the gate-as-orchestrator-step pattern is set once, replicated twice
+- Phase 1 discuss: **Aggressive rename chosen** over Conservative — full rename including `get-shit-done/` → `brief/` and `gsd-tools.cjs` → `brief-tools.cjs`. Trade-off: GSD upstream merge possibility abandoned. Justification: clean break tells better story for fork; vocabulary cleanliness; user is in Korea-first business domain not SW dev contributing back to GSD
+- Phase 1 discuss: **Recursive removal** — for every removed command, delete corresponding agent + template + reference + test files. Total ~38–45 files removed
+- Phase 1 discuss: **Staged 4–5 commit strategy** — backup branch, removals, user-facing rename, internal rename, text-ref updates. Each commit must leave repo buildable
+- Phase 1 discuss: **npm package = `brief-cc`** (inherits GSD `-cc` Claude Code suffix)
+- Phase 1 discuss: **CLAUDE.md targeted delta** — replace Project + Workflow + Skills/Commands + Stack sections; reuse rest
 
 ### Pending Todos
 
@@ -56,7 +61,7 @@ None yet.
 
 [Issues that affect future work]
 
-- **HIGH-RISK assumption A1 (zero-runtime-deps)** must be verified in Phase 1 before any new code; if wrong, BRIEF can freely add `gray-matter`/`ajv` to dependencies, otherwise inline implementations are mandatory
+- **HIGH-RISK assumption A1 (zero-runtime-deps) VERIFIED** ahead of Phase 1: `package.json` `dependencies: {}` confirmed via direct inspection. Inline implementations are mandatory for any future supporting libs (gray-matter, ajv, etc.). Plan-phase still records formal verification step in `.planning/ASSUMPTIONS.md`
 - **HIGH-RISK assumption A4 (state.cjs round-trip)** must be verified in Phase 2; if wrong, the architecture needs a sidecar `state-brief.json` instead of namespaced `state.brief.*` extension and changes propagate to Phase 6 (bidirectional foundation)
 - Korean compliance reference library content (clause-level ISMS-P / PIPA / e-금융업 / mydata / 의료기기법) needs deeper Korean legal research during Phase 7; consider engaging legal counsel for review
 - Marp `npx --yes` invocation pattern (Assumption STACK-A4) needs verification across all four runtime sandboxes in Phase 9 cross-runtime smoke test
@@ -71,6 +76,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-04-17
-Stopped at: Roadmap and STATE.md initialized; awaiting Phase 1 planning via `/gsd-plan-phase 1`
-Resume file: None
+Last session: 2026-04-18
+Stopped at: Phase 1 context gathered; awaiting Phase 1 planning via `/gsd-plan-phase 1`
+Resume file: .planning/phases/01-foundation-fork-hygiene-removal-rename/01-CONTEXT.md
