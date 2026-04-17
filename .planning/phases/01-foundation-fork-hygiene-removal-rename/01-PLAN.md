@@ -28,7 +28,7 @@ must_haves:
 ---
 
 <objective>
-Create the `backup/original-gsd` git branch as the one-command rollback safety net BEFORE any removal or rename work begins. This commit (commit 1 of 5 per D-08) is the precondition for all subsequent Phase 1 plans: if anything in plans 02-06 goes wrong, `git checkout backup/original-gsd` restores the exact pre-BRIEF state.
+Create the `backup/original-gsd` git branch as the one-command rollback safety net BEFORE any removal or rename work begins. This commit (commit 1 of 6 per D-08) is the precondition for all subsequent Phase 1 plans: if anything in plans 02-06 goes wrong, `git checkout backup/original-gsd` restores the exact pre-BRIEF state.
 
 Purpose: Honor FND-01 (rollback safety) and D-06 accepted trade-off (GSD upstream merge abandoned — backup branch IS the rollback path). No actual code or file changes happen in this plan; only a git ref is created.
 

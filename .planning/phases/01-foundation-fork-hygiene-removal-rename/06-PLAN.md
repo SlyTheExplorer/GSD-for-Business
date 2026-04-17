@@ -252,6 +252,32 @@ grep -rc "get-shit-done" brief/bin/lib/       →  ${GSD_HITS} total refs    (mu
 - Zero \`get-shit-done\` path references remain in any \`brief/bin/lib/*.cjs\` file — the rename did not introduce broken absolute paths in the runtime-detection code.
 - Actual smoke testing BRIEF across Claude Code / Codex / Gemini / OpenCode is deferred to Phase 9 (HRD-01) per the cross-runtime smoke-test milestone. Phase 1 verifies only that the detection CODE survived the rename intact at both sites.
 
+### A-REPO — Placeholder repository URL in package.json
+
+**Status:** PLACEHOLDER (NOT VERIFIED — requires Phase 9 resolution)
+**Timestamp:** ${TS}
+**Phase:** 01-foundation-fork-hygiene-removal-rename
+**Requirement:** W1 closure (checker WARNING iteration 1)
+
+**Current package.json values (set by Plan 04 Task 2):**
+\`\`\`
+repository.url:  git+https://github.com/brief-build/brief.git
+homepage:        https://github.com/brief-build/brief
+bugs.url:        https://github.com/brief-build/brief/issues
+\`\`\`
+
+**Why placeholder:** The GitHub org \`brief-build\` and repo \`brief\` have not been verified to exist or be reserved. Checker iteration 1 flagged this as unverified (W1). The real BRIEF repository URL is a Phase 9 (npm publishing / HRD-02) decision.
+
+**Constraint until resolved:**
+- Do NOT run \`npm publish\` while this assumption is in PLACEHOLDER status. A published package would direct users to a 404 URL.
+- Plan 04 Task 2 Threat T-01-21 documents this as \"accept\" risk because no publish happens in Phase 1.
+- Plan 06 FND-07 residue-grep includes a check for \`brief-build/brief\` to detect any accidental override back to placeholder-incompatible content.
+
+**Resolution path (Phase 9 HRD-02):**
+1. Verify/reserve GitHub org + repo (or pick a different one — planner or user decision at Phase 9 time).
+2. Single-file find-replace on package.json across repository.url, homepage, bugs.url.
+3. Update this ASSUMPTIONS.md entry: PLACEHOLDER → VERIFIED, record the resolved URL.
+
 EOF
 cat "$ASSUMPTIONS" | tail -40
 ```
@@ -277,6 +303,10 @@ grep -q "^### FND-06" .planning/ASSUMPTIONS.md || { echo "FAIL: FND-06 section m
 # FND-06 entry names BOTH sites (dual-site requirement per BLOCKER fix)
 grep -q "brief/workflows/" .planning/ASSUMPTIONS.md || { echo "FAIL: FND-06 entry does not name workflows site"; exit 1; }
 grep -q "brief/bin/lib/" .planning/ASSUMPTIONS.md || { echo "FAIL: FND-06 entry does not name lib site"; exit 1; }
+# Contains A-REPO entry with PLACEHOLDER status (W1 closure)
+grep -q "^### A-REPO" .planning/ASSUMPTIONS.md || { echo "FAIL: A-REPO section missing"; exit 1; }
+grep -q "Status:.*PLACEHOLDER" .planning/ASSUMPTIONS.md || { echo "FAIL: A-REPO missing PLACEHOLDER status"; exit 1; }
+grep -q "brief-build/brief" .planning/ASSUMPTIONS.md || { echo "FAIL: A-REPO missing placeholder URL details"; exit 1; }
 # Deps really zero
 DEPS=$(node -e "console.log(Object.keys(require(\"./package.json\").dependencies||{}).length)")
 [ "$DEPS" = "0" ] || { echo "FAIL: deps=$DEPS"; exit 1; }
@@ -579,7 +609,7 @@ echo "OK: Task 3 verified"
 </task>
 
 <task type="auto">
-  <name>Task 4: Final FND-07 verification and atomic commit (commit 6 of 5 + 1)</name>
+  <name>Task 4: Final FND-07 verification and atomic commit (commit 6 of 6)</name>
   <files>
     CLAUDE.md
     README.md
@@ -609,14 +639,34 @@ echo "Dev vocab (CLAUDE.md + README.md): $DEV (should be 0 or low with explanati
 # Also record where matches live
 grep -i "code review\|TDD\|deployment\|security audit\|unit test" CLAUDE.md README.md | head -10 > /tmp/plan06-devmatches.txt
 
-# package.json residue check (checker WARNING #6 closure — Plan 04 Task 2 updates the fields; Plan 06 confirms no residue)
-PKG_RESIDUE=$(grep -ci "spec-driven\|get-shit-done\|gsd-build" package.json)
+# package.json residue check (Plan 04 Task 2 updated descriptive fields; Plan 06 confirms no residue)
+# NOTE: brief-build/brief placeholder is ALLOWED — see A-REPO assumption in ASSUMPTIONS.md (W1 closure).
+# Check for GSD-specific tokens that should NOT remain.
+PKG_RESIDUE=$(grep -ci "spec-driven\|get-shit-done-cc\|gsd-build/get-shit-done" package.json)
 echo "GSD-domain residue in package.json: $PKG_RESIDUE (should be 0)"
 if [ "$PKG_RESIDUE" != "0" ]; then
   echo "FAIL: package.json still contains GSD-domain content"
-  grep -in "spec-driven\|get-shit-done\|gsd-build" package.json
+  grep -in "spec-driven\|get-shit-done-cc\|gsd-build/get-shit-done" package.json
   exit 1
 fi
+
+# BLOCKER 1 closure — broadened repo-wide residue grep for removed-agent identifiers
+# Scope: ALL tracked files EXCEPT documented exclusions (.planning, .git, node_modules, backup, CHANGELOG.md RESIDUAL, removed-surfaces.smoke.txt audit trail)
+ORPHAN_PATTERN='gsd-(code-reviewer|code-fixer|debugger|ui-researcher|ui-checker|ui-auditor|ai-researcher|eval-planner|eval-auditor|domain-researcher|security-auditor|integration-checker|debug-session-manager)'
+ORPHAN_HITS=$(grep -rE "$ORPHAN_PATTERN" . --exclude-dir=.planning --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=backup 2>/dev/null | grep -v "^CHANGELOG\.md:" | grep -v "^./CHANGELOG\.md:" | grep -v "removed-surfaces.smoke.txt:" | wc -l | tr -d ' ')
+echo "Removed-agent orphan count (BLOCKER 1 closure — must be 0): $ORPHAN_HITS"
+if [ "$ORPHAN_HITS" != "0" ]; then
+  echo "FAIL (BLOCKER 1): $ORPHAN_HITS orphan references to removed agents found repo-wide"
+  grep -rE "$ORPHAN_PATTERN" . --exclude-dir=.planning --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=backup 2>/dev/null | grep -v "^CHANGELOG\.md:\|^./CHANGELOG\.md:\|removed-surfaces.smoke.txt:" | head -20
+  exit 1
+fi
+
+# BLOCKER 2 closure — tests/agent-frontmatter.test.cjs bare-prefix + iteration-count check
+! grep -q "startsWith('gsd-')" tests/agent-frontmatter.test.cjs || { echo "FAIL (BLOCKER 2): tests/agent-frontmatter.test.cjs still has bare 'gsd-' literal"; exit 1; }
+grep -q "startsWith('brief-')" tests/agent-frontmatter.test.cjs || { echo "FAIL (BLOCKER 2): tests/agent-frontmatter.test.cjs missing 'brief-' literal"; exit 1; }
+AGENT_ITER=$(node -e "const fs = require('fs'); const path = require('path'); const dir = path.join(process.cwd(), 'agents'); console.log(fs.readdirSync(dir).filter(f => f.startsWith('brief-') && f.endsWith('.md')).length);")
+echo "Agent-frontmatter iteration count (BLOCKER 2 closure — must be ≥18): $AGENT_ITER"
+[ "$AGENT_ITER" -ge 18 ] || { echo "FAIL (BLOCKER 2): iterates $AGENT_ITER agents (expected ≥18)"; exit 1; }
 ```
 
 2. Append an FND-07 verification section to `.planning/ASSUMPTIONS.md`:
@@ -669,15 +719,15 @@ node -e "JSON.parse(require('fs').readFileSync('package.json','utf8')); console.
 git add CLAUDE.md README.md .planning/ASSUMPTIONS.md
 git status --short
 
-node brief/bin/brief-tools.cjs commit "docs(01): CLAUDE.md + README.md targeted delta, ASSUMPTIONS.md A1+FND-06+FND-07 (closes Phase 1)" --files CLAUDE.md README.md .planning/ASSUMPTIONS.md
+node brief/bin/brief-tools.cjs commit "docs(01): CLAUDE.md + README.md targeted delta, ASSUMPTIONS.md A1+FND-06+FND-07+A-REPO (closes Phase 1)" --files CLAUDE.md README.md .planning/ASSUMPTIONS.md
 # Fallback
-# git commit -m "docs(01): CLAUDE.md + README.md targeted delta, ASSUMPTIONS.md A1+FND-06+FND-07 (closes Phase 1)"
+# git commit -m "docs(01): CLAUDE.md + README.md targeted delta, ASSUMPTIONS.md A1+FND-06+FND-07+A-REPO (closes Phase 1)"
 ```
 
 5. Verify the commit landed:
 ```bash
 git log -1 --oneline
-# Expect: <hash> docs(01): CLAUDE.md + README.md targeted delta, ASSUMPTIONS.md A1+FND-06+FND-07 (closes Phase 1)
+# Expect: <hash> docs(01): CLAUDE.md + README.md targeted delta, ASSUMPTIONS.md A1+FND-06+FND-07+A-REPO (closes Phase 1)
 git log --oneline -10 | head -10
 # Expect 6 Phase 1 commits (1: backup, 2: remove, 3: rename, 4: dir+bin, 5: text-refs, 6: docs+verify)
 ```
@@ -697,31 +747,46 @@ grep -q "brief/workflows/" .planning/ASSUMPTIONS.md || { echo "FAIL: FND-06 miss
 grep -q "brief/bin/lib/" .planning/ASSUMPTIONS.md || { echo "FAIL: FND-06 missing lib site"; exit 1; }
 # FND-07 entry includes package.json residue check
 grep -q "package.json" .planning/ASSUMPTIONS.md || { echo "FAIL: FND-07 missing package.json check"; exit 1; }
-# package.json has no GSD residue (checker WARNING #6)
-! grep -qi "spec-driven\|get-shit-done\|gsd-build" package.json || { echo "FAIL: package.json GSD residue"; exit 1; }
+# package.json has no GSD residue (checker WARNING #6 closure; A-REPO placeholder ALLOWED per W1)
+! grep -qi "spec-driven\|get-shit-done-cc\|gsd-build/get-shit-done" package.json || { echo "FAIL: package.json GSD residue"; exit 1; }
+# ASSUMPTIONS.md has A-REPO entry for W1 placeholder (STATUS: PLACEHOLDER)
+grep -q "^### A-REPO" .planning/ASSUMPTIONS.md || { echo "FAIL: A-REPO missing from ASSUMPTIONS.md"; exit 1; }
+grep -q "Status:.*PLACEHOLDER" .planning/ASSUMPTIONS.md || { echo "FAIL: A-REPO missing PLACEHOLDER status"; exit 1; }
+# BLOCKER 1 closure — removed-agent orphan grep repo-wide
+ORPHAN_PATTERN="gsd-(code-reviewer|code-fixer|debugger|ui-researcher|ui-checker|ui-auditor|ai-researcher|eval-planner|eval-auditor|domain-researcher|security-auditor|integration-checker|debug-session-manager)"
+ORPHAN_HITS=$(grep -rE "$ORPHAN_PATTERN" . --exclude-dir=.planning --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=backup 2>/dev/null | grep -v "^CHANGELOG\.md:\|^./CHANGELOG\.md:\|removed-surfaces.smoke.txt:" | wc -l | tr -d " ")
+[ "$ORPHAN_HITS" = "0" ] || { echo "FAIL (BLOCKER 1): $ORPHAN_HITS orphan refs in final gate"; exit 1; }
+# BLOCKER 2 closure — tests/agent-frontmatter.test.cjs uses brief- literal, iterates ≥18 agents
+! grep -q "startsWith(.gsd-.)" tests/agent-frontmatter.test.cjs || { echo "FAIL (BLOCKER 2): gsd- literal in agent-frontmatter"; exit 1; }
+grep -q "startsWith(.brief-.)" tests/agent-frontmatter.test.cjs || { echo "FAIL (BLOCKER 2): brief- literal missing"; exit 1; }
+AGENT_ITER=$(node -e "const fs = require(\"fs\"); const path = require(\"path\"); const dir = path.join(process.cwd(), \"agents\"); console.log(fs.readdirSync(dir).filter(f => f.startsWith(\"brief-\") && f.endsWith(\".md\")).length);")
+[ "$AGENT_ITER" -ge 18 ] || { echo "FAIL (BLOCKER 2): iterates $AGENT_ITER"; exit 1; }
 # Lib loads
 node -e "require(\"./brief/bin/lib/core.cjs\");" || { echo "FAIL: lib broken"; exit 1; }
 # Deps zero
 DEPS=$(node -e "console.log(Object.keys(require(\"./package.json\").dependencies||{}).length)")
 [ "$DEPS" = "0" ] || { echo "FAIL: deps $DEPS"; exit 1; }
-# Phase 1 commit count approximation
+# Phase 1 commit count = 6 (D-08 normalized)
 PHASE1_COMMITS=$(git log --oneline main | grep -cE "chore\(01\)|refactor\(01-(rename|refs|remove)\)|docs\(01\)")
-echo "Phase 1 commit count: $PHASE1_COMMITS"
-[ "$PHASE1_COMMITS" -ge 5 ] || { echo "WARN: expected 5-6 Phase 1 commits"; }
-echo "OK: Task 4 verified — Phase 1 complete"
+echo "Phase 1 commit count: $PHASE1_COMMITS (expected 6)"
+[ "$PHASE1_COMMITS" -ge 5 ] || { echo "WARN: expected 6 Phase 1 commits, got $PHASE1_COMMITS"; }
+echo "OK: Task 4 verified — Phase 1 complete with BLOCKER 1+2 closure"
 '
     </automated>
   </verify>
   <done>
     - FND-04 (A1), FND-06, FND-07 all documented as VERIFIED in `.planning/ASSUMPTIONS.md` with timestamps and command evidence
-    - FND-06 entry explicitly names BOTH detection sites (workflows/ for INSTRUCTION_FILE, bin/lib/ for text_mode) per BLOCKER fix
-    - FND-07 entry includes the package.json-residue check (per WARNING #6)
-    - `grep -i 'spec-driven\|get-shit-done\|gsd-build' package.json` returns 0 matches
-    - Exactly one new commit on `main` with message `docs(01): CLAUDE.md + README.md targeted delta, ASSUMPTIONS.md A1+FND-06+FND-07 (closes Phase 1)`
+    - FND-06 entry explicitly names BOTH detection sites (workflows/ for INSTRUCTION_FILE, bin/lib/ for text_mode) per iteration-1 BLOCKER fix
+    - A-REPO entry present with STATUS: PLACEHOLDER (W1 closure — placeholder URL strategy documented; Phase 9 HRD-02 resolves)
+    - FND-07 entry includes the package.json residue check
+    - `grep -i 'spec-driven\|get-shit-done-cc\|gsd-build/get-shit-done' package.json` returns 0 matches (the `brief-build/brief` placeholder is allowed per A-REPO)
+    - BLOCKER 1 closure: repo-wide removed-agent orphan grep (excluding .planning, .git, node_modules, backup, CHANGELOG.md RESIDUAL, removed-surfaces.smoke.txt) returns 0
+    - BLOCKER 2 closure: `tests/agent-frontmatter.test.cjs` uses `'brief-'` literal (not `'gsd-'`); iterates ≥18 agents
+    - Exactly one new commit on `main` with message `docs(01): CLAUDE.md + README.md targeted delta, ASSUMPTIONS.md A1+FND-06+FND-07+A-REPO (closes Phase 1)`
     - Lib layer still loads
     - `package.json dependencies` still empty
-    - Phase 1 commit count on main is 5–6 (Plan 01 through Plan 06) — provides git-log trace of the phase
-    - All three Plan 06 requirements (FND-04, FND-06, FND-07) closed
+    - Phase 1 commit count on main is 6 (Plan 01 through Plan 06, per D-08 normalized) — provides git-log trace of the phase
+    - All three Plan 06 requirements (FND-04, FND-06, FND-07) closed + A-REPO assumption recorded
   </done>
 </task>
 

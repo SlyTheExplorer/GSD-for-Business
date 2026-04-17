@@ -264,7 +264,7 @@ h. Replace the repository URL. Find:
    `    "url": "git+https://github.com/gsd-build/get-shit-done.git"`
    Replace with:
    `    "url": "git+https://github.com/brief-build/brief.git"`
-   (Placeholder org/repo. If Phase 9 selects a different URL, this is a single-file find-replace.)
+   (Placeholder — see ASSUMPTIONS.md entry `A-REPO` recorded by Plan 06 Task 1. Do NOT publish to npm until this placeholder is resolved in Phase 9.)
 
 i. Replace the homepage URL. Find:
    `  "homepage": "https://github.com/gsd-build/get-shit-done",`
@@ -430,7 +430,7 @@ echo "OK: commit 4 verified"
 | T-01-07 | T (Tampering) | Hard-coded absolute path inside a .cjs file (e.g., `__dirname + '/../../get-shit-done/'`) breaks silently | mitigate | Plan 05 scope: grep `.cjs` files for any `get-shit-done` path references. Buildability gate in this plan catches any synchronous require() failures — verified with explicit `node -e require()` checks. |
 | T-01-08 | D (DoS) | Test suite fails post-rename because tests hard-code `get-shit-done/bin/lib/...` paths | accept | Plan 05 fixes text references in test source files. Until then, tests referencing old paths will fail — that's an expected intermediate state. Buildability per D-09 is module-load, not full test-pass. |
 | T-01-09 | E (Elevation of Privilege) | None — no privilege boundary changes | accept | Phase 1 does not introduce or relax any privilege gates. |
-| T-01-21 | I (Information Disclosure) | Placeholder URLs (`brief-build/brief`) in package.json resolve to a non-existent repo; users who click through get a 404 | accept | No actual BRIEF install is happening in Phase 1 (no `npm publish` step). Phase 9 publishing work replaces the placeholder with the real URL. Documented as a known state in Plan 06 SUMMARY. |
+| T-01-21 | I (Information Disclosure) | Placeholder URLs (`brief-build/brief`) in package.json resolve to a non-existent repo; users who click through get a 404 | accept | No actual BRIEF install is happening in Phase 1 (no `npm publish` step). Phase 9 publishing work replaces the placeholder with the real URL. Documented as ASSUMPTIONS.md entry `A-REPO` (recorded by Plan 06 Task 1; STATUS: PLACEHOLDER — Phase 9 resolves before any npm publish). |
 
 Phase 1 still adds zero new attack surface.
 </threat_model>

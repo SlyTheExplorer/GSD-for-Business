@@ -54,16 +54,17 @@ BRIEF presents itself as a clean fork: GSD-development-specific surfaces are gon
 
 ### Commit Strategy
 
-- **D-08:** **Staged commits in 4–5 sequential atomic commits**, in this order:
-  1. **`chore: create backup branch`** — `git branch backup/original-gsd` (FND-01)
-  2. **`chore(remove): drop GSD development surfaces (X files)`** — All ~38–45 file removals (FND-02)
-  3. **`refactor(rename): brief-* prefix for commands, agents, hooks, tests`** — User-facing identifiers renamed (FND-03 part 1)
-  4. **`refactor(rename): brief-* internal directory + binary rename (get-shit-done/, gsd-tools.cjs)`** — Aggressive internal rename (FND-03 part 2)
-  5. **`refactor(refs): update internal text references to BRIEF terminology`** — String/path replacements in `.md` and `.cjs` files (FND-03 part 3)
+- **D-08:** **Staged commits in 6 sequential atomic commits** (expanded from an initial 5-commit plan to add a Phase-1-closing documentation + verification commit that writes ASSUMPTIONS.md and rebrands CLAUDE.md/README.md). Revision iteration 2 (2026-04-18) normalized the count to 6 across all plans. The ordering:
+  1. **`chore(01): create backup/original-gsd branch for rollback safety (FND-01)`** — `git branch backup/original-gsd` + STATE.md update (Plan 01, commit 1 of 6)
+  2. **`chore(01-remove): drop GSD development surfaces (X files) (FND-02)`** — All ~37–44 file removals + audit trail (Plan 02, commit 2 of 6)
+  3. **`refactor(01-rename): brief-* prefix for commands, agents, hooks, tests (FND-03 part 1)`** — User-facing identifiers renamed (Plan 03, commit 3 of 6)
+  4. **`refactor(01-rename): brief-* internal directory + binary rename + package.json BRIEF identity (FND-03 part 2)`** — Aggressive internal rename + descriptive package.json fields (Plan 04, commit 4 of 6)
+  5. **`refactor(01-refs): update internal text references to BRIEF terminology (FND-03 part 3; W3/W4/W5 surgical closure)`** — Two-phase (surgical + blanket) string/path replacements (Plan 05, commit 5 of 6)
+  6. **`docs(01): CLAUDE.md + README.md targeted delta, ASSUMPTIONS.md A1+FND-06+FND-07 (closes Phase 1)`** — Verification + documentation rewrite closing Phase 1 (Plan 06, commit 6 of 6)
 
 - **D-09:** **Each commit must leave the repo in a buildable state** (i.e., no half-applied rename). If a step would break the repo, split it further. `git revert HEAD` on any of these commits should produce a coherent state.
 
-- **D-10:** Commit messages follow Conventional Commits with `chore`/`refactor` prefixes — no `feat` because Phase 1 adds no features.
+- **D-10:** Commit messages follow Conventional Commits with `chore`/`refactor`/`docs` prefixes — no `feat` because Phase 1 adds no features.
 
 ### npm Package Name
 
@@ -188,3 +189,4 @@ BRIEF presents itself as a clean fork: GSD-development-specific surfaces are gon
 
 *Phase: 01-foundation-fork-hygiene-removal-rename*
 *Context gathered: 2026-04-18*
+*Revised: 2026-04-18 (iteration 2) — D-08 normalized to 6 commits across all plans; orphan-audit scope expanded (BLOCKER 1); surgical-edit coverage extended to bin/install.js, tests/, docs/, CHANGELOG.md (BLOCKER 1); bare-prefix fix for tests/agent-frontmatter.test.cjs line 21 (BLOCKER 2); placeholder URL strategy documented as Phase 9 deferred (W1); EXCLUDE list unified across verbose-brand and acronym substitutions (W3); npm test baseline captured with delta cap (W4)*

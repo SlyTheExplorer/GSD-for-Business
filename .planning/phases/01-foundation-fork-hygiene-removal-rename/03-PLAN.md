@@ -75,7 +75,7 @@ must_haves:
 ---
 
 <objective>
-Execute commit 3 of 5 (per D-08): rename all user-facing `gsd-*` identifiers to `brief-*`. This covers the externally-visible surfaces — agent files, the `commands/gsd/` directory and all its files, hook files, and gsd-* prefixed test files. File content is NOT modified in this plan (string replacements inside files are Plan 05); only filenames and directory names change via `git mv`.
+Execute commit 3 of 6 (per D-08): rename all user-facing `gsd-*` identifiers to `brief-*`. This covers the externally-visible surfaces — agent files, the `commands/gsd/` directory and all its files, hook files, and gsd-* prefixed test files. File content is NOT modified in this plan (string replacements inside files are Plan 05); only filenames and directory names change via `git mv`.
 
 Purpose: Honor FND-03 (hard rename, no aliases per D-07) part 1. After this plan, `/brief-*` autocomplete will surface the renamed commands, and the filesystem visibly reflects BRIEF's identity at the externally-visible layer. Internal paths (`get-shit-done/`, `gsd-tools.cjs`) are still gsd-named — those rename in Plan 04.
 
@@ -289,7 +289,7 @@ echo "OK: Task 2 verification passed"
 </task>
 
 <task type="auto">
-  <name>Task 3: Commit the user-facing rename set (commit 3 of 5)</name>
+  <name>Task 3: Commit the user-facing rename set (commit 3 of 6)</name>
   <files>
     (staged changes from Tasks 1 and 2)
   </files>
