@@ -1,0 +1,285 @@
+# Phase 1 Plan 02: Removal Audit Trail
+# Generated: 2026-04-18T01:13:46Z
+
+EXISTS: agents/gsd-code-reviewer.md
+EXISTS: agents/gsd-code-fixer.md
+EXISTS: agents/gsd-debugger.md
+EXISTS: agents/gsd-ui-researcher.md
+EXISTS: agents/gsd-ui-checker.md
+EXISTS: agents/gsd-ui-auditor.md
+EXISTS: agents/gsd-ai-researcher.md
+EXISTS: agents/gsd-eval-planner.md
+EXISTS: agents/gsd-eval-auditor.md
+EXISTS: agents/gsd-domain-researcher.md
+EXISTS: agents/gsd-security-auditor.md
+EXISTS: agents/gsd-integration-checker.md
+EXISTS: commands/gsd/code-review.md
+EXISTS: commands/gsd/code-review-fix.md
+EXISTS: commands/gsd/add-tests.md
+EXISTS: commands/gsd/ui-phase.md
+EXISTS: commands/gsd/ui-review.md
+EXISTS: commands/gsd/ai-integration-phase.md
+EXISTS: commands/gsd/eval-review.md
+EXISTS: commands/gsd/secure-phase.md
+EXISTS: get-shit-done/workflows/add-tests.md
+EXISTS: get-shit-done/workflows/ai-integration-phase.md
+EXISTS: get-shit-done/workflows/code-review.md
+EXISTS: get-shit-done/workflows/code-review-fix.md
+EXISTS: get-shit-done/workflows/eval-review.md
+EXISTS: get-shit-done/workflows/secure-phase.md
+EXISTS: get-shit-done/workflows/ui-phase.md
+EXISTS: get-shit-done/workflows/ui-review.md
+EXISTS: get-shit-done/templates/AI-SPEC.md
+EXISTS: get-shit-done/templates/UI-SPEC.md
+EXISTS: get-shit-done/templates/SECURITY.md
+EXISTS: get-shit-done/references/tdd.md
+EXISTS: get-shit-done/references/ai-evals.md
+EXISTS: get-shit-done/references/ai-frameworks.md
+EXISTS: get-shit-done/references/ui-brand.md
+EXISTS: agents/gsd-debug-session-manager.md
+EXISTS: commands/gsd/debug.md
+EXISTS: commands/gsd/forensics.md
+EXISTS: commands/gsd/graphify.md
+EXISTS: commands/gsd/inbox.md
+EXISTS: commands/gsd/pr-branch.md
+EXISTS: commands/gsd/ship.md
+EXISTS: get-shit-done/workflows/forensics.md
+EXISTS: get-shit-done/workflows/inbox.md
+EXISTS: get-shit-done/workflows/pr-branch.md
+EXISTS: get-shit-done/workflows/ship.md
+EXISTS: tests/code-review.test.cjs
+EXISTS: tests/code-review-command.test.cjs
+EXISTS: tests/code-review-summary-parser.test.cjs
+EXISTS: tests/secure-phase.test.cjs
+EXISTS: tests/ai-evals.test.cjs
+EXISTS: tests/forensics.test.cjs
+EXISTS: tests/debug-session-management.test.cjs
+EXISTS: tests/playwright-ui-verify.test.cjs
+EXISTS: tests/plan-phase-ui-redirect.test.cjs
+EXISTS: tests/autonomous-ui-steps.test.cjs
+
+# Totals: 56 to delete, 0 already absent
+
+
+# ORPHAN REFERENCES TO REPAIR IN PLAN 05 (SURGICAL EDITS)
+# Format: file:line:snippet — Plan 05 parses this section and DELETES or EDITS
+# each recorded line. Disposition tags (added per-section):
+#   DELETE-LINE:   single-line Edit-tool surgical delete
+#   DELETE-FILE:   whole-file removal via git rm (file solely supports a removed agent)
+#   RESIDUAL:      documented intentional residue (Plan 05 leaves alone; Plan 06 documents)
+
+## [get-shit-done markdown] Surviving markdown in get-shit-done/ (DELETE-LINE default; DELETE-FILE for files listed in known-orphan-files below)
+[DELETE-LINE] get-shit-done/workflows/diagnose-issues.md:11:- gsd-debugger — Diagnoses and fixes issues
+[DELETE-LINE] get-shit-done/workflows/diagnose-issues.md:90:AGENT_SKILLS_DEBUGGER=$(gsd-sdk query agent-skills gsd-debugger 2>/dev/null)
+[DELETE-LINE] get-shit-done/workflows/diagnose-issues.md:101:  subagent_type="gsd-debugger",
+[DELETE-LINE] get-shit-done/workflows/audit-milestone.md:11:- gsd-integration-checker — Checks cross-phase integration
+[DELETE-LINE] get-shit-done/workflows/audit-milestone.md:21:AGENT_SKILLS_CHECKER=$(gsd-sdk query agent-skills gsd-integration-checker 2>/dev/null)
+[DELETE-LINE] get-shit-done/workflows/audit-milestone.md:28:integration_checker_model=$(gsd-sdk query resolve-model gsd-integration-checker --raw)
+[DELETE-LINE] get-shit-done/workflows/audit-milestone.md:84:  subagent_type="gsd-integration-checker",
+[DELETE-LINE] get-shit-done/workflows/execute-phase.md:43:- gsd-debugger — Diagnoses and fixes issues
+[DELETE-LINE] get-shit-done/workflows/execute-phase.md:45:- gsd-integration-checker — Checks cross-phase integration
+[DELETE-LINE] get-shit-done/workflows/execute-phase.md:47:- gsd-ui-researcher — Researches UI/UX approaches
+[DELETE-LINE] get-shit-done/workflows/execute-phase.md:48:- gsd-ui-checker — Reviews UI implementation quality
+[DELETE-LINE] get-shit-done/workflows/execute-phase.md:49:- gsd-ui-auditor — Audits UI against design requirements
+[DELETE-LINE] get-shit-done/workflows/quick.md:26:- gsd-code-reviewer — Reviews source files for bugs, security issues, and code quality
+[DELETE-LINE] get-shit-done/workflows/quick.md:743:  subagent_type="gsd-code-reviewer",
+[DELETE-LINE] get-shit-done/references/model-profiles.md:15:| gsd-debugger | opus | sonnet | sonnet | opus | inherit |
+[DELETE-LINE] get-shit-done/references/model-profiles.md:19:| gsd-integration-checker | sonnet | sonnet | haiku | haiku | inherit |
+[DELETE-LINE] get-shit-done/references/model-profiles.md:64:    "gsd-debugger": "o3",
+[DELETE-LINE] get-shit-done/references/agent-contracts.md:19:| gsd-debugger | Debug investigation | `## DEBUG COMPLETE`, `## ROOT CAUSE FOUND`, `## CHECKPOINT REACHED` |
+[DELETE-LINE] get-shit-done/references/agent-contracts.md:21:| gsd-ui-auditor | UI review | `## UI REVIEW COMPLETE` |
+[DELETE-LINE] get-shit-done/references/agent-contracts.md:22:| gsd-ui-checker | UI validation | `## ISSUES FOUND` |
+[DELETE-LINE] get-shit-done/references/agent-contracts.md:23:| gsd-ui-researcher | UI spec creation | `## UI-SPEC COMPLETE`, `## UI-SPEC BLOCKED` |
+[DELETE-LINE] get-shit-done/references/agent-contracts.md:25:| gsd-integration-checker | Cross-phase integration check | `## Integration Check Complete` (title case) |
+[DELETE-LINE] get-shit-done/references/agent-contracts.md:27:| gsd-security-auditor | Security audit | `## OPEN_THREATS`, `## ESCALATE` (non-standard) |
+[DELETE-LINE] get-shit-done/references/agent-contracts.md:39:2. **Title-case markers** (e.g., `## Verification Complete`) exist in gsd-verifier and gsd-integration-checker -- these are intentional as-is, not bugs
+[DELETE-LINE] get-shit-done/templates/debug-subagent-prompt.md:3:Template for spawning gsd-debugger agent. The agent contains all debugging expertise - this template provides problem context only.
+[DELETE-LINE] get-shit-done/templates/debug-subagent-prompt.md:58:  subagent_type="gsd-debugger",
+[DELETE-LINE] get-shit-done/templates/debug-subagent-prompt.md:65:Task(prompt=template, subagent_type="gsd-debugger", description="Debug UAT-001")
+
+## [agents + commands/gsd] Surviving agent + command markdown (DELETE-LINE)
+
+## [get-shit-done/bin cjs] Source .cjs in get-shit-done/bin/ (DELETE-LINE — object-literal keys and switch cases must be surgically deleted before any blanket substitution runs)
+[DELETE-LINE] get-shit-done/bin/lib/model-profiles.cjs:16:  'gsd-debugger': { quality: 'opus', balanced: 'sonnet', budget: 'sonnet', adaptive: 'opus' },
+[DELETE-LINE] get-shit-done/bin/lib/model-profiles.cjs:20:  'gsd-integration-checker': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
+[DELETE-LINE] get-shit-done/bin/lib/model-profiles.cjs:23:  'gsd-ui-researcher': { quality: 'opus', balanced: 'sonnet', budget: 'haiku', adaptive: 'sonnet' },
+[DELETE-LINE] get-shit-done/bin/lib/model-profiles.cjs:24:  'gsd-ui-checker': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
+[DELETE-LINE] get-shit-done/bin/lib/model-profiles.cjs:25:  'gsd-ui-auditor': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
+
+## [bin + scripts + hooks] Source files outside get-shit-done/bin/ (DELETE-LINE — bin/install.js permission map entries, etc.)
+[DELETE-LINE] bin/install.js:33:  'gsd-debugger': 'workspace-write',
+[DELETE-LINE] bin/install.js:35:  'gsd-integration-checker': 'read-only',
+
+## [sdk] TypeScript SDK source (DELETE-LINE — model-profile object-literal keys)
+[DELETE-LINE] sdk/src/query/config-query.ts:39:  'gsd-debugger': { quality: 'opus', balanced: 'sonnet', budget: 'sonnet', adaptive: 'opus' },
+[DELETE-LINE] sdk/src/query/config-query.ts:43:  'gsd-integration-checker': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
+[DELETE-LINE] sdk/src/query/config-query.ts:45:  'gsd-ui-researcher': { quality: 'opus', balanced: 'sonnet', budget: 'haiku', adaptive: 'sonnet' },
+[DELETE-LINE] sdk/src/query/config-query.ts:46:  'gsd-ui-checker': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
+[DELETE-LINE] sdk/src/query/config-query.ts:47:  'gsd-ui-auditor': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
+
+## [tests] Surviving test files in tests/ (DELETE-LINE for individual hardcoded refs; see known-orphan-files for DELETE-FILE candidates)
+[DELETE-LINE] tests/copilot-install.test.cjs:1183:      'gsd-ai-researcher.agent.md',
+[DELETE-LINE] tests/copilot-install.test.cjs:1185:      'gsd-code-fixer.agent.md',
+[DELETE-LINE] tests/copilot-install.test.cjs:1186:      'gsd-code-reviewer.agent.md',
+[DELETE-LINE] tests/copilot-install.test.cjs:1188:      'gsd-debug-session-manager.agent.md',
+[DELETE-LINE] tests/copilot-install.test.cjs:1189:      'gsd-debugger.agent.md',
+[DELETE-LINE] tests/copilot-install.test.cjs:1192:      'gsd-domain-researcher.agent.md',
+[DELETE-LINE] tests/copilot-install.test.cjs:1193:      'gsd-eval-auditor.agent.md',
+[DELETE-LINE] tests/copilot-install.test.cjs:1194:      'gsd-eval-planner.agent.md',
+[DELETE-LINE] tests/copilot-install.test.cjs:1197:      'gsd-integration-checker.agent.md',
+[DELETE-LINE] tests/copilot-install.test.cjs:1207:      'gsd-security-auditor.agent.md',
+[DELETE-LINE] tests/copilot-install.test.cjs:1208:      'gsd-ui-auditor.agent.md',
+[DELETE-LINE] tests/copilot-install.test.cjs:1209:      'gsd-ui-checker.agent.md',
+[DELETE-LINE] tests/copilot-install.test.cjs:1210:      'gsd-ui-researcher.agent.md',
+[DELETE-LINE] tests/agent-skills-awareness.test.cjs:16:    'gsd-debugger',
+[DELETE-LINE] tests/agent-skills-awareness.test.cjs:17:    'gsd-integration-checker',
+[DELETE-LINE] tests/agent-skills-awareness.test.cjs:18:    'gsd-security-auditor',
+[DELETE-LINE] tests/agent-skills-awareness.test.cjs:22:    'gsd-eval-auditor',
+[DELETE-LINE] tests/bug-2346-agent-read-loop-guards.test.cjs:4: * Multiple GSD agents (gsd-ui-checker, gsd-planner) entered unbounded Read
+[DELETE-LINE] tests/bug-2346-agent-read-loop-guards.test.cjs:26:  describe('gsd-ui-checker', () => {
+[DELETE-LINE] tests/bug-2346-agent-read-loop-guards.test.cjs:27:    const agentPath = path.join(AGENTS_DIR, 'gsd-ui-checker.md');
+[DELETE-LINE] tests/bug-2346-agent-read-loop-guards.test.cjs:31:      assert.ok(fs.existsSync(agentPath), 'agents/gsd-ui-checker.md must exist');
+[DELETE-LINE] tests/bug-2346-agent-read-loop-guards.test.cjs:39:        'gsd-ui-checker.md must have a <critical_rules> block to prevent unbounded read loops (#2346)'
+[DELETE-LINE] tests/qwen-skills-migration.test.cjs:259:      'agent: gsd-code-reviewer',
+[DELETE-LINE] tests/model-profiles.test.cjs:25:      'gsd-debugger', 'gsd-codebase-mapper', 'gsd-verifier',
+[DELETE-LINE] tests/model-profiles.test.cjs:26:      'gsd-plan-checker', 'gsd-integration-checker', 'gsd-nyquist-auditor',
+[DELETE-LINE] tests/model-profiles.test.cjs:27:      'gsd-ui-researcher', 'gsd-ui-checker', 'gsd-ui-auditor',
+[DELETE-LINE] tests/model-profiles.test.cjs:103:    assert.strictEqual(map['gsd-debugger'], 'opus', 'debugger should use opus in adaptive');
+[DELETE-LINE] tests/planner-language-regression.test.cjs:109:  'gsd-debugger.md': ['time_sizing'],
+[DELETE-LINE] tests/bug-patterns-reference.test.cjs:19:  __dirname, '..', 'agents', 'gsd-debugger.md'
+[DELETE-LINE] tests/bug-patterns-reference.test.cjs:84:  test('gsd-debugger.md exists', () => {
+[DELETE-LINE] tests/bug-patterns-reference.test.cjs:91:  test('gsd-debugger.md references common-bug-patterns.md', () => {
+[DELETE-LINE] tests/agent-frontmatter.test.cjs:145:  test('diagnose-issues uses gsd-debugger (not general-purpose)', () => {
+[DELETE-LINE] tests/agent-frontmatter.test.cjs:150:      content.includes('subagent_type="gsd-debugger"'),
+[DELETE-LINE] tests/agent-frontmatter.test.cjs:151:      'diagnose-issues should spawn gsd-debugger, not general-purpose'
+[DELETE-LINE] tests/agent-frontmatter.test.cjs:395:  const AGENTS_WITH_WRITE = ['gsd-executor', 'gsd-debugger'];
+[DELETE-LINE] tests/thinking-model-guidance.test.cjs:52:  'gsd-debugger': {
+[DELETE-LINE] tests/codex-config.test.cjs:176:name: gsd-debugger
+[DELETE-LINE] tests/codex-config.test.cjs:366:      'gsd-codebase-mapper', 'gsd-roadmapper', 'gsd-debugger',
+[DELETE-LINE] tests/codex-config.test.cjs:374:    const readOnlyAgents = ['gsd-plan-checker', 'gsd-integration-checker'];
+
+## [docs English] docs/*.md English documentation (DELETE-LINE per row; see known-orphan-files for whole-file DELETE-FILE candidates)
+[DELETE-LINE] docs/ARCHITECTURE.md:275:| **Researchers** | gsd-project-researcher, gsd-phase-researcher, gsd-ui-researcher, gsd-advisor-researcher | 4 parallel (stack, features, architecture, pitfalls); advisor spawns during discuss-phase |
+[DELETE-LINE] docs/ARCHITECTURE.md:278:| **Checkers** | gsd-plan-checker, gsd-integration-checker, gsd-ui-checker, gsd-nyquist-auditor | Sequential (verification loop, max 3 iterations) |
+[DELETE-LINE] docs/ARCHITECTURE.md:282:| **Debuggers** | gsd-debugger | Sequential (interactive) |
+[DELETE-LINE] docs/ARCHITECTURE.md:283:| **Auditors** | gsd-ui-auditor, gsd-security-auditor | Sequential |
+[DELETE-LINE] docs/COMMANDS.md:1047:**Spawns:** `gsd-code-reviewer` agent
+[DELETE-LINE] docs/COMMANDS.md:1069:**Spawns:** `gsd-code-fixer` agent
+[DELETE-LINE] docs/COMMANDS.md:1189:**Spawns:** `gsd-security-auditor` agent
+[DELETE-LINE] docs/USER-GUIDE.md:676:| gsd-debugger | Opus | Sonnet | Sonnet | Inherit |
+[DELETE-LINE] docs/USER-GUIDE.md:680:| gsd-integration-checker | Sonnet | Sonnet | Haiku | Inherit |
+[DELETE-LINE] docs/USER-GUIDE.md:874:    "gsd-debugger": "o3"
+[DELETE-LINE] docs/CONFIGURATION.md:227:- `gsd-debugger` -- diagnostic agents
+[DELETE-LINE] docs/CONFIGURATION.md:230:- `gsd-ui-researcher` -- UI design contract creation
+[DELETE-LINE] docs/CONFIGURATION.md:231:- `gsd-ui-checker` -- UI spec verification
+[DELETE-LINE] docs/CONFIGURATION.md:451:| gsd-debugger | Opus | Sonnet | Sonnet | Inherit |
+[DELETE-LINE] docs/CONFIGURATION.md:455:| gsd-integration-checker | Sonnet | Sonnet | Haiku | Inherit |
+[DELETE-LINE] docs/CONFIGURATION.md:486:    "gsd-debugger": "o3",
+[DELETE-LINE] docs/FEATURES.md:742:| gsd-debugger | Opus | Sonnet | Sonnet | Inherit |
+[DELETE-LINE] docs/FEATURES.md:746:| gsd-integration-checker | Sonnet | Sonnet | Haiku | Inherit |
+[DELETE-LINE] docs/FEATURES.md:1452:- REQ-SEC-04: System MUST spawn `gsd-security-auditor` agent for analysis
+[DELETE-LINE] docs/FEATURES.md:1461:2. **Audit** — Spawn `gsd-security-auditor` to verify against threat model
+[DELETE-LINE] docs/AGENTS.md:71:### gsd-ui-researcher
+[DELETE-LINE] docs/AGENTS.md:244:### gsd-integration-checker
+[DELETE-LINE] docs/AGENTS.md:259:### gsd-ui-checker
+[DELETE-LINE] docs/AGENTS.md:315:### gsd-ui-auditor
+[DELETE-LINE] docs/AGENTS.md:358:### gsd-debugger
+[DELETE-LINE] docs/AGENTS.md:449:### gsd-security-auditor
+[DELETE-LINE] docs/CLI-TOOLS.md:161:Agent names: `gsd-planner`, `gsd-executor`, `gsd-phase-researcher`, `gsd-project-researcher`, `gsd-research-synthesizer`, `gsd-verifier`, `gsd-plan-checker`, `gsd-integration-checker`, `gsd-roadmapper`, `gsd-debugger`, `gsd-codebase-mapper`, `gsd-nyquist-auditor`
+
+## [docs localized] docs/ja-JP + docs/ko-KR + docs/zh-CN + docs/pt-BR mirrors (DELETE-LINE; if orphan density is high per-file, Plan 05 may substitute a banner-add approach — see disposition notes below)
+[DELETE-LINE] docs/ja-JP/ARCHITECTURE.md:226:| **リサーチャー** | gsd-project-researcher, gsd-phase-researcher, gsd-ui-researcher, gsd-advisor-researcher | 4並列（stack、features、architecture、pitfalls）; advisorはdiscuss-phase中に起動 |
+[DELETE-LINE] docs/ja-JP/ARCHITECTURE.md:229:| **チェッカー** | gsd-plan-checker, gsd-integration-checker, gsd-ui-checker, gsd-nyquist-auditor | 逐次（検証ループ、最大3回反復） |
+[DELETE-LINE] docs/ja-JP/ARCHITECTURE.md:233:| **デバッガー** | gsd-debugger | 逐次（インタラクティブ） |
+[DELETE-LINE] docs/ja-JP/ARCHITECTURE.md:234:| **オーディター** | gsd-ui-auditor | 逐次 |
+[DELETE-LINE] docs/ja-JP/USER-GUIDE.md:573:| gsd-debugger | Opus | Sonnet | Sonnet | Inherit |
+[DELETE-LINE] docs/ja-JP/USER-GUIDE.md:577:| gsd-integration-checker | Sonnet | Sonnet | Haiku | Inherit |
+[DELETE-LINE] docs/ja-JP/USER-GUIDE.md:738:    "gsd-debugger": "o3"
+[DELETE-LINE] docs/ja-JP/CONFIGURATION.md:277:| gsd-debugger | Opus | Sonnet | Sonnet | Inherit |
+[DELETE-LINE] docs/ja-JP/CONFIGURATION.md:281:| gsd-integration-checker | Sonnet | Sonnet | Haiku | Inherit |
+[DELETE-LINE] docs/ja-JP/CONFIGURATION.md:312:    "gsd-debugger": "o3",
+[DELETE-LINE] docs/ja-JP/FEATURES.md:707:| gsd-debugger | Opus | Sonnet | Sonnet | Inherit |
+[DELETE-LINE] docs/ja-JP/FEATURES.md:711:| gsd-integration-checker | Sonnet | Sonnet | Haiku | Inherit |
+[DELETE-LINE] docs/ja-JP/FEATURES.md:1418:- REQ-SEC-04: 分析のために `gsd-security-auditor` エージェントを起動しなければならない
+[DELETE-LINE] docs/ja-JP/FEATURES.md:1427:2. **監査** — `gsd-security-auditor` を起動して脅威モデルに対して検証
+[DELETE-LINE] docs/ja-JP/AGENTS.md:69:### gsd-ui-researcher
+[DELETE-LINE] docs/ja-JP/AGENTS.md:241:### gsd-integration-checker
+[DELETE-LINE] docs/ja-JP/AGENTS.md:256:### gsd-ui-checker
+[DELETE-LINE] docs/ja-JP/AGENTS.md:310:### gsd-ui-auditor
+[DELETE-LINE] docs/ja-JP/AGENTS.md:353:### gsd-debugger
+[DELETE-LINE] docs/ja-JP/CLI-TOOLS.md:158:エージェント名: `gsd-planner`, `gsd-executor`, `gsd-phase-researcher`, `gsd-project-researcher`, `gsd-research-synthesizer`, `gsd-verifier`, `gsd-plan-checker`, `gsd-integration-checker`, `gsd-roadmapper`, `gsd-debugger`, `gsd-codebase-mapper`, `gsd-nyquist-auditor`
+[DELETE-LINE] docs/ko-KR/ARCHITECTURE.md:226:| **Researchers** | gsd-project-researcher, gsd-phase-researcher, gsd-ui-researcher, gsd-advisor-researcher | 4개 병렬 (stack, features, architecture, pitfalls); advisor는 discuss-phase 중 생성됨 |
+[DELETE-LINE] docs/ko-KR/ARCHITECTURE.md:229:| **Checkers** | gsd-plan-checker, gsd-integration-checker, gsd-ui-checker, gsd-nyquist-auditor | 순차적 (검증 루프, 최대 3회 반복) |
+[DELETE-LINE] docs/ko-KR/ARCHITECTURE.md:233:| **Debuggers** | gsd-debugger | 순차적 (대화형) |
+[DELETE-LINE] docs/ko-KR/ARCHITECTURE.md:234:| **Auditors** | gsd-ui-auditor | 순차적 |
+[DELETE-LINE] docs/ko-KR/USER-GUIDE.md:573:| gsd-debugger | Opus | Sonnet | Sonnet | Inherit |
+[DELETE-LINE] docs/ko-KR/USER-GUIDE.md:577:| gsd-integration-checker | Sonnet | Sonnet | Haiku | Inherit |
+[DELETE-LINE] docs/ko-KR/USER-GUIDE.md:738:    "gsd-debugger": "o3"
+[DELETE-LINE] docs/ko-KR/CONFIGURATION.md:277:| gsd-debugger | Opus | Sonnet | Sonnet | Inherit |
+[DELETE-LINE] docs/ko-KR/CONFIGURATION.md:281:| gsd-integration-checker | Sonnet | Sonnet | Haiku | Inherit |
+[DELETE-LINE] docs/ko-KR/CONFIGURATION.md:312:    "gsd-debugger": "o3",
+[DELETE-LINE] docs/ko-KR/FEATURES.md:707:| gsd-debugger | Opus | Sonnet | Sonnet | Inherit |
+[DELETE-LINE] docs/ko-KR/FEATURES.md:711:| gsd-integration-checker | Sonnet | Sonnet | Haiku | Inherit |
+[DELETE-LINE] docs/ko-KR/FEATURES.md:1418:- REQ-SEC-04: 분석을 위해 `gsd-security-auditor` 에이전트를 스폰해야 합니다.
+[DELETE-LINE] docs/ko-KR/FEATURES.md:1427:2. **감사** — `gsd-security-auditor`를 스폰하여 위협 모델에 대해 검증
+[DELETE-LINE] docs/ko-KR/AGENTS.md:69:### gsd-ui-researcher
+[DELETE-LINE] docs/ko-KR/AGENTS.md:241:### gsd-integration-checker
+[DELETE-LINE] docs/ko-KR/AGENTS.md:256:### gsd-ui-checker
+[DELETE-LINE] docs/ko-KR/AGENTS.md:310:### gsd-ui-auditor
+[DELETE-LINE] docs/ko-KR/AGENTS.md:353:### gsd-debugger
+[DELETE-LINE] docs/ko-KR/CLI-TOOLS.md:158:에이전트 이름: `gsd-planner`, `gsd-executor`, `gsd-phase-researcher`, `gsd-project-researcher`, `gsd-research-synthesizer`, `gsd-verifier`, `gsd-plan-checker`, `gsd-integration-checker`, `gsd-roadmapper`, `gsd-debugger`, `gsd-codebase-mapper`, `gsd-nyquist-auditor`
+[DELETE-LINE] docs/zh-CN/references/model-profiles.md:15:| gsd-debugger | opus | sonnet | sonnet |
+[DELETE-LINE] docs/zh-CN/references/model-profiles.md:19:| gsd-integration-checker | sonnet | sonnet | haiku |
+[DELETE-LINE] docs/zh-CN/USER-GUIDE.md:326:| gsd-debugger | Opus | Sonnet | Sonnet |
+[DELETE-LINE] docs/zh-CN/USER-GUIDE.md:330:| gsd-integration-checker | Sonnet | Sonnet | Haiku |
+
+## [top-level docs] CHANGELOG.md + CONTRIBUTING.md + SECURITY.md (disposition varies — see notes)
+[RESIDUAL] CHANGELOG.md:59:- **Phase 2 docs and call sites (follow-up)** — `docs/USER-GUIDE.md` now explains `gsd-sdk query` vs legacy CJS and lists CJS-only commands (`state validate`/`sync`, `audit-open`, `graphify`, `from-gsd2`). Updated `commands/gsd` (`debug`, `quick`, `intel`), `agents/gsd-debug-session-manager.md`, and workflows (`milestone-summary`, `forensics`, `next`, `complete-milestone`, `verify-work`, `discuss-phase`, `progress`, `verify-phase`, `add-phase`/`insert-phase`/`remove-phase`, `transition`, `manager`, `quick`) for `gsd-sdk query` or explicit CJS exceptions (`audit-open`).  (CHANGELOG history — pre-fork entries preserved; Plan 06 adds a banner)
+[RESIDUAL] CHANGELOG.md:60:- **Phase 2 orchestration doc pass (#2122)** — Aligned `commands/gsd` (`execute-phase`, `code-review`, `code-review-fix`, `from-gsd2`, `graphify`) and agents (`gsd-verifier`, `gsd-plan-checker`, `gsd-code-fixer`, `gsd-executor`, `gsd-planner`, researchers, debugger) so examples use `init.*` query names, correct `frontmatter.get` positional field, `state.*` positional args, and `commit` with positional file paths (not `--files`, except `commit-to-subrepo` which keeps `--files`).  (CHANGELOG history — pre-fork entries preserved; Plan 06 adds a banner)
+[RESIDUAL] CHANGELOG.md:336:- **"Follow the Indirection" debugging technique** in gsd-debugger  (CHANGELOG history — pre-fork entries preserved; Plan 06 adds a banner)
+[RESIDUAL] CHANGELOG.md:1248:- New `gsd-debugger` agent (990 lines) with scientific debugging methodology, hypothesis testing, and 7+ investigation techniques  (CHANGELOG history — pre-fork entries preserved; Plan 06 adds a banner)
+[RESIDUAL] CHANGELOG.md:1255:- `/gsd:debug` refactored to thin orchestrator (149 lines) — spawns gsd-debugger agent with full debugging expertise  (CHANGELOG history — pre-fork entries preserved; Plan 06 adds a banner)
+[RESIDUAL] CHANGELOG.md:1261:- `workflows/debug.md` — consolidated into gsd-debugger agent  (CHANGELOG history — pre-fork entries preserved; Plan 06 adds a banner)
+[RESIDUAL] CHANGELOG.md:1263:- `references/debugging.md` — consolidated into gsd-debugger agent  (CHANGELOG history — pre-fork entries preserved; Plan 06 adds a banner)
+[RESIDUAL] CHANGELOG.md:1264:- `references/debug-investigation.md` — consolidated into gsd-debugger agent  (CHANGELOG history — pre-fork entries preserved; Plan 06 adds a banner)
+[RESIDUAL] CHANGELOG.md:1269:- **Agents now install correctly** — The `agents/` folder (gsd-executor, gsd-verifier, gsd-integration-checker, gsd-milestone-auditor) was missing from npm package, now included  (CHANGELOG history — pre-fork entries preserved; Plan 06 adds a banner)
+
+## [known orphan files — DELETE-FILE disposition]
+# Plan 05 git rms these whole files (in addition to surgical line-deletes from sections above)
+# Rationale recorded per file:
+[DELETE-FILE] get-shit-done/templates/debug-subagent-prompt.md  # Template documents removed gsd-debugger agent only
+[DELETE-FILE] get-shit-done/workflows/diagnose-issues.md  # Workflow dispatches solely to removed gsd-debugger
+[DELETE-FILE] get-shit-done/workflows/audit-milestone.md  # Workflow dispatches solely to removed gsd-integration-checker
+
+# Orphan-reference totals across EXPANDED scope (BLOCKER 1 fix):
+#   DELETE-LINE: 149 records (surgical line-deletes in Plan 05)
+#   DELETE-FILE: 3 records (whole-file removals in Plan 05)
+#   RESIDUAL:    9 records (documented residues — no edit needed)
+# Plan 05 MUST address every DELETE-LINE and DELETE-FILE record before the FND-07 residue-grep gate
+
+# graphify SURVIVOR RATIONALE
+# ---
+# get-shit-done/bin/lib/graphify.cjs is NOT in the removal list above even though
+# commands/gsd/graphify.md IS removed. Reason:
+#   - get-shit-done/bin/gsd-tools.cjs line 1091 imports it:
+#       const graphify = require('./lib/graphify.cjs');
+#     The `graphify` switch case in gsd-tools.cjs (lines 1090-1113) powers the
+#     `gsd-tools graphify <query|status|diff|build>` subcommand.
+#   - agents/gsd-planner.md line 871 uses `gsd-tools graphify query ...`
+#     to drive dependency-graph queries during planning.
+#   - agents/gsd-phase-researcher.md line 562 also uses it.
+# Therefore:
+#   - graphify.cjs STAYS (workflow primitive)
+#   - tests/graphify.test.cjs STAYS (covers surviving code)
+#   - Only the USER-FACING command commands/gsd/graphify.md is removed.
+
+# tests/agent-frontmatter.test.cjs SPECIAL-CASE (BLOCKER 2)
+# ---
+# Line 21 of this file: `.filter(f => f.startsWith('gsd-') && f.endsWith('.md'))`
+# This is a BARE PREFIX STRING LITERAL, not an agent identifier. After Plan 03 renames
+# all agents to `brief-*.md`, this filter returns an empty array and every downstream
+# test asserts on zero iterations (vacuous PASS — invisibly broken test). Plan 05
+# MUST replace `'gsd-'` with `'brief-'` on line 21 AND update the path constants
+# at lines 17 (WORKFLOWS_DIR = 'get-shit-done/workflows') and 18 (COMMANDS_DIR =
+# 'commands/gsd') to the renamed paths. This is recorded separately from the
+# removed-agent orphan list because it's a string-literal pattern, not an identifier.
