@@ -1,5 +1,5 @@
 /**
- * Tests for gsd-statusline.js GSD state display helpers.
+ * Tests for brief-statusline.js GSD state display helpers.
  *
  * Covers:
  * - parseStateMd across YAML-frontmatter, body-fallback, and partial formats
@@ -197,7 +197,7 @@ describe('formatGsdState', () => {
 // ─── readGsdState ───────────────────────────────────────────────────────────
 
 describe('readGsdState', () => {
-  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'gsd-statusline-test-'));
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'brief-statusline-test-'));
 
   test('finds STATE.md in the starting directory', () => {
     const proj = fs.mkdtempSync(path.join(tmpRoot, 'proj-'));
@@ -252,7 +252,7 @@ describe('readGsdState', () => {
 
 describe('context meter respects CLAUDE_CODE_AUTO_COMPACT_WINDOW (#2219)', () => {
   const { execFileSync } = require('node:child_process');
-  const hookPath = path.join(__dirname, '..', 'hooks', 'gsd-statusline.js');
+  const hookPath = path.join(__dirname, '..', 'hooks', 'brief-statusline.js');
 
   /**
    * Run the statusline hook with a synthetic context_window payload and

@@ -28,7 +28,7 @@ function sha256(content) {
 }
 
 /**
- * Write a fake gsd-file-manifest.json into configDir with the given file entries.
+ * Write a fake brief-file-manifest.json into configDir with the given file entries.
  */
 function writeManifest(configDir, files) {
   const manifest = {
@@ -43,7 +43,7 @@ function writeManifest(configDir, files) {
     manifest.files[relPath] = sha256(content);
   }
   fs.writeFileSync(
-    path.join(configDir, 'gsd-file-manifest.json'),
+    path.join(configDir, 'brief-file-manifest.json'),
     JSON.stringify(manifest, null, 2)
   );
 }

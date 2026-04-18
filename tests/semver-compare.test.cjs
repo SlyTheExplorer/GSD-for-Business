@@ -1,5 +1,5 @@
 /**
- * Tests for the isNewer() semver comparison function used in gsd-check-update.js.
+ * Tests for the isNewer() semver comparison function used in brief-check-update.js.
  *
  * WHY DUPLICATED: isNewer() lives inside a template literal string passed to
  * spawn(process.execPath, ['-e', `...`]) — it runs in a detached child process

@@ -1,7 +1,7 @@
 /**
  * Regression test for bug #1908
  *
- * `--uninstall` did not remove `gsd-file-manifest.json` from the target
+ * `--uninstall` did not remove `brief-file-manifest.json` from the target
  * directory, leaving a stale metadata file after uninstall.
  *
  * Fix: `uninstall()` must call
@@ -21,7 +21,7 @@ const os = require('os');
 
 const { uninstall } = require('../bin/install.js');
 
-const MANIFEST_NAME = 'gsd-file-manifest.json';
+const MANIFEST_NAME = 'brief-file-manifest.json';
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -66,7 +66,7 @@ describe('uninstall — manifest cleanup (#1908)', () => {
     cleanup(tmpDir);
   });
 
-  test('gsd-file-manifest.json is removed after global uninstall', () => {
+  test('brief-file-manifest.json is removed after global uninstall', () => {
     const manifestPath = path.join(tmpDir, MANIFEST_NAME);
 
     // Pre-condition: manifest exists before uninstall
@@ -98,7 +98,7 @@ describe('uninstall — manifest cleanup (#1908)', () => {
     );
   });
 
-  test('gsd-file-manifest.json is removed after local uninstall', () => {
+  test('brief-file-manifest.json is removed after local uninstall', () => {
     const manifestPath = path.join(tmpDir, MANIFEST_NAME);
 
     assert.ok(

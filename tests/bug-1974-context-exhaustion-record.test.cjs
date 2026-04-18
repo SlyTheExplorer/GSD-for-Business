@@ -1,5 +1,5 @@
 /**
- * Integration tests for gsd-context-monitor.js auto-record on CRITICAL (#1974).
+ * Integration tests for brief-context-monitor.js auto-record on CRITICAL (#1974).
  *
  * Verifies:
  * 1. On CRITICAL + active GSD project, subprocess is spawned and STATE.md
@@ -19,7 +19,7 @@ const path = require('node:path');
 const os = require('node:os');
 const { spawnSync } = require('node:child_process');
 
-const HOOK_PATH = path.resolve(__dirname, '..', 'hooks', 'gsd-context-monitor.js');
+const HOOK_PATH = path.resolve(__dirname, '..', 'hooks', 'brief-context-monitor.js');
 
 /**
  * Run the hook with a given session id and context percentage.
