@@ -413,7 +413,7 @@ describe('writeManifest tracks skills/ for Claude', () => {
   test('manifest includes skills/brief-xxx/SKILL.md entries for Claude runtime', () => {
     // Create skills directory structure (as install would)
     const skillsDir = path.join(tmpDir, 'skills');
-    const skillDir = path.join(skillsDir, 'gsd-next');
+    const skillDir = path.join(skillsDir, 'brief-next');
     fs.mkdirSync(skillDir, { recursive: true });
     fs.writeFileSync(path.join(skillDir, 'SKILL.md'), 'skill content');
 

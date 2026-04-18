@@ -146,15 +146,15 @@ describe('convertClaudeToAntigravityContent', () => {
   });
 
   describe('command name conversion', () => {
-    test('converts /gsd:command to /brief-command', () => {
-      const input = 'Run /gsd:new-project to start';
+    test('converts /brief:command to /brief-command', () => {
+      const input = 'Run /brief:new-project to start';
       const result = convertClaudeToAntigravityContent(input, true);
       assert.ok(result.includes('/brief-new-project'), result);
-      assert.ok(!result.includes('gsd:'), result);
+      assert.ok(!result.includes('brief:'), result);
     });
 
-    test('converts all gsd: references', () => {
-      const input = '/gsd:plan-phase and /gsd:execute-phase';
+    test('converts all brief: references', () => {
+      const input = '/brief:plan-phase and /brief:execute-phase';
       const result = convertClaudeToAntigravityContent(input, false);
       assert.ok(result.includes('/brief-plan-phase'), result);
       assert.ok(result.includes('/brief-execute-phase'), result);
@@ -207,16 +207,16 @@ Initialize new project at ~/.claude/brief/workflows/new-project.md
     assert.ok(result.includes('name: gsd-custom-name'), result);
   });
 
-  test('converts gsd: command references in body', () => {
+  test('converts brief: command references in body', () => {
     const content = `---
 name: test
 description: test skill
 ---
-Run /gsd:new-project to get started.
+Run /brief:new-project to get started.
 `;
     const result = convertClaudeCommandToAntigravitySkill(content, 'gsd-test', false);
     assert.ok(result.includes('/brief-new-project'), result);
-    assert.ok(!result.includes('gsd:'), result);
+    assert.ok(!result.includes('brief:'), result);
   });
 
   test('returns unchanged content when no frontmatter', () => {
@@ -297,20 +297,20 @@ describe('copyCommandsAsAntigravitySkills', () => {
 
     // Create a sample command file
     fs.writeFileSync(path.join(srcDir, 'new-project.md'), `---
-name: gsd:new-project
+name: brief:new-project
 description: Initialize a new project
 allowed-tools:
   - Read
   - Write
 ---
-Run /gsd:new-project to start.
+Run /brief:new-project to start.
 `);
 
     // Create a subdirectory command
     const subDir = path.join(srcDir, 'subdir');
     fs.mkdirSync(subDir, { recursive: true });
     fs.writeFileSync(path.join(subDir, 'sub-command.md'), `---
-name: gsd:sub-command
+name: brief:sub-command
 description: A sub-command
 allowed-tools:
   - Read
@@ -352,8 +352,8 @@ Body text.
   test('SKILL.md body has paths converted for local install', () => {
     copyCommandsAsAntigravitySkills(srcDir, skillsDir, 'gsd', false);
     const content = fs.readFileSync(path.join(skillsDir, 'gsd-new-project', 'SKILL.md'), 'utf8');
-    // gsd: → gsd- conversion
-    assert.ok(!content.includes('gsd:'), content);
+    // brief: → brief- conversion
+    assert.ok(!content.includes('brief:'), content);
   });
 
   test('removes old gsd-* skill dirs before reinstalling', () => {
@@ -386,9 +386,9 @@ describe('writeManifest (Antigravity)', () => {
   beforeEach(() => {
     tmpDir = createTempDir('gsd-manifest-ag-');
     // Create minimal structure
-    const skillsDir = path.join(tmpDir, 'skills', 'gsd-help');
+    const skillsDir = path.join(tmpDir, 'skills', 'brief-help');
     fs.mkdirSync(skillsDir, { recursive: true });
-    fs.writeFileSync(path.join(skillsDir, 'SKILL.md'), '---\nname: gsd-help\ndescription: Help\n---\n');
+    fs.writeFileSync(path.join(skillsDir, 'SKILL.md'), '---\nname: brief-help\ndescription: Help\n---\n');
     const gsdDir = path.join(tmpDir, 'brief');
     fs.mkdirSync(gsdDir, { recursive: true });
     fs.writeFileSync(path.join(gsdDir, 'VERSION'), '1.0.0');

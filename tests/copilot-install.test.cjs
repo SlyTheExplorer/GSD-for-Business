@@ -1032,7 +1032,7 @@ describe('Copilot manifest and patches fixes', () => {
     fs.writeFileSync(path.join(gsdDir, 'verify.cjs'), '// verify stub');
 
     // Create Copilot skills directory
-    const skillDir = path.join(tmpDir, 'skills', 'gsd-test');
+    const skillDir = path.join(tmpDir, 'skills', 'brief-test');
     fs.mkdirSync(skillDir, { recursive: true });
     fs.writeFileSync(path.join(skillDir, 'SKILL.md'), '# Test Skill\n\nA test skill.');
 
