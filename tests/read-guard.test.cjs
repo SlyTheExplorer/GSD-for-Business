@@ -1,5 +1,5 @@
 /**
- * Tests for gsd-read-guard.js PreToolUse hook.
+ * Tests for brief-read-guard.js PreToolUse hook.
  *
  * The read guard intercepts Write/Edit tool calls on existing files and injects
  * advisory guidance telling the model to Read the file first. This prevents
@@ -20,7 +20,7 @@ const { execFileSync } = require('node:child_process');
 
 const { createTempDir, cleanup } = require('./helpers.cjs');
 
-const HOOK_PATH = path.join(__dirname, '..', 'hooks', 'gsd-read-guard.js');
+const HOOK_PATH = path.join(__dirname, '..', 'hooks', 'brief-read-guard.js');
 
 /**
  * Run the read guard hook with a given tool input payload.
@@ -48,11 +48,11 @@ function runHook(payload, envOverrides = {}) {
   }
 }
 
-describe('gsd-read-guard hook', () => {
+describe('brief-read-guard hook', () => {
   let tmpDir;
 
   beforeEach(() => {
-    tmpDir = createTempDir('gsd-read-guard-');
+    tmpDir = createTempDir('brief-read-guard-');
   });
 
   afterEach(() => {
@@ -201,8 +201,8 @@ describe('gsd-read-guard hook', () => {
     const buildHooksPath = path.join(__dirname, '..', 'scripts', 'build-hooks.js');
     const content = fs.readFileSync(buildHooksPath, 'utf8');
     assert.ok(
-      content.includes('gsd-read-guard.js'),
-      'gsd-read-guard.js must be in HOOKS_TO_COPY so it ships in hooks/dist/'
+      content.includes('brief-read-guard.js'),
+      'brief-read-guard.js must be in HOOKS_TO_COPY so it ships in hooks/dist/'
     );
   });
 
@@ -210,8 +210,8 @@ describe('gsd-read-guard hook', () => {
     const installPath = path.join(__dirname, '..', 'bin', 'install.js');
     const content = fs.readFileSync(installPath, 'utf8');
     assert.ok(
-      content.includes("'gsd-read-guard.js'"),
-      'gsd-read-guard.js must be in the uninstall gsdHooks list'
+      content.includes("'brief-read-guard.js'"),
+      'brief-read-guard.js must be in the uninstall briefHooks list'
     );
   });
 

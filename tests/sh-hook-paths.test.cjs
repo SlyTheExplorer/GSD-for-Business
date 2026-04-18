@@ -1,8 +1,8 @@
 /**
  * Regression tests for bugs #2045 and #2046
  *
- * #2046 (macOS/Linux): The three .sh hooks (gsd-validate-commit.sh,
- * gsd-session-state.sh, gsd-phase-boundary.sh) were registered in
+ * #2046 (macOS/Linux): The three .sh hooks (brief-validate-commit.sh,
+ * brief-session-state.sh, brief-phase-boundary.sh) were registered in
  * settings.json with RELATIVE paths (bash .claude/hooks/...) for local
  * installs, causing "No such file or directory" when Claude Code's cwd
  * is not the project root.
@@ -30,9 +30,9 @@ const path = require('path');
 const INSTALL_SRC = path.join(__dirname, '..', 'bin', 'install.js');
 
 const SH_HOOKS = [
-  { name: 'gsd-validate-commit.sh', commandVar: 'validateCommitCommand' },
-  { name: 'gsd-session-state.sh',   commandVar: 'sessionStateCommand' },
-  { name: 'gsd-phase-boundary.sh',  commandVar: 'phaseBoundaryCommand' },
+  { name: 'brief-validate-commit.sh', commandVar: 'validateCommitCommand' },
+  { name: 'brief-session-state.sh',   commandVar: 'sessionStateCommand' },
+  { name: 'brief-phase-boundary.sh',  commandVar: 'phaseBoundaryCommand' },
 ];
 
 describe('bugs #2045 #2046: .sh hook paths must be absolute and quoted', () => {

@@ -888,18 +888,18 @@ describe('Codex install hook configuration (e2e)', () => {
   });
 
   test('Codex install copies hook file that is referenced in config.toml (#2153)', () => {
-    // Regression test: Codex install writes gsd-check-update hook reference into
+    // Regression test: Codex install writes brief-check-update hook reference into
     // config.toml but must also copy the hook file to ~/$CODEX_HOME/hooks/
     runCodexInstall(codexHome);
 
     const configContent = readCodexConfig(codexHome);
     // config.toml must reference the hook
-    assert.ok(configContent.includes('gsd-check-update.js'), 'config.toml references gsd-check-update.js');
+    assert.ok(configContent.includes('brief-check-update.js'), 'config.toml references brief-check-update.js');
     // The hook file must physically exist at the referenced path
-    const hookFile = path.join(codexHome, 'hooks', 'gsd-check-update.js');
+    const hookFile = path.join(codexHome, 'hooks', 'brief-check-update.js');
     assert.ok(
       fs.existsSync(hookFile),
-      `gsd-check-update.js must exist at ${hookFile} — config.toml references it but file was not installed`
+      `brief-check-update.js must exist at ${hookFile} — config.toml references it but file was not installed`
     );
   });
 

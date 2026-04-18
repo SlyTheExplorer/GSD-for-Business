@@ -419,7 +419,7 @@ describe('validateFieldName', () => {
 });
 
 // ─── Hook session_id path traversal (#1533) ────────────────────────────────
-// Verify that gsd-context-monitor and gsd-statusline reject session_id values
+// Verify that brief-context-monitor and brief-statusline reject session_id values
 // containing path traversal sequences before constructing temp file paths.
 
 const { execFileSync } = require('child_process');
@@ -438,8 +438,8 @@ function runHook(hookPath, inputJson) {
   }
 }
 
-describe('gsd-context-monitor session_id path traversal', () => {
-  const monitorPath = path.join(__dirname, '..', 'hooks', 'gsd-context-monitor.js');
+describe('brief-context-monitor session_id path traversal', () => {
+  const monitorPath = path.join(__dirname, '..', 'hooks', 'brief-context-monitor.js');
   const tmpDir = os.tmpdir();
 
   test('exits silently for session_id with ../ traversal', () => {
@@ -466,8 +466,8 @@ describe('gsd-context-monitor session_id path traversal', () => {
   });
 });
 
-describe('gsd-statusline session_id path traversal', () => {
-  const statuslinePath = path.join(__dirname, '..', 'hooks', 'gsd-statusline.js');
+describe('brief-statusline session_id path traversal', () => {
+  const statuslinePath = path.join(__dirname, '..', 'hooks', 'brief-statusline.js');
   const tmpDir = os.tmpdir();
 
   const baseInput = {

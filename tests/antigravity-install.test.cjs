@@ -403,7 +403,7 @@ describe('writeManifest (Antigravity)', () => {
 
   test('writes manifest JSON file', () => {
     writeManifest(tmpDir, 'antigravity');
-    const manifestPath = path.join(tmpDir, 'gsd-file-manifest.json');
+    const manifestPath = path.join(tmpDir, 'brief-file-manifest.json');
     assert.ok(fs.existsSync(manifestPath), 'manifest file should exist');
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
     assert.ok(manifest.version, 'should have version');
@@ -412,14 +412,14 @@ describe('writeManifest (Antigravity)', () => {
 
   test('manifest includes skills in skills/ directory', () => {
     writeManifest(tmpDir, 'antigravity');
-    const manifest = JSON.parse(fs.readFileSync(path.join(tmpDir, 'gsd-file-manifest.json'), 'utf8'));
+    const manifest = JSON.parse(fs.readFileSync(path.join(tmpDir, 'brief-file-manifest.json'), 'utf8'));
     const skillFiles = Object.keys(manifest.files).filter(f => f.startsWith('skills/'));
     assert.ok(skillFiles.length > 0, 'should have skill files in manifest');
   });
 
   test('manifest includes agent files', () => {
     writeManifest(tmpDir, 'antigravity');
-    const manifest = JSON.parse(fs.readFileSync(path.join(tmpDir, 'gsd-file-manifest.json'), 'utf8'));
+    const manifest = JSON.parse(fs.readFileSync(path.join(tmpDir, 'brief-file-manifest.json'), 'utf8'));
     const agentFiles = Object.keys(manifest.files).filter(f => f.startsWith('agents/'));
     assert.ok(agentFiles.length > 0, 'should have agent files in manifest');
   });
