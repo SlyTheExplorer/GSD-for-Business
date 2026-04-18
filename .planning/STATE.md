@@ -1,3 +1,20 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: Plan 09 HALT (PARTIAL — in-scope 31-file work complete, out-of-scope residual documented). POST=216 vs cap=16. 135 tests recovered. Plan 10 recommended for tuple-form + name-prefix residual coverage.
+stopped_at: "Plan 09 HALT at Task 7 delta-cap gate (POST=216 vs cap=16). Scope-deviation: planner enumerated 31 files via substring grep; ~40 additional files with tuple-form `path.join('commands', 'gsd')` + `name: gsd:<cmd>` patterns are out-of-scope. Plan 09 delivered in-scope 27 T-A + 3 T-B + 1 T-D (135 tests recovered); recommends Plan 10 or HALT-ACCEPTED per 09-GAP-CLOSURE-PARTIAL-AUDIT.md §7."
+last_updated: "2026-04-18T08:50:57.993Z"
+last_activity: "2026-04-18 — Plan 08: scripts/build-hooks.js 11-entry brief-*, bin/install.js 100+ P-A/P-B/P-C/P-D rewrites, hooks/dist/ 11 files populated, worktree 7/7 + workspace 25/25 tests recovered; 08-GAP-CLOSURE-PARTIAL-AUDIT.md §7 Option A chosen"
+progress:
+  total_phases: 9
+  completed_phases: 0
+  total_plans: 9
+  completed_plans: 9
+  percent: 95
+  note: "Phase 1 Plan 09 PARTIAL HALT — 31-file in-scope work complete (135 tests recovered), 216 out-of-scope failures remain. Phase 1 does NOT advance to 'completed' until Plan 10 closes the residual or HALT-ACCEPTED is explicitly recorded. Progress percent reflects plan-count (9/9) but Phase 1 status gate (FND-03 full closure + /brief-verify-work 1 transition) is not yet satisfied."
+---
+
 # Project State
 
 ## Project Reference
@@ -10,15 +27,16 @@ See: .planning/PROJECT.md (updated 2026-04-18)
 ## Current Position
 
 Phase: 1 of 9 (Foundation — Fork Hygiene, Removal, Rename)
-Plan: 8 of 8 in current phase — Task 6 delta-cap gate HALTed; Plan 09 queued (test-side bulk rewrite)
-Status: Plan 08 source-side fully closed (SHAs 19fcaa2 + 8f3eb9e); npm-test POST=351 vs cap=16 — 100% categorized as out-of-scope pre-Phase-1 test regressions requiring Plan 09
-Last activity: 2026-04-18 — Plan 08: scripts/build-hooks.js 11-entry brief-*, bin/install.js 100+ P-A/P-B/P-C/P-D rewrites, hooks/dist/ 11 files populated, worktree 7/7 + workspace 25/25 tests recovered; 08-GAP-CLOSURE-PARTIAL-AUDIT.md §7 Option A chosen
+Plan: 9 of 9 in current phase — Task 7 delta-cap gate HALTed; in-scope work complete. Plan 10 recommended per 09-GAP-CLOSURE-PARTIAL-AUDIT.md §7 Option 1.
+Status: Plan 09 HALT (PARTIAL — 31-file enumerated scope complete; 216 residual failures from out-of-scope tuple-form `path.join('commands', 'gsd')` + `name: gsd:<cmd>` patterns in ~40 additional tests/ files). 135 previously-failing tests recovered vs Plan 08 HALT state.
+Last activity: 2026-04-18 — Plan 09 test-side bulk rewrite: 27 T-A (5 atomic cluster commits 492751c/1456e0d/8c14f74/c3602ac/ab9a776), 3 T-B preserved, 1 T-D per-line split. Scope guard PASS (zero source-side hunks). PARTIAL audit artifact produced.
 
-Progress: [████████░░] 88% (8 of 9 plans complete source-side across Phase 1; Plan 09 test-side bulk rewrite + verify re-run remaining)
+Progress: [█████████░] 95% (9 of 9 Phase 1 plans executed; Plan 09 HALT PARTIAL — 31-file in-scope work complete, out-of-scope residual awaits Plan 10 or HALT-ACCEPTED decision)
 
 ## Performance Metrics
 
 **Velocity:**
+
 - Total plans completed: 0
 - Average duration: -
 - Total execution time: 0.0 hours
@@ -30,10 +48,12 @@ Progress: [████████░░] 88% (8 of 9 plans complete source-sid
 | - | - | - | - |
 
 **Recent Trend:**
+
 - Last 5 plans: -
 - Trend: -
 
 *Updated after each plan completion*
+| Phase 01 P09 | 1.5h | 8 tasks | 31 files |
 
 ## Accumulated Context
 
@@ -65,6 +85,7 @@ None yet.
 - **HIGH-RISK assumption A4 (state.cjs round-trip)** must be verified in Phase 2; if wrong, the architecture needs a sidecar `state-brief.json` instead of namespaced `state.brief.*` extension and changes propagate to Phase 6 (bidirectional foundation)
 - Korean compliance reference library content (clause-level ISMS-P / PIPA / e-금융업 / mydata / 의료기기법) needs deeper Korean legal research during Phase 7; consider engaging legal counsel for review
 - Marp `npx --yes` invocation pattern (Assumption STACK-A4) needs verification across all four runtime sandboxes in Phase 9 cross-runtime smoke test
+- Plan 09 HALT scope-deviation: 216 npm-test failures from out-of-scope tuple-form + name-prefix patterns in ~40 additional tests/ files. Recommended: spawn Plan 10.
 
 ## Deferred Items
 
@@ -76,6 +97,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-04-18
-Stopped at: Phase 1 Plan 08 source-side closure committed (SHAs 19fcaa2 + 8f3eb9e); Task 6 delta-cap gate HALTed (POST=351 vs cap=16). Plan 09 needed for test-side bulk rewrite across ~31 test files (~300 residues: commands/gsd paths, gsd-* hook filenames, gsdHooks arrays, .cache/gsd, gsd-local-patches, gsd-file-manifest).
-Resume file: .planning/phases/01-foundation-fork-hygiene-removal-rename/08-GAP-CLOSURE-PARTIAL-AUDIT.md (forensic analysis + Plan 09 scope per §7 Option A)
+Last session: 2026-04-18T08:50:45.407Z
+Stopped at: Plan 09 HALT at Task 7 delta-cap gate (POST=216 vs cap=16). Scope-deviation: planner enumerated 31 files via substring grep; ~40 additional files with tuple-form `path.join('commands', 'gsd')` + `name: gsd:<cmd>` patterns are out-of-scope. Plan 09 delivered in-scope 27 T-A + 3 T-B + 1 T-D (135 tests recovered); recommends Plan 10 or HALT-ACCEPTED per 09-GAP-CLOSURE-PARTIAL-AUDIT.md §7.
+Resume file: None

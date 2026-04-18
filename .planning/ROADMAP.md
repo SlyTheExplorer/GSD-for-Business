@@ -12,7 +12,7 @@ BRIEF is built as a hard fork of GSD, transformed in-place into a meta-prompting
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation — Fork Hygiene, Removal, Rename** - Backup branch, dev-surface removal, hard rename, multi-runtime preservation, A1 (zero-deps) verification
+- [~] **Phase 1: Foundation — Fork Hygiene, Removal, Rename** - Backup branch, dev-surface removal, hard rename, multi-runtime preservation, A1 (zero-deps) verification (9/9 plans executed; Plan 09 PARTIAL HALT — Plan 10 recommended for residual tuple-form + name-prefix coverage before FND-03 full closure)
 - [ ] **Phase 2: Stable Seam — Anchor Schema, Caps, Workstream-as-Config** - A4 verification (state.brief.* round-trip), workstream-spec.yaml architecture, CLAUDE.md command/skill caps, /brief-status skeleton
 - [ ] **Phase 3: DEFINE Canary — Phase 0 End-to-End** - Conversational intent extractor, Dream State Mapping, OBJECTIVES.md with mutability layers, business_model/region declaration
 - [ ] **Phase 4: First Gate — ALIGN Pattern Established** - Three-output ALIGN gate (ALIGNED / DRIFTED-objective / DRIFTED-output), findings-not-checks vocabulary, gate-as-orchestrator-step (not hook)
@@ -44,7 +44,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] 06-PLAN.md — CLAUDE.md + README.md targeted delta; A1 + FND-06 + FND-07 verified in ASSUMPTIONS.md (FND-04, FND-06, FND-07)
 - [x] 07-PLAN.md — GAP CLOSURE (path-substring scope, SHA b1ec9f6): commands/gsd residue 45→10 files (bin/install.js 13 SRC tuples rewritten; init.cjs dual-root; 41 files edited) + npm test baseline re-captured via `grep -cE '^✖'`. Task 4 delta-cap gate HALTed — upstream hook-rename regression (scripts/build-hooks.js + bin/install.js hook refs + worktree test assertions) deferred to Plan 08 (FND-03 partial closure).
 - [x] 08-PLAN.md — GAP CLOSURE (hook-rename propagation, SHAs 19fcaa2 + 8f3eb9e): scripts/build-hooks.js HOOKS_TO_COPY 10→11 brief-* entries; bin/install.js 100+ P-A/P-B/P-C/P-D rewrites (copy-helper prefixes, PATCHES_DIR_NAME, MANIFEST_NAME, cache path, user-visible $gsd-*, /gsd:/ normalizers, dual-prefix startsWith/includes for uninstall+manifest); hooks/dist/ populated with 11 brief-* files; worktree 7/7 + workspace 25/25 tests recovered. Task 6 delta-cap gate HALTed (POST=351 vs cap=16) — 100% categorized as out-of-scope pre-Phase-1 test-side regressions, deferred to Plan 09 per 08-GAP-CLOSURE-PARTIAL-AUDIT.md §7 Option A (FND-03 source-side closure).
-- [ ] 09-PLAN.md — GAP CLOSURE (test-side bulk rewrite): ~31 test files with ~300 residues (commands/gsd paths, gsd-*.{js,sh} hook filenames, gsdHooks arrays, .cache/gsd/, gsd-local-patches, gsd-file-manifest) rewritten per P-A/P-C test-side decision framework. Target: POST ≤ 16 against EMPIRICAL_BASELINE=6; VERIFICATION.md Gap 2 (W4 delta-cap) closure; FND-03 full closure.
+- [~] 09-PLAN.md — GAP CLOSURE (test-side bulk rewrite, PARTIAL HALT at Task 7): Plan 09's enumerated 31-file scope delivered cleanly — 27 T-A bulk-sed rewritten (commits 492751c/1456e0d/8c14f74), 1 T-D per-line split (c3602ac), 3 T-B preserved (ab9a776). 135 tests recovered (PRE npm-test fail 351 → POST 216). Final audit 1871fd5. HALT reason: planner-enumeration defect — substring grep missed tuple-form `path.join('commands', 'gsd')` (~36 files) + `name: gsd:<cmd>` frontmatter assertions (~16 files). 216 residual failures out-of-scope for Plan 09's 31-file enumeration. Recommends Plan 10 for ~40 additional files (Option 1 per 09-GAP-CLOSURE-PARTIAL-AUDIT.md §7); Phase 1 FND-03 closure NOT yet verified.
 
 **Pitfall coverage**: #2 Cross-runtime fragility (FND-06 verifies LCD surface), #8 Fork drift (FND-01 + FND-03 design the layered seam BEFORE rename — single-purpose rename commit), #1 Skill bloat (FND-02 removal of 28 dev surfaces creates headroom under future caps).
 
@@ -166,7 +166,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation — Fork Hygiene, Removal, Rename | 0/TBD | Not started | - |
+| 1. Foundation — Fork Hygiene, Removal, Rename | 9/9 (8 full + 1 PARTIAL HALT) | PARTIAL HALT — Plan 09 enumeration gap; Plan 10 recommended for FND-03 full closure | - |
 | 2. Stable Seam — Anchor Schema, Caps, Workstream-as-Config | 0/TBD | Not started | - |
 | 3. DEFINE Canary — Phase 0 End-to-End | 0/TBD | Not started | - |
 | 4. First Gate — ALIGN Pattern Established | 0/TBD | Not started | - |
