@@ -291,23 +291,23 @@ describe('convertClaudeToCopilotContent', () => {
     );
   });
 
-  test('converts gsd: to gsd- in command names', () => {
+  test('converts brief: to brief- in command names', () => {
     assert.strictEqual(
-      convertClaudeToCopilotContent('run /gsd:health or gsd:progress'),
-      'run /brief-health or gsd-progress'
+      convertClaudeToCopilotContent('run /brief:health or brief:progress'),
+      'run /brief-health or brief-progress'
     );
   });
 
   test('handles mixed content in local mode', () => {
     const input = 'Config at ~/.claude/settings and $HOME/.claude/config.\n' +
       'Local at ./.claude/data and .claude/commands.\n' +
-      'Run gsd:health and /gsd:progress.';
+      'Run brief:health and /brief:progress.';
     const result = convertClaudeToCopilotContent(input);
     assert.ok(result.includes('.github/settings'), 'tilde path converted to local');
     assert.ok(!result.includes('$HOME/.claude/'), '$HOME path converted');
     assert.ok(result.includes('./.github/data'), 'dot-slash path converted');
     assert.ok(result.includes('.github/commands'), 'bare path converted');
-    assert.ok(result.includes('gsd-health'), 'command name converted');
+    assert.ok(result.includes('brief-health'), 'command name converted');
     assert.ok(result.includes('/brief-progress'), 'slash command converted');
   });
 
@@ -349,7 +349,7 @@ describe('convertClaudeToCopilotContent', () => {
 describe('convertClaudeCommandToCopilotSkill', () => {
   test('converts frontmatter with all fields', () => {
     const input = `---
-name: gsd:health
+name: brief:health
 description: Diagnose planning directory health
 argument-hint: [--repair]
 allowed-tools:
@@ -359,7 +359,7 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-Body content here referencing ~/.claude/foo and gsd:health.`;
+Body content here referencing ~/.claude/foo and brief:health.`;
 
     const result = convertClaudeCommandToCopilotSkill(input, 'gsd-health');
     assert.ok(result.startsWith('---\nname: gsd-health\n'), 'name uses param');
@@ -367,8 +367,8 @@ Body content here referencing ~/.claude/foo and gsd:health.`;
     assert.ok(result.includes('argument-hint: "[--repair]"'), 'argument-hint double-quoted');
     assert.ok(result.includes('allowed-tools: Read, Bash, Write, AskUserQuestion'), 'tools comma-separated');
     assert.ok(result.includes('.github/foo'), 'CONV-06 applied to body (local mode default)');
-    assert.ok(result.includes('gsd-health'), 'CONV-07 applied to body');
-    assert.ok(!result.includes('gsd:health'), 'no gsd: references remain');
+    assert.ok(result.includes('brief-health'), 'CONV-07 applied to body');
+    assert.ok(!result.includes('brief:health'), 'no brief: references remain');
   });
 
   test('handles skill without allowed-tools', () => {
@@ -446,23 +446,23 @@ Check ~/.claude/settings and ./.claude/local and $HOME/.claude/global.`;
 
   test('applies CONV-07 command name conversion to body', () => {
     const input = `---
-name: gsd:test
+name: brief:test
 description: Test skill
 ---
 
-Run gsd:health and /gsd:progress for diagnostics.`;
+Run brief:health and /brief:progress for diagnostics.`;
 
     const result = convertClaudeCommandToCopilotSkill(input, 'gsd-test');
-    assert.ok(result.includes('gsd-health'), 'gsd:health converted');
-    assert.ok(result.includes('/brief-progress'), '/gsd:progress converted');
-    assert.ok(!result.match(/gsd:[a-z]/), 'no gsd: command refs remain');
+    assert.ok(result.includes('brief-health'), 'brief:health converted');
+    assert.ok(result.includes('/brief-progress'), '/brief:progress converted');
+    assert.ok(!result.match(/brief:[a-z]/), 'no brief: command refs remain');
   });
 
   test('handles content without frontmatter (local mode)', () => {
-    const input = 'Just some markdown with ~/.claude/path and gsd:health.';
+    const input = 'Just some markdown with ~/.claude/path and brief:health.';
     const result = convertClaudeCommandToCopilotSkill(input, 'gsd-test');
     assert.ok(result.includes('.github/path'), 'CONV-06 applied (local)');
-    assert.ok(result.includes('gsd-health'), 'CONV-07 applied');
+    assert.ok(result.includes('brief-health'), 'CONV-07 applied');
     assert.ok(!result.includes('---'), 'no frontmatter added');
   });
 
@@ -564,13 +564,13 @@ description: Test
 tools: Read
 ---
 
-Check ~/.claude/settings and run gsd:health.`;
+Check ~/.claude/settings and run brief:health.`;
 
     const result = convertClaudeAgentToCopilotAgent(input);
     assert.ok(result.includes('.github/settings'), 'CONV-06 applied (local)');
-    assert.ok(result.includes('gsd-health'), 'CONV-07 applied');
+    assert.ok(result.includes('brief-health'), 'CONV-07 applied');
     assert.ok(!result.includes('~/.claude/'), 'no ~/.claude/ remains');
-    assert.ok(!result.match(/gsd:[a-z]/), 'no gsd: command refs remain');
+    assert.ok(!result.match(/brief:[a-z]/), 'no brief: command refs remain');
   });
 
   test('applies CONV-06 and CONV-07 to body (global mode)', () => {
@@ -580,18 +580,18 @@ description: Test
 tools: Read
 ---
 
-Check ~/.claude/settings and run gsd:health.`;
+Check ~/.claude/settings and run brief:health.`;
 
     const result = convertClaudeAgentToCopilotAgent(input, true);
     assert.ok(result.includes('~/.copilot/settings'), 'CONV-06 applied (global)');
-    assert.ok(result.includes('gsd-health'), 'CONV-07 applied');
+    assert.ok(result.includes('brief-health'), 'CONV-07 applied');
   });
 
   test('handles content without frontmatter (local mode)', () => {
-    const input = 'Just markdown with ~/.claude/path and gsd:test.';
+    const input = 'Just markdown with ~/.claude/path and brief:test.';
     const result = convertClaudeAgentToCopilotAgent(input);
     assert.ok(result.includes('.github/path'), 'CONV-06 applied (local)');
-    assert.ok(result.includes('gsd-test'), 'CONV-07 applied');
+    assert.ok(result.includes('brief-test'), 'CONV-07 applied');
     assert.ok(!result.includes('---'), 'no frontmatter added');
   });
 });

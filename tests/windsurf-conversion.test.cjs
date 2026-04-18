@@ -39,21 +39,21 @@ Test body
 
   test('preserves slash for slash commands in markdown body', () => {
     const input = `---
-name: gsd:plan-phase
+name: brief:plan-phase
 description: Plan a phase
 ---
 
 Next:
-/gsd:execute-phase 17
+/brief:execute-phase 17
 /brief-help
-gsd:progress
+brief:progress
 `;
 
     const result = convertClaudeCommandToWindsurfSkill(input, 'gsd-plan-phase');
-    // Slash commands: /gsd:execute-phase -> /brief-execute-phase
-    assert.ok(result.includes('/brief-execute-phase 17'), 'slash command gsd: -> gsd-');
+    // Slash commands: /brief:execute-phase -> /brief-execute-phase
+    assert.ok(result.includes('/brief-execute-phase 17'), 'slash command brief: -> brief-');
     assert.ok(result.includes('/brief-help'), '/brief-help preserved');
-    assert.ok(result.includes('gsd-progress'), 'bare gsd: -> gsd-');
+    assert.ok(result.includes('brief-progress'), 'bare brief: -> brief-');
   });
 
   test('includes windsurf_skill_adapter block', () => {

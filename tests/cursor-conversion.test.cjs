@@ -38,22 +38,22 @@ Test body
 
   test('preserves slash for slash commands in markdown body', () => {
     const input = `---
-name: gsd:plan-phase
+name: brief:plan-phase
 description: Plan a phase
 ---
 
 Next:
-/gsd:execute-phase 17
+/brief:execute-phase 17
 /brief-help
-gsd:progress
+brief:progress
 `;
 
     const result = convertClaudeCommandToCursorSkill(input, 'gsd-plan-phase');
 
     assert.ok(result.includes('/brief-execute-phase 17'), 'slash command remains slash-prefixed');
     assert.ok(result.includes('/brief-help'), 'existing slash command is preserved');
-    assert.ok(result.includes('gsd-progress'), 'non-slash gsd: references still normalize');
-    assert.ok(!result.includes('/gsd:execute-phase'), 'legacy colon command form is removed');
+    assert.ok(result.includes('brief-progress'), 'non-slash brief: references still normalize');
+    assert.ok(!result.includes('/brief:execute-phase'), 'legacy colon command form is removed');
   });
 });
 

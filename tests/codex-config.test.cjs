@@ -161,7 +161,7 @@ tools: Read
 Run /gsd:execute-phase to proceed.`;
 
     const result = convertClaudeAgentToCodexAgent(input);
-    assert.ok(result.includes('$gsd-execute-phase'), 'converts slash commands');
+    assert.ok(result.includes('$brief-execute-phase'), 'converts slash commands');
     assert.ok(!result.includes('/gsd:execute-phase'), 'original slash command removed');
   });
 
@@ -190,7 +190,7 @@ node "$HOME/.claude/brief/bin/brief-tools.cjs" commit "docs: resolve"`;
 // ─── Codex command prefix conversion ────────────────────────────────────────────
 
 describe('Codex hyphen-style command prefix conversion', () => {
-  test('converts /brief-command in workflow output to $gsd-command', () => {
+  test('converts /brief-command in workflow output to $brief-command', () => {
     const input = `---
 name: gsd-test
 description: Test
@@ -202,9 +202,9 @@ tools: Read
 /brief-execute-phase 3 — run it`;
 
     const result = convertClaudeCommandToCodexSkill(input, 'gsd-test');
-    assert.ok(result.includes('$gsd-discuss-phase'), 'converts /brief-discuss-phase');
-    assert.ok(result.includes('$gsd-plan-phase'), 'converts /brief-plan-phase');
-    assert.ok(result.includes('$gsd-execute-phase'), 'converts /brief-execute-phase');
+    assert.ok(result.includes('$brief-discuss-phase'), 'converts /brief-discuss-phase');
+    assert.ok(result.includes('$brief-plan-phase'), 'converts /brief-plan-phase');
+    assert.ok(result.includes('$brief-execute-phase'), 'converts /brief-execute-phase');
     assert.ok(!result.includes('/brief-discuss-phase'), 'no /brief-discuss-phase remains');
   });
 
@@ -218,7 +218,7 @@ tools: Read
 Run \`/brief-plan-phase 1\` to plan.`;
 
     const result = convertClaudeCommandToCodexSkill(input, 'gsd-test');
-    assert.ok(result.includes('$gsd-plan-phase'), 'converts backtick-wrapped command');
+    assert.ok(result.includes('$brief-plan-phase'), 'converts backtick-wrapped command');
   });
 
   test('does not convert /brief- in file paths', () => {
@@ -244,11 +244,11 @@ tools: Read
 
 \`/clear\` then:
 
-\`$gsd-plan-phase 1\``;
+\`$brief-plan-phase 1\``;
 
     const result = convertClaudeCommandToCodexSkill(input, 'gsd-test');
     assert.ok(!result.includes('/clear'), 'no /clear remains');
-    assert.ok(result.includes('$gsd-plan-phase'), 'command preserved after /clear removal');
+    assert.ok(result.includes('$brief-plan-phase'), 'command preserved after /clear removal');
   });
 
   test('removes bare /clear then: for Codex', () => {
@@ -263,7 +263,7 @@ tools: Read
 
     const result = convertClaudeCommandToCodexSkill(input, 'gsd-test');
     assert.ok(!result.includes('/clear'), 'no /clear remains');
-    assert.ok(result.includes('$gsd-execute-phase'), 'command converted');
+    assert.ok(result.includes('$brief-execute-phase'), 'command converted');
   });
 });
 
