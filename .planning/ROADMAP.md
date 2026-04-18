@@ -12,7 +12,7 @@ BRIEF is built as a hard fork of GSD, transformed in-place into a meta-prompting
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [~] **Phase 1: Foundation — Fork Hygiene, Removal, Rename** - Backup branch, dev-surface removal, hard rename, multi-runtime preservation, A1 (zero-deps) verification (10/10 plans executed; Plan 10 PARTIAL HALT — 63 source-side drift failures remain; Plan 11 source-side recommended OR HALT-ACCEPTED for FND-03 closure)
+- [x] **Phase 1: Foundation — Fork Hygiene, Removal, Rename** - Backup branch, dev-surface removal, hard rename, multi-runtime preservation, A1 (zero-deps) verification (10/10 plans executed; HALT-ACCEPTED 2026-04-18 after 4 gap-closure cycles; 288 tests recovered 83.5%; 63 residual source/doc drift deferred to Phase 9 per 01-VERIFICATION.md `deferred[2]` + 10-PARTIAL-AUDIT.md §4)
 - [ ] **Phase 2: Stable Seam — Anchor Schema, Caps, Workstream-as-Config** - A4 verification (state.brief.* round-trip), workstream-spec.yaml architecture, CLAUDE.md command/skill caps, /brief-status skeleton
 - [ ] **Phase 3: DEFINE Canary — Phase 0 End-to-End** - Conversational intent extractor, Dream State Mapping, OBJECTIVES.md with mutability layers, business_model/region declaration
 - [ ] **Phase 4: First Gate — ALIGN Pattern Established** - Three-output ALIGN gate (ALIGNED / DRIFTED-objective / DRIFTED-output), findings-not-checks vocabulary, gate-as-orchestrator-step (not hook)
@@ -156,9 +156,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. User opens the surface-count audit document (committed at v1 launch) and reads ≤12 user-facing commands and ≤8 skills, each with one-line rationale; nothing exceeds the cap set in CLAUDE.md back in Phase 2 (HRD-02)
   3. User runs `/brief-help` and obtains a categorized command listing with one-line per-command summary (NOT a raw `--help` dump); supports `/brief-help <topic>` subset queries; suggests closest 3 commands on a typo via Levenshtein distance (HRD-03)
   4. At least 3 non-developer business planners (NOT on the build team) have used BRIEF for a real planning project end-to-end, observed; their findings are logged in `.planning/pilot/` with friction journal entries; any blocking findings are resolved before public release (HRD-04)
+  5. User runs `npm test 2>&1 > /tmp/hardening-test.txt; grep -cE '^✖' /tmp/hardening-test.txt` and gets a value ≤ 16 (EMPIRICAL_BASELINE 6 + DELTA_CAP 10 inherited from Phase 1). Closes the 63 residual failures deferred from Phase 1 per 10-PARTIAL-AUDIT.md §4: (a) restore 19 missing-file tests by creating brief/workflows/pr-branch.md + diagnose-issues.md + brief/references/ui-brand.md — or prune the assertions if the workflows are truly out of scope; (b) reconcile docs/ARCHITECTURE.md component counts (Total commands 75→61, workflows 72→58, agents 31→18) + sync tree comments in tests/architecture-counts.test.cjs + command-count-sync.test.cjs — 14 tests; (c) fix source-behavior drift in hooks/brief-check-update-worker.js MANAGED_HOOKS array + bin/install.js CONV-07 function + hooks/brief-read-guard.js JSON output + custom-file detection — 30 tests; (d) sync source-content drift in agents/*.md required_reading blocks (≥20 agents) + commands/brief/autonomous.md frontmatter + brief/workflows/verify-work.md — 13 tests (HRD-05, added 2026-04-18 during Phase 1 HALT-ACCEPTED orchestrator decision)
 **Plans**: TBD
 
-**Pitfall coverage**: #2 Cross-runtime fragility (HRD-01 explicit smoke tests in Codex + Gemini), #1 Skill/command bloat (HRD-02 surface count audit), #12 Slash command memorability failure (HRD-03 rich `/brief-help` with verb-based mappings + suggestion-on-miss), #9 Non-developer friction + #14 Dogfooding trap (HRD-04 external pilot with non-developer planners — Track B of two-track dogfooding).
+**Pitfall coverage**: #2 Cross-runtime fragility (HRD-01 explicit smoke tests in Codex + Gemini), #1 Skill/command bloat (HRD-02 surface count audit), #12 Slash command memorability failure (HRD-03 rich `/brief-help` with verb-based mappings + suggestion-on-miss), #9 Non-developer friction + #14 Dogfooding trap (HRD-04 external pilot with non-developer planners — Track B of two-track dogfooding), #8 Fork drift residual (HRD-05 closes Phase 1 HALT-ACCEPTED source-drift residue via test-infrastructure modernization — structural closure of the rename-scope boundary).
 
 ## Progress
 
@@ -167,7 +168,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation — Fork Hygiene, Removal, Rename | 10/10 (8 full + 2 PARTIAL HALT) | PARTIAL HALT — Plan 10 closed Plan 09's enumeration gap (153 tests recovered); 63 source-side drift failures remain; Plan 11 source-side recommended OR HALT-ACCEPTED for FND-03 closure | - |
+| 1. Foundation — Fork Hygiene, Removal, Rename | 10/10 | HALT-ACCEPTED 2026-04-18 — 288 tests recovered (83.5%) across 4 gap-closure cycles (Plans 07/08/09/10); 63 residual source/doc drift deferred to Phase 9 HRD-05; functional fork-rename goal fully achieved | 2026-04-18 |
 | 2. Stable Seam — Anchor Schema, Caps, Workstream-as-Config | 0/TBD | Not started | - |
 | 3. DEFINE Canary — Phase 0 End-to-End | 0/TBD | Not started | - |
 | 4. First Gate — ALIGN Pattern Established | 0/TBD | Not started | - |
