@@ -7,8 +7,8 @@ Output: .planning/codebase/ folder with 7 structured documents about the codebas
 </purpose>
 
 <available_agent_types>
-Valid GSD subagent types (use exact names — do not fall back to 'general-purpose'):
-- gsd-codebase-mapper — Maps project structure and dependencies
+Valid BRIEF subagent types (use exact names — do not fall back to 'general-purpose'):
+- brief-codebase-mapper — Maps project structure and dependencies
 </available_agent_types>
 
 <philosophy>
@@ -33,7 +33,7 @@ Load codebase mapping context:
 ```bash
 INIT=$(gsd-sdk query init.map-codebase)
 if [[ "$INIT" == @file:* ]]; then INIT=$(cat "${INIT#@file:}"); fi
-AGENT_SKILLS_MAPPER=$(gsd-sdk query agent-skills gsd-codebase-mapper 2>/dev/null)
+AGENT_SKILLS_MAPPER=$(gsd-sdk query agent-skills brief-codebase-mapper 2>/dev/null)
 ```
 
 Extract from init JSON: `mapper_model`, `commit_docs`, `codebase_dir`, `existing_maps`, `has_maps`, `codebase_dir_exists`, `subagent_timeout`, `date`.
@@ -99,17 +99,17 @@ Before spawning agents, detect whether the current runtime supports the `Task` t
 </step>
 
 <step name="spawn_agents" condition="Task tool is available">
-Spawn 4 parallel gsd-codebase-mapper agents.
+Spawn 4 parallel brief-codebase-mapper agents.
 
-Use Task tool with `subagent_type="gsd-codebase-mapper"`, `model="{mapper_model}"`, and `run_in_background=true` for parallel execution.
+Use Task tool with `subagent_type="brief-codebase-mapper"`, `model="{mapper_model}"`, and `run_in_background=true` for parallel execution.
 
-**CRITICAL:** Use the dedicated `gsd-codebase-mapper` agent, NOT `Explore` or `browser_subagent`. The mapper agent writes documents directly.
+**CRITICAL:** Use the dedicated `brief-codebase-mapper` agent, NOT `Explore` or `browser_subagent`. The mapper agent writes documents directly.
 
 **Agent 1: Tech Focus**
 
 ```
 Task(
-  subagent_type="gsd-codebase-mapper",
+  subagent_type="brief-codebase-mapper",
   model="{mapper_model}",
   run_in_background=true,
   description="Map codebase tech stack",
@@ -133,7 +133,7 @@ ${AGENT_SKILLS_MAPPER}"
 
 ```
 Task(
-  subagent_type="gsd-codebase-mapper",
+  subagent_type="brief-codebase-mapper",
   model="{mapper_model}",
   run_in_background=true,
   description="Map codebase architecture",
@@ -157,7 +157,7 @@ ${AGENT_SKILLS_MAPPER}"
 
 ```
 Task(
-  subagent_type="gsd-codebase-mapper",
+  subagent_type="brief-codebase-mapper",
   model="{mapper_model}",
   run_in_background=true,
   description="Map codebase conventions",
@@ -181,7 +181,7 @@ ${AGENT_SKILLS_MAPPER}"
 
 ```
 Task(
-  subagent_type="gsd-codebase-mapper",
+  subagent_type="brief-codebase-mapper",
   model="{mapper_model}",
   run_in_background=true,
   description="Map codebase concerns",
@@ -267,7 +267,7 @@ Perform all 4 mapping passes sequentially:
 - Explore TODOs, known issues, fragile areas, security patterns
 - Write `.planning/codebase/CONCERNS.md` — Tech debt, bugs, security, performance, fragile areas
 
-Use the same document templates as the `gsd-codebase-mapper` agent. Include actual file paths formatted with backticks.
+Use the same document templates as the `brief-codebase-mapper` agent. Include actual file paths formatted with backticks.
 
 Continue to verify_output.
 </step>
@@ -365,12 +365,12 @@ Created .planning/codebase/:
 
 `/clear` then:
 
-`/gsd-new-project`
+`/brief-new-project`
 
 ---
 
 **Also available:**
-- Re-run mapping: `/gsd-map-codebase`
+- Re-run mapping: `/brief-map-codebase`
 - Review specific file: `cat .planning/codebase/STACK.md`
 - Edit any document before proceeding
 
@@ -384,10 +384,10 @@ End workflow.
 
 <success_criteria>
 - .planning/codebase/ directory created
-- If Task tool available: 4 parallel gsd-codebase-mapper agents spawned with run_in_background=true
+- If Task tool available: 4 parallel brief-codebase-mapper agents spawned with run_in_background=true
 - If Task tool NOT available: 4 sequential mapping passes performed inline (never using browser_subagent)
 - All 7 codebase documents exist
 - No empty documents (each should have >20 lines)
 - Clear completion summary with line counts
-- User offered clear next steps in GSD style
+- User offered clear next steps in BRIEF style
 </success_criteria>

@@ -28,8 +28,8 @@ Clarify phase requirements through structured Socratic questioning with quantita
 </objective>
 
 <execution_context>
-@~/.claude/get-shit-done/workflows/spec-phase.md
-@~/.claude/get-shit-done/templates/spec.md
+@~/.claude/brief/workflows/spec-phase.md
+@~/.claude/brief/templates/spec.md
 </execution_context>
 
 <runtime_note>
@@ -47,7 +47,7 @@ Context files are resolved in-workflow using `init phase-op`.
 </context>
 
 <process>
-Execute the spec-phase workflow from @~/.claude/get-shit-done/workflows/spec-phase.md end-to-end.
+Execute the spec-phase workflow from @~/.claude/brief/workflows/spec-phase.md end-to-end.
 
 **MANDATORY:** Read the workflow file BEFORE taking any action. The workflow contains the complete step-by-step process including the Socratic interview loop, ambiguity scoring gate, and SPEC.md generation. Do not improvise from the objective summary above.
 </process>
@@ -58,5 +58,5 @@ Execute the spec-phase workflow from @~/.claude/get-shit-done/workflows/spec-pha
 - Gate passed: ambiguity ≤ 0.20 AND all dimension minimums met
 - SPEC.md written with falsifiable requirements, explicit boundaries, and acceptance criteria
 - SPEC.md committed atomically
-- User knows they can now run /gsd-discuss-phase which will load SPEC.md automatically
+- User knows they can now run /brief-discuss-phase which will load SPEC.md automatically
 </success_criteria>

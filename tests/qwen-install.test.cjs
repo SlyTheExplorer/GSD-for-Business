@@ -98,16 +98,16 @@ describe('Qwen Code local install/uninstall', () => {
     assert.strictEqual(result.configDir, fs.realpathSync(targetDir));
 
     assert.ok(fs.existsSync(path.join(targetDir, 'skills', 'gsd-help', 'SKILL.md')));
-    assert.ok(fs.existsSync(path.join(targetDir, 'get-shit-done', 'VERSION')));
+    assert.ok(fs.existsSync(path.join(targetDir, 'brief', 'VERSION')));
     assert.ok(fs.existsSync(path.join(targetDir, 'agents')));
 
     const manifest = writeManifest(targetDir, 'qwen');
-    assert.ok(Object.keys(manifest.files).some(file => file.startsWith('skills/gsd-help/')), manifest);
+    assert.ok(Object.keys(manifest.files).some(file => file.startsWith('skills/brief-help/')), manifest);
 
     uninstall(false, 'qwen');
 
     assert.ok(!fs.existsSync(path.join(targetDir, 'skills', 'gsd-help')), 'Qwen skill directory removed');
-    assert.ok(!fs.existsSync(path.join(targetDir, 'get-shit-done')), 'get-shit-done removed');
+    assert.ok(!fs.existsSync(path.join(targetDir, 'brief')), 'brief removed');
   });
 });
 
@@ -167,13 +167,13 @@ describe('E2E: Qwen Code uninstall skills cleanup', () => {
     const targetDir = path.join(tmpDir, '.qwen');
     install(false, 'qwen');
 
-    assert.ok(fs.existsSync(path.join(targetDir, 'get-shit-done', 'VERSION')),
+    assert.ok(fs.existsSync(path.join(targetDir, 'brief', 'VERSION')),
       'engine exists before uninstall');
 
     uninstall(false, 'qwen');
 
-    assert.ok(!fs.existsSync(path.join(targetDir, 'get-shit-done')),
-      'get-shit-done engine should be removed after Qwen uninstall');
+    assert.ok(!fs.existsSync(path.join(targetDir, 'brief')),
+      'brief engine should be removed after Qwen uninstall');
   });
 });
 

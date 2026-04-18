@@ -1,7 +1,7 @@
 /**
  * Phase Researcher Flow Diagram Tests (#2139)
  *
- * Validates that gsd-phase-researcher enforces data-flow architecture
+ * Validates that brief-phase-researcher enforces data-flow architecture
  * diagrams instead of file-listing diagrams. Also validates that the
  * research template includes the matching directive.
  */
@@ -12,18 +12,18 @@ const fs = require('fs');
 const path = require('path');
 
 const AGENTS_DIR = path.join(__dirname, '..', 'agents');
-const TEMPLATES_DIR = path.join(__dirname, '..', 'get-shit-done', 'templates');
+const TEMPLATES_DIR = path.join(__dirname, '..', 'brief', 'templates');
 
 // ─── Phase Researcher: System Architecture Diagram Directive ─────────────────
 
 describe('phase-researcher: System Architecture Diagram directive', () => {
-  const researcherPath = path.join(AGENTS_DIR, 'gsd-phase-researcher.md');
+  const researcherPath = path.join(AGENTS_DIR, 'brief-phase-researcher.md');
   const content = fs.readFileSync(researcherPath, 'utf-8');
 
   test('contains System Architecture Diagram section', () => {
     assert.ok(
       content.includes('### System Architecture Diagram'),
-      'gsd-phase-researcher.md must contain "### System Architecture Diagram"'
+      'brief-phase-researcher.md must contain "### System Architecture Diagram"'
     );
   });
 

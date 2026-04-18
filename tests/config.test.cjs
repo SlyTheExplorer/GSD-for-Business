@@ -2,7 +2,7 @@
  * GSD Tools Tests - config.cjs
  *
  * CLI integration tests for config-ensure-section, config-set, and config-get
- * commands exercised through gsd-tools.cjs via execSync.
+ * commands exercised through brief-tools.cjs via execSync.
  *
  * Requirements: TEST-13
  */
@@ -929,7 +929,7 @@ describe('config-set/config-get context', () => {
   });
 
   test('all three context profile files exist', () => {
-    const contextsDir = path.join(__dirname, '..', 'get-shit-done', 'contexts');
+    const contextsDir = path.join(__dirname, '..', 'brief', 'contexts');
     assert.ok(fs.existsSync(path.join(contextsDir, 'dev.md')), 'dev.md should exist');
     assert.ok(fs.existsSync(path.join(contextsDir, 'research.md')), 'research.md should exist');
     assert.ok(fs.existsSync(path.join(contextsDir, 'review.md')), 'review.md should exist');

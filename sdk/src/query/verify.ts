@@ -1,7 +1,7 @@
 /**
  * Verification query handlers — plan structure, phase completeness, artifact checks.
  *
- * Ported from get-shit-done/bin/lib/verify.cjs.
+ * Ported from brief/bin/lib/verify.cjs.
  * Provides plan validation, phase completeness checking, and artifact verification
  * as native TypeScript query handlers registered in the SDK query registry.
  *
@@ -310,7 +310,7 @@ export const verifyArtifacts: QueryHandler = async (args, projectDir) => {
  * Verify that commit hashes referenced in SUMMARY.md files actually exist.
  *
  * Port of `cmdVerifyCommits` from `verify.cjs` lines 262-282.
- * Used by gsd-verifier agent to confirm commits mentioned in summaries
+ * Used by brief-verifier agent to confirm commits mentioned in summaries
  * are real commits in the git history.
  *
  * @param args - One or more commit hashes

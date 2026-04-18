@@ -26,8 +26,8 @@ const AUTONOMOUS_SIZE_LIMIT = 38 * 1024;
 
 // ─── File paths ──────────────────────────────────────────────────────────────
 
-const AUTONOMOUS_PATH = path.join(PROJECT_ROOT, 'get-shit-done', 'workflows', 'autonomous.md');
-const SMART_DISCUSS_REF = path.join(PROJECT_ROOT, 'get-shit-done', 'references', 'autonomous-smart-discuss.md');
+const AUTONOMOUS_PATH = path.join(PROJECT_ROOT, 'brief', 'workflows', 'autonomous.md');
+const SMART_DISCUSS_REF = path.join(PROJECT_ROOT, 'brief', 'references', 'autonomous-smart-discuss.md');
 
 // ─── autonomous.md size ──────────────────────────────────────────────────────
 

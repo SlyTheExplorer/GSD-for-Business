@@ -4,7 +4,7 @@
  *
  * Patterns removed:
  * - @file:... references (file injection directives)
- * - /gsd-... skill commands
+ * - /brief-... skill commands
  * - AskUserQuestion(...) calls
  * - STOP directives in interactive contexts
  * - SlashCommand() calls
@@ -22,7 +22,7 @@ const LINE_PATTERNS: RegExp[] = [
   // @file:path/to/something references — entire line
   /^.*@file:\S+.*$/gm,
 
-  // /gsd-command references — entire line containing a skill command
+  // /brief-command references — entire line containing a skill command
   /^.*\/gsd[:-]\S+.*$/gm,
 
   // AskUserQuestion(...) calls — entire line

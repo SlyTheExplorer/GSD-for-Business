@@ -45,14 +45,14 @@ description: Plan a phase
 
 Next:
 /gsd:execute-phase 17
-/gsd-help
+/brief-help
 gsd:progress
 `;
 
     const result = convertClaudeCommandToAugmentSkill(input, 'gsd-plan-phase');
-    // Slash commands: /gsd:execute-phase -> /gsd-execute-phase
-    assert.ok(result.includes('/gsd-execute-phase 17'), 'slash command gsd: -> gsd-');
-    assert.ok(result.includes('/gsd-help'), '/gsd-help preserved');
+    // Slash commands: /gsd:execute-phase -> /brief-execute-phase
+    assert.ok(result.includes('/brief-execute-phase 17'), 'slash command gsd: -> gsd-');
+    assert.ok(result.includes('/brief-help'), '/brief-help preserved');
     assert.ok(result.includes('gsd-progress'), 'bare gsd: -> gsd-');
   });
 
@@ -166,6 +166,6 @@ describe('convertClaudeToAugmentMarkdown', () => {
   test('normalizes gsd: to gsd-', () => {
     const input = 'Run /gsd:new-project for new projects.';
     const result = convertClaudeToAugmentMarkdown(input);
-    assert.strictEqual(result, 'Run /gsd-new-project for new projects.');
+    assert.strictEqual(result, 'Run /brief-new-project for new projects.');
   });
 });

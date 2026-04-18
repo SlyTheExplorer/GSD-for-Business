@@ -88,7 +88,7 @@ if (configDir) {
 
 let latest = null;
 try {
-  latest = execFileSync('npm', ['view', 'get-shit-done-cc', 'version'], {
+  latest = execFileSync('npm', ['view', 'brief-cc', 'version'], {
     encoding: 'utf8',
     timeout: 10000,
     windowsHide: true,

@@ -110,8 +110,8 @@ function cmdInitExecutePhase(cwd, phase, raw, options = {}) {
 
   const result = {
     // Models
-    executor_model: resolveModelInternal(cwd, 'gsd-executor'),
-    verifier_model: resolveModelInternal(cwd, 'gsd-verifier'),
+    executor_model: resolveModelInternal(cwd, 'brief-executor'),
+    verifier_model: resolveModelInternal(cwd, 'brief-verifier'),
 
     // Config flags
     tdd_mode: options.tdd || config.tdd_mode || false,
@@ -243,9 +243,9 @@ function cmdInitPlanPhase(cwd, phase, raw, options = {}) {
 
   const result = {
     // Models
-    researcher_model: resolveModelInternal(cwd, 'gsd-phase-researcher'),
-    planner_model: resolveModelInternal(cwd, 'gsd-planner'),
-    checker_model: resolveModelInternal(cwd, 'gsd-plan-checker'),
+    researcher_model: resolveModelInternal(cwd, 'brief-phase-researcher'),
+    planner_model: resolveModelInternal(cwd, 'brief-planner'),
+    checker_model: resolveModelInternal(cwd, 'brief-plan-checker'),
 
     // Workflow flags
     tdd_mode: options.tdd || config.tdd_mode || false,
@@ -416,9 +416,9 @@ function cmdInitNewProject(cwd, raw) {
 
   const result = {
     // Models
-    researcher_model: resolveModelInternal(cwd, 'gsd-project-researcher'),
-    synthesizer_model: resolveModelInternal(cwd, 'gsd-research-synthesizer'),
-    roadmapper_model: resolveModelInternal(cwd, 'gsd-roadmapper'),
+    researcher_model: resolveModelInternal(cwd, 'brief-project-researcher'),
+    synthesizer_model: resolveModelInternal(cwd, 'brief-research-synthesizer'),
+    roadmapper_model: resolveModelInternal(cwd, 'brief-roadmapper'),
 
     // Config
     commit_docs: config.commit_docs,
@@ -466,9 +466,9 @@ function cmdInitNewMilestone(cwd, raw) {
 
   const result = {
     // Models
-    researcher_model: resolveModelInternal(cwd, 'gsd-project-researcher'),
-    synthesizer_model: resolveModelInternal(cwd, 'gsd-research-synthesizer'),
-    roadmapper_model: resolveModelInternal(cwd, 'gsd-roadmapper'),
+    researcher_model: resolveModelInternal(cwd, 'brief-project-researcher'),
+    synthesizer_model: resolveModelInternal(cwd, 'brief-research-synthesizer'),
+    roadmapper_model: resolveModelInternal(cwd, 'brief-roadmapper'),
 
     // Config
     commit_docs: config.commit_docs,
@@ -523,10 +523,10 @@ function cmdInitQuick(cwd, description, raw) {
 
   const result = {
     // Models
-    planner_model: resolveModelInternal(cwd, 'gsd-planner'),
-    executor_model: resolveModelInternal(cwd, 'gsd-executor'),
-    checker_model: resolveModelInternal(cwd, 'gsd-plan-checker'),
-    verifier_model: resolveModelInternal(cwd, 'gsd-verifier'),
+    planner_model: resolveModelInternal(cwd, 'brief-planner'),
+    executor_model: resolveModelInternal(cwd, 'brief-executor'),
+    checker_model: resolveModelInternal(cwd, 'brief-plan-checker'),
+    verifier_model: resolveModelInternal(cwd, 'brief-verifier'),
 
     // Config
     commit_docs: config.commit_docs,
@@ -627,8 +627,8 @@ function cmdInitVerifyWork(cwd, phase, raw) {
 
   const result = {
     // Models
-    planner_model: resolveModelInternal(cwd, 'gsd-planner'),
-    checker_model: resolveModelInternal(cwd, 'gsd-plan-checker'),
+    planner_model: resolveModelInternal(cwd, 'brief-planner'),
+    checker_model: resolveModelInternal(cwd, 'brief-plan-checker'),
 
     // Config
     commit_docs: config.commit_docs,
@@ -890,7 +890,7 @@ function cmdInitMapCodebase(cwd, raw) {
 
   const result = {
     // Models
-    mapper_model: resolveModelInternal(cwd, 'gsd-codebase-mapper'),
+    mapper_model: resolveModelInternal(cwd, 'brief-codebase-mapper'),
 
     // Config
     commit_docs: config.commit_docs,
@@ -926,10 +926,10 @@ function cmdInitManager(cwd, raw) {
 
   // Validate prerequisites
   if (!fs.existsSync(paths.roadmap)) {
-    error('No ROADMAP.md found. Run /gsd-new-milestone first.');
+    error('No ROADMAP.md found. Run /brief-new-milestone first.');
   }
   if (!fs.existsSync(paths.state)) {
-    error('No STATE.md found. Run /gsd-new-milestone first.');
+    error('No STATE.md found. Run /brief-new-milestone first.');
   }
   const rawContent = fs.readFileSync(paths.roadmap, 'utf-8');
   const content = extractCurrentMilestone(rawContent, cwd);
@@ -1108,7 +1108,7 @@ function cmdInitManager(cwd, raw) {
         phase_name: phase.name,
         action: 'execute',
         reason: `${phase.plan_count} plans ready, dependencies met`,
-        command: `/gsd-execute-phase ${phase.number}`,
+        command: `/brief-execute-phase ${phase.number}`,
       });
     } else if (phase.disk_status === 'discussed' || phase.disk_status === 'researched') {
       recommendedActions.push({
@@ -1116,7 +1116,7 @@ function cmdInitManager(cwd, raw) {
         phase_name: phase.name,
         action: 'plan',
         reason: 'Context gathered, ready for planning',
-        command: `/gsd-plan-phase ${phase.number}`,
+        command: `/brief-plan-phase ${phase.number}`,
       });
     } else if ((phase.disk_status === 'empty' || phase.disk_status === 'no_directory') && phase.is_next_to_discuss) {
       recommendedActions.push({
@@ -1124,7 +1124,7 @@ function cmdInitManager(cwd, raw) {
         phase_name: phase.name,
         action: 'discuss',
         reason: 'Unblocked, ready to gather context',
-        command: `/gsd-discuss-phase ${phase.number}`,
+        command: `/brief-discuss-phase ${phase.number}`,
       });
     }
   }
@@ -1180,7 +1180,7 @@ function cmdInitManager(cwd, raw) {
     const tokens = val.split(/\s+/).filter(Boolean);
     const safe = tokens.every(t => /^--[a-zA-Z0-9][-a-zA-Z0-9]*$/.test(t) || /^[a-zA-Z0-9][-a-zA-Z0-9_.]*$/.test(t));
     if (!safe) {
-      process.stderr.write(`gsd-tools: warning: manager.flags contains invalid tokens, ignoring: ${val}\n`);
+      process.stderr.write(`brief-tools: warning: manager.flags contains invalid tokens, ignoring: ${val}\n`);
       return '';
     }
     return val;
@@ -1321,8 +1321,8 @@ function cmdInitProgress(cwd, raw) {
 
   const result = {
     // Models
-    executor_model: resolveModelInternal(cwd, 'gsd-executor'),
-    planner_model: resolveModelInternal(cwd, 'gsd-planner'),
+    executor_model: resolveModelInternal(cwd, 'brief-executor'),
+    planner_model: resolveModelInternal(cwd, 'brief-planner'),
 
     // Config
     commit_docs: config.commit_docs,
@@ -1524,7 +1524,7 @@ function cmdInitRemoveWorkspace(cwd, name, raw) {
  * string if no skills are configured.
  *
  * @param {object} config - Loaded project config
- * @param {string} agentType - The agent type (e.g., 'gsd-executor', 'gsd-planner')
+ * @param {string} agentType - The agent type (e.g., 'brief-executor', 'brief-planner')
  * @param {string} projectRoot - Absolute path to project root (for path validation)
  * @returns {string} Formatted skills block or empty string
  */
@@ -1602,7 +1602,7 @@ function buildAgentSkillsBlock(config, agentType, projectRoot) {
 
 /**
  * Command: output the agent skills block for a given agent type.
- * Used by workflows: SKILLS=$(node "$TOOLS" agent-skills gsd-executor 2>/dev/null)
+ * Used by workflows: SKILLS=$(node "$TOOLS" agent-skills brief-executor 2>/dev/null)
  */
 function cmdAgentSkills(cwd, agentType, raw) {
   if (!agentType) {
@@ -1691,8 +1691,8 @@ function buildSkillManifest(cwd, skillsDir = null) {
       kind: 'skills',
     },
     {
-      root: '.claude/get-shit-done/skills',
-      path: path.join(os.homedir(), '.claude', 'get-shit-done', 'skills'),
+      root: '.claude/brief/skills',
+      path: path.join(os.homedir(), '.claude', 'brief', 'skills'),
       scope: 'import-only',
       kind: 'skills',
       deprecated: true,

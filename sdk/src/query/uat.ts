@@ -1,7 +1,7 @@
 /**
  * UAT query handlers — checkpoint rendering and audit scanning.
  *
- * Ported from get-shit-done/bin/lib/uat.cjs.
+ * Ported from brief/bin/lib/uat.cjs.
  * Provides UAT checkpoint rendering for verify-work workflows and
  * audit scanning for UAT/VERIFICATION files across phases.
  *

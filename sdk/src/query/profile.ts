@@ -2,7 +2,7 @@
  * Profile and learnings query handlers — session scanning, questionnaire,
  * profile generation, and knowledge store management.
  *
- * Ported from get-shit-done/bin/lib/profile-pipeline.cjs, profile-output.cjs,
+ * Ported from brief/bin/lib/profile-pipeline.cjs, profile-output.cjs,
  * and learnings.cjs.
  *
  * @example
@@ -66,7 +66,7 @@ function learningsList(): Array<Record<string, unknown>> {
  * Query learnings from the global knowledge store, optionally filtered by tag.
  *
  * Port of `cmdLearningsQuery` from learnings.cjs lines 316-323.
- * Called by gsd-planner agent to inject prior learnings into plan generation.
+ * Called by brief-planner agent to inject prior learnings into plan generation.
  *
  * Args: --tag <tag> [--limit N]
  */
@@ -310,7 +310,7 @@ export const writeProfile: QueryHandler = async (args, projectDir) => {
 export const generateClaudeProfile: QueryHandler = async (args, _projectDir) => {
   const analysisFlag = args.indexOf('--analysis');
   const analysisPath = analysisFlag >= 0 ? args[analysisFlag + 1] : null;
-  let profile = '> Profile not yet configured. Run `/gsd-profile-user` to generate your developer profile.\n> This section is managed by `generate-claude-profile` -- do not edit manually.';
+  let profile = '> Profile not yet configured. Run `/brief-profile-user` to generate your developer profile.\n> This section is managed by `generate-claude-profile` -- do not edit manually.';
 
   if (analysisPath && existsSync(resolve(analysisPath))) {
     try {

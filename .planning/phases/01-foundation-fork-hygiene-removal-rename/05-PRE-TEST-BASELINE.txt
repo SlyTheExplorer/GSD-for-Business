@@ -1,0 +1,123 @@
+      at node:internal/test_runner/test:1531:71
+      at node:internal/per_context/primordials:466:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:435:3)
+      at node:internal/per_context/primordials:466:9 {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/get-shit-done/workflows/execute-plan.md'
+  }
+
+test at tests/worktree-safety.test.cjs:60:3
+✖ gsd-executor.md task_commit_protocol includes post-commit deletion verification (0.216543ms)
+  Error: ENOENT: no such file or directory, open '/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/agents/gsd-executor.md'
+      at Object.readFileSync (node:fs:440:20)
+      at TestContext.<anonymous> (/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/tests/worktree-safety.test.cjs:61:24)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Promise.all (index 0)
+      at async Suite.run (node:internal/test_runner/test:1533:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/agents/gsd-executor.md'
+  }
+
+test at tests/worktree-safety.test.cjs:76:3
+✖ execute-phase.md worktree merge section includes pre-merge deletion check (0.209876ms)
+  Error: ENOENT: no such file or directory, open '/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/get-shit-done/workflows/execute-phase.md'
+      at Object.readFileSync (node:fs:440:20)
+      at TestContext.<anonymous> (/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/tests/worktree-safety.test.cjs:77:24)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/get-shit-done/workflows/execute-phase.md'
+  }
+
+test at tests/worktree-stagger.test.cjs:22:3
+✖ execute-phase.md exists (1.907378ms)
+  AssertionError [ERR_ASSERTION]: execute-phase.md should exist
+      at TestContext.<anonymous> (/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/tests/worktree-stagger.test.cjs:23:12)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at node:internal/test_runner/test:1531:71
+      at node:internal/per_context/primordials:466:82
+      at new Promise (<anonymous>)
+      at new SafePromise (node:internal/per_context/primordials:435:3)
+      at node:internal/per_context/primordials:466:9
+      at Array.map (<anonymous>) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/worktree-stagger.test.cjs:26:3
+✖ execute-phase explains git config.lock contention (0.243009ms)
+  Error: ENOENT: no such file or directory, open '/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/get-shit-done/workflows/execute-phase.md'
+      at Object.readFileSync (node:fs:440:20)
+      at TestContext.<anonymous> (/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/tests/worktree-stagger.test.cjs:27:18)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Promise.all (index 0)
+      at async Suite.run (node:internal/test_runner/test:1533:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/get-shit-done/workflows/execute-phase.md'
+  }
+
+test at tests/worktree-stagger.test.cjs:34:3
+✖ execute-phase requires sequential dispatch with run_in_background (0.220789ms)
+  Error: ENOENT: no such file or directory, open '/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/get-shit-done/workflows/execute-phase.md'
+      at Object.readFileSync (node:fs:440:20)
+      at TestContext.<anonymous> (/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/tests/worktree-stagger.test.cjs:35:29)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/get-shit-done/workflows/execute-phase.md'
+  }
+
+test at tests/worktree-stagger.test.cjs:42:3
+✖ execute-phase warns against multiple Task calls in single message (0.194981ms)
+  Error: ENOENT: no such file or directory, open '/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/get-shit-done/workflows/execute-phase.md'
+      at Object.readFileSync (node:fs:440:20)
+      at TestContext.<anonymous> (/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/tests/worktree-stagger.test.cjs:43:29)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Suite.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Suite.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/Users/agent/GSD-for-Business/.claude/worktrees/agent-af21ca25/get-shit-done/workflows/execute-phase.md'
+  }
+BASELINE_FAIL_COUNT=2
+DELTA=3
+POST_FAIL_COUNT=5

@@ -15,7 +15,7 @@
 const { describe, test } = require('node:test');
 const assert = require('node:assert/strict');
 
-// Mirror of isNewer() from hooks/gsd-check-update.js (inside spawn template)
+// Mirror of isNewer() from hooks/brief-check-update.js (inside spawn template)
 function isNewer(a, b) {
   const pa = (a || '').split('.').map(s => Number(s.replace(/-.*/, '')) || 0);
   const pb = (b || '').split('.').map(s => Number(s.replace(/-.*/, '')) || 0);

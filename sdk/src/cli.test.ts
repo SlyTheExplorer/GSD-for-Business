@@ -108,7 +108,7 @@ describe('parseCliArgs', () => {
     expect(() => parseCliArgs(['run', 'hello', '--not-a-real-option'])).toThrow();
   });
 
-  it('parses query permissively (keeps gsd-tools flags like --pick, --json)', () => {
+  it('parses query permissively (keeps brief-tools flags like --pick, --json)', () => {
     const result = parseCliArgs([
       'query', 'state.load', '--pick', 'data', '--project-dir', 'C:\\tmp\\proj',
     ]);

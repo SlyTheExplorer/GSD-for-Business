@@ -1,7 +1,7 @@
 /**
  * Regression tests for bug #1891
  *
- * gsd-tools.cjs must transparently resolve @file: references in stdout
+ * brief-tools.cjs must transparently resolve @file: references in stdout
  * so that workflows never see the @file: prefix. This eliminates the
  * bash-specific `if [[ "$INIT" == @file:* ]]` check that breaks on
  * PowerShell and other non-bash shells.
@@ -14,9 +14,9 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-const GSD_TOOLS_SRC = path.join(__dirname, '..', 'get-shit-done', 'bin', 'gsd-tools.cjs');
+const GSD_TOOLS_SRC = path.join(__dirname, '..', 'brief', 'bin', 'brief-tools.cjs');
 
-describe('bug #1891: @file: resolution in gsd-tools.cjs', () => {
+describe('bug #1891: @file: resolution in brief-tools.cjs', () => {
   let src;
 
   before(() => {

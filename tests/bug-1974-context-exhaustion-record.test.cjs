@@ -92,7 +92,7 @@ describe('#1974 context exhaustion auto-record', () => {
       '',
     ].join('\n'));
 
-    // Minimal config.json required by gsd-tools
+    // Minimal config.json required by brief-tools
     fs.writeFileSync(path.join(planningDir, 'config.json'), JSON.stringify({ project_code: 'TEST' }));
 
     sessionId = `test-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -167,12 +167,12 @@ describe('#1974 context exhaustion auto-record', () => {
     const hookSource = fs.readFileSync(HOOK_PATH, 'utf-8');
     assert.match(
       hookSource,
-      /path\.join\(__dirname,\s*'\.\.',\s*'get-shit-done'/,
-      'hook must use __dirname-based path resolution for gsd-tools.cjs'
+      /path\.join\(__dirname,\s*'\.\.',\s*'brief'/,
+      'hook must use __dirname-based path resolution for brief-tools.cjs'
     );
     assert.doesNotMatch(
       hookSource,
-      /process\.env\.HOME.*\.claude.*get-shit-done.*gsd-tools\.cjs/,
+      /process\.env\.HOME.*\.claude.*brief.*brief-tools\.cjs/,
       'hook must not hardcode ~/.claude/ path'
     );
   });

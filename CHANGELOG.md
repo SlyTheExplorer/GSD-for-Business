@@ -1,3 +1,11 @@
+<!-- PRE-FORK NOTICE (Phase 1, BRIEF iteration 2 — 2026-04-18)
+Historical entries below describe changes to GSD (Get Shit Done) before the BRIEF fork.
+Agent names, command names, and paths in these entries reflect the GSD-era vocabulary
+and are preserved intentionally as audit history. They are NOT active in BRIEF post-Phase-1.
+
+For the post-fork BRIEF-era changelog, see entries from 2026-04 onward.
+-->
+
 # Changelog
 
 All notable changes to GSD will be documented in this file.

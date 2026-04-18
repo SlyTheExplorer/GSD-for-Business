@@ -90,7 +90,7 @@ describe('Trae markdown conversion', () => {
     const result = convertClaudeToTraeMarkdown(input);
 
     assert.ok(result.includes('Trae reads .trae/rules/ before using .trae/skills/.'), result);
-    assert.ok(result.includes('/gsd-plan-phase'), result);
+    assert.ok(result.includes('/brief-plan-phase'), result);
     assert.ok(result.includes('{{GSD_ARGS}}'), result);
     assert.ok(result.includes('Shell('), result);
     assert.ok(result.includes('StrReplace('), result);
@@ -105,7 +105,7 @@ description: Initialize a project
 Use .claude/skills/ and /gsd:help.
 `;
     const agent = `---
-name: gsd-planner
+name: brief-planner
 description: Planner agent
 tools: Read, Write
 color: blue
@@ -120,9 +120,9 @@ Read CLAUDE.md before acting.
     assert.ok(convertedCommand.includes('name: gsd-new-project'), convertedCommand);
     assert.ok(!convertedCommand.includes('<trae_skill_adapter>'), convertedCommand);
     assert.ok(convertedCommand.includes('.trae/skills/'), convertedCommand);
-    assert.ok(convertedCommand.includes('/gsd-help'), convertedCommand);
+    assert.ok(convertedCommand.includes('/brief-help'), convertedCommand);
 
-    assert.ok(convertedAgent.includes('name: gsd-planner'), convertedAgent);
+    assert.ok(convertedAgent.includes('name: brief-planner'), convertedAgent);
     assert.ok(!convertedAgent.includes('color:'), convertedAgent);
     assert.ok(convertedAgent.includes('.trae/rules/'), convertedAgent);
   });
@@ -182,16 +182,16 @@ describe('Trae local install/uninstall', () => {
     });
 
     assert.ok(fs.existsSync(path.join(targetDir, 'skills', 'gsd-help', 'SKILL.md')));
-    assert.ok(fs.existsSync(path.join(targetDir, 'get-shit-done', 'VERSION')));
+    assert.ok(fs.existsSync(path.join(targetDir, 'brief', 'VERSION')));
     assert.ok(fs.existsSync(path.join(targetDir, 'agents')));
 
     const manifest = writeManifest(targetDir, 'trae');
-    assert.ok(Object.keys(manifest.files).some(file => file.startsWith('skills/gsd-help/')), manifest);
+    assert.ok(Object.keys(manifest.files).some(file => file.startsWith('skills/brief-help/')), manifest);
 
     uninstall(false, 'trae');
 
     assert.ok(!fs.existsSync(path.join(targetDir, 'skills', 'gsd-help')), 'Trae skill directory removed');
-    assert.ok(!fs.existsSync(path.join(targetDir, 'get-shit-done')), 'get-shit-done removed');
+    assert.ok(!fs.existsSync(path.join(targetDir, 'brief')), 'brief removed');
   });
 });
 
@@ -251,12 +251,12 @@ describe('E2E: Trae uninstall skills cleanup', () => {
     const targetDir = path.join(tmpDir, '.trae');
     install(false, 'trae');
 
-    assert.ok(fs.existsSync(path.join(targetDir, 'get-shit-done', 'VERSION')),
+    assert.ok(fs.existsSync(path.join(targetDir, 'brief', 'VERSION')),
       'engine exists before uninstall');
 
     uninstall(false, 'trae');
 
-    assert.ok(!fs.existsSync(path.join(targetDir, 'get-shit-done')),
-      'get-shit-done engine should be removed after Trae uninstall');
+    assert.ok(!fs.existsSync(path.join(targetDir, 'brief')),
+      'brief engine should be removed after Trae uninstall');
   });
 });

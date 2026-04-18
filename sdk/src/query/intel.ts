@@ -1,7 +1,7 @@
 /**
  * Intel query handlers — .planning/intel/ file management.
  *
- * Ported from get-shit-done/bin/lib/intel.cjs.
+ * Ported from brief/bin/lib/intel.cjs.
  * Provides intel status, diff, snapshot, validate, query, extract-exports,
  * and patch-meta operations for the project intelligence system.
  *

@@ -6,7 +6,7 @@
  * that CJS init.cjs produces for the new-project, progress, and manager
  * workflows.
  *
- * Port of get-shit-done/bin/lib/init.cjs cmdInitNewProject (lines 296-399),
+ * Port of brief/bin/lib/init.cjs cmdInitNewProject (lines 296-399),
  * cmdInitProgress (lines 1139-1284), cmdInitManager (lines 854-1137).
  *
  * @example
@@ -131,9 +131,9 @@ export const initNewProject: QueryHandler = async (_args, projectDir) => {
     pathExists(projectDir, 'project.clj');
 
   const [researcherModel, synthesizerModel, roadmapperModel] = await Promise.all([
-    getModelAlias('gsd-project-researcher', projectDir),
-    getModelAlias('gsd-research-synthesizer', projectDir),
-    getModelAlias('gsd-roadmapper', projectDir),
+    getModelAlias('brief-project-researcher', projectDir),
+    getModelAlias('brief-research-synthesizer', projectDir),
+    getModelAlias('brief-roadmapper', projectDir),
   ]);
 
   const result: Record<string, unknown> = {
@@ -282,8 +282,8 @@ export const initProgress: QueryHandler = async (_args, projectDir) => {
   } catch { /* intentionally empty */ }
 
   const result: Record<string, unknown> = {
-    executor_model: await getModelAlias('gsd-executor', projectDir),
-    planner_model: await getModelAlias('gsd-planner', projectDir),
+    executor_model: await getModelAlias('brief-executor', projectDir),
+    planner_model: await getModelAlias('brief-planner', projectDir),
 
     commit_docs: config.commit_docs,
 
@@ -331,7 +331,7 @@ export const initManager: QueryHandler = async (_args, projectDir) => {
   try {
     rawContent = await readFile(paths.roadmap, 'utf-8');
   } catch {
-    return { data: { error: 'No ROADMAP.md found. Run /gsd-new-milestone first.' } };
+    return { data: { error: 'No ROADMAP.md found. Run /brief-new-milestone first.' } };
   }
 
   const content = await extractCurrentMilestone(rawContent, projectDir);
@@ -514,7 +514,7 @@ export const initManager: QueryHandler = async (_args, projectDir) => {
         phase_name: phase.name,
         action: 'execute',
         reason: `${phase.plan_count} plans ready, dependencies met`,
-        command: `/gsd-execute-phase ${phase.number}`,
+        command: `/brief-execute-phase ${phase.number}`,
       };
       const isAllowed = activeExecuting.length === 0 ||
         activeExecuting.every(a => !reaches(phase.number as string, a.number as string) && !reaches(a.number as string, phase.number as string));
@@ -525,7 +525,7 @@ export const initManager: QueryHandler = async (_args, projectDir) => {
         phase_name: phase.name,
         action: 'plan',
         reason: 'Context gathered, ready for planning',
-        command: `/gsd-plan-phase ${phase.number}`,
+        command: `/brief-plan-phase ${phase.number}`,
       };
       const isAllowed = activePlanning.length === 0 ||
         activePlanning.every(a => !reaches(phase.number as string, a.number as string) && !reaches(a.number as string, phase.number as string));
@@ -536,7 +536,7 @@ export const initManager: QueryHandler = async (_args, projectDir) => {
         phase_name: phase.name,
         action: 'discuss',
         reason: 'Unblocked, ready to gather context',
-        command: `/gsd-discuss-phase ${phase.number}`,
+        command: `/brief-discuss-phase ${phase.number}`,
       });
     }
   }

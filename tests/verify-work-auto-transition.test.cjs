@@ -12,7 +12,7 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-const VERIFY_WORK = path.join(__dirname, '..', 'get-shit-done', 'workflows', 'verify-work.md');
+const VERIFY_WORK = path.join(__dirname, '..', 'brief', 'workflows', 'verify-work.md');
 
 describe('verify-work.md — auto-transition after UAT passes with 0 issues', () => {
   test('workflow reads transition.md when issues == 0 and security gate cleared', () => {
@@ -74,10 +74,10 @@ describe('verify-work.md — auto-transition after UAT passes with 0 issues', ()
 
   test('transition is NOT suggested when security enforcement is enabled and no SECURITY.md exists', () => {
     const content = fs.readFileSync(VERIFY_WORK, 'utf-8');
-    // The workflow should suggest /gsd-secure-phase when security is enabled but no file exists
+    // The workflow should suggest /brief-secure-phase when security is enabled but no file exists
     assert.ok(
       content.includes('gsd-secure-phase'),
-      'verify-work.md must suggest /gsd-secure-phase when security gate blocks transition'
+      'verify-work.md must suggest /brief-secure-phase when security gate blocks transition'
     );
   });
 });

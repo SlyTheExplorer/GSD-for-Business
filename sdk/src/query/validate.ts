@@ -1,7 +1,7 @@
 /**
  * Validation query handlers — key-link verification and consistency checking.
  *
- * Ported from get-shit-done/bin/lib/verify.cjs.
+ * Ported from brief/bin/lib/verify.cjs.
  * Provides key-link integration point verification and cross-file consistency
  * detection as native TypeScript query handlers registered in the SDK query registry.
  *
@@ -382,7 +382,7 @@ export const validateHealth: QueryHandler = async (args, projectDir) => {
 
   // ─── Check 1: .planning/ exists ───────────────────────────────────────────
   if (!existsSync(planBase)) {
-    addIssue('error', 'E001', '.planning/ directory not found', 'Run /gsd-new-project to initialize');
+    addIssue('error', 'E001', '.planning/ directory not found', 'Run /brief-new-project to initialize');
     return {
       data: {
         status: 'broken',
@@ -396,7 +396,7 @@ export const validateHealth: QueryHandler = async (args, projectDir) => {
 
   // ─── Check 2: PROJECT.md exists and has required sections ─────────────────
   if (!existsSync(projectPath)) {
-    addIssue('error', 'E002', 'PROJECT.md not found', 'Run /gsd-new-project to create');
+    addIssue('error', 'E002', 'PROJECT.md not found', 'Run /brief-new-project to create');
   } else {
     try {
       const content = await readFile(projectPath, 'utf-8');
@@ -411,12 +411,12 @@ export const validateHealth: QueryHandler = async (args, projectDir) => {
 
   // ─── Check 3: ROADMAP.md exists ───────────────────────────────────────────
   if (!existsSync(roadmapPath)) {
-    addIssue('error', 'E003', 'ROADMAP.md not found', 'Run /gsd-new-milestone to create roadmap');
+    addIssue('error', 'E003', 'ROADMAP.md not found', 'Run /brief-new-milestone to create roadmap');
   }
 
   // ─── Check 4: STATE.md exists and references valid phases ─────────────────
   if (!existsSync(statePath)) {
-    addIssue('error', 'E004', 'STATE.md not found', 'Run /gsd-health --repair to regenerate', true);
+    addIssue('error', 'E004', 'STATE.md not found', 'Run /brief-health --repair to regenerate', true);
     repairs.push('regenerateState');
   } else {
     try {
@@ -448,7 +448,7 @@ export const validateHealth: QueryHandler = async (args, projectDir) => {
 
   // ─── Check 5: config.json valid JSON + valid schema ───────────────────────
   if (!existsSync(configPath)) {
-    addIssue('warning', 'W003', 'config.json not found', 'Run /gsd-health --repair to create with defaults', true);
+    addIssue('warning', 'W003', 'config.json not found', 'Run /brief-health --repair to create with defaults', true);
     repairs.push('createConfig');
   } else {
     try {
@@ -460,7 +460,7 @@ export const validateHealth: QueryHandler = async (args, projectDir) => {
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      addIssue('error', 'E005', `config.json: JSON parse error - ${msg}`, 'Run /gsd-health --repair to reset to defaults', true);
+      addIssue('error', 'E005', `config.json: JSON parse error - ${msg}`, 'Run /brief-health --repair to reset to defaults', true);
       repairs.push('resetConfig');
     }
   }
@@ -472,7 +472,7 @@ export const validateHealth: QueryHandler = async (args, projectDir) => {
       const configParsed = JSON.parse(configRaw) as Record<string, unknown>;
       const workflow = configParsed.workflow as Record<string, unknown> | undefined;
       if (workflow && workflow.nyquist_validation === undefined) {
-        addIssue('warning', 'W008', 'config.json: workflow.nyquist_validation absent (defaults to enabled but agents may skip)', 'Run /gsd-health --repair to add key', true);
+        addIssue('warning', 'W008', 'config.json: workflow.nyquist_validation absent (defaults to enabled but agents may skip)', 'Run /brief-health --repair to add key', true);
         if (!repairs.includes('addNyquistKey')) repairs.push('addNyquistKey');
       }
     } catch { /* intentionally empty */ }
@@ -521,7 +521,7 @@ export const validateHealth: QueryHandler = async (args, projectDir) => {
           try {
             const researchContent = await readFile(join(phasesDir, e.name, researchFile), 'utf-8');
             if (researchContent.includes('## Validation Architecture')) {
-              addIssue('warning', 'W009', `Phase ${e.name}: has Validation Architecture in RESEARCH.md but no VALIDATION.md`, 'Re-run /gsd-plan-phase with --research to regenerate');
+              addIssue('warning', 'W009', `Phase ${e.name}: has Validation Architecture in RESEARCH.md but no VALIDATION.md`, 'Re-run /brief-plan-phase with --research to regenerate');
             }
           } catch { /* intentionally empty */ }
         }
@@ -584,7 +584,7 @@ export const validateHealth: QueryHandler = async (args, projectDir) => {
           if (statusVal !== 'complete' && statusVal !== 'done') {
             addIssue('warning', 'W011',
               `STATE.md says current phase is ${statePhase} (status: ${statusVal || 'unknown'}) but ROADMAP.md shows it as [x] complete — state files may be out of sync`,
-              'Run /gsd-progress to re-derive current position, or manually update STATE.md');
+              'Run /brief-progress to re-derive current position, or manually update STATE.md');
           }
         }
       }
@@ -680,7 +680,7 @@ export const validateHealth: QueryHandler = async (args, projectDir) => {
             stateContent += `**Current phase:** (determining...)\n`;
             stateContent += `**Status:** Resuming\n\n`;
             stateContent += `## Session Log\n\n`;
-            stateContent += `- ${new Date().toISOString().split('T')[0]}: STATE.md regenerated by /gsd-health --repair\n`;
+            stateContent += `- ${new Date().toISOString().split('T')[0]}: STATE.md regenerated by /brief-health --repair\n`;
             await writeFile(statePath, stateContent, 'utf-8');
             repairActions.push({ action: repair, success: true, path: 'STATE.md' });
             break;

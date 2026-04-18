@@ -1,6 +1,6 @@
-# Arquitetura do GSD
+# Arquitetura do BRIEF
 
-Visão arquitetural do Get Shit Done (GSD) em Português.  
+Visão arquitetural do BRIEF (BRIEF) em Português.  
 Para detalhes de implementação linha a linha, consulte [ARCHITECTURE.md em inglês](../ARCHITECTURE.md).
 
 ---
@@ -16,7 +16,7 @@ Para detalhes de implementação linha a linha, consulte [ARCHITECTURE.md em ing
 ## Componentes centrais
 
 1. **Camada de comando**  
-   Recebe entrada do usuário (`/gsd-*`) e roteia fluxo.
+   Recebe entrada do usuário (`/brief-*`) e roteia fluxo.
 
 2. **Camada de orquestração**  
    Coordena pesquisadores, planejadores, executores e verificadores.
@@ -33,7 +33,7 @@ Para detalhes de implementação linha a linha, consulte [ARCHITECTURE.md em ing
 ## Fluxo arquitetural (alto nível)
 
 ```text
-Entrada (/gsd-comando)
+Entrada (/brief-comando)
   -> Orquestrador
   -> Subagentes especializados
   -> Artefatos em .planning/
@@ -68,7 +68,7 @@ Claude Code, Gemini CLI, OpenCode, Kilo, Codex, Copilot, Antigravity, Trae, Clin
 
 ## Extensibilidade
 
-GSD suporta evolução por:
+BRIEF suporta evolução por:
 
 - novos comandos
 - novos tipos de agente

@@ -110,7 +110,7 @@ describe('No stale /gsd: colon references (#1748)', () => {
 
     if (staleRefs.length > 0) {
       assert.fail(
-        `Found ${staleRefs.length} stale /gsd: colon reference(s) that should use /gsd- hyphen format:\n${staleRefs.join('\n')}`
+        `Found ${staleRefs.length} stale /gsd: colon reference(s) that should use /brief- hyphen format:\n${staleRefs.join('\n')}`
       );
     }
   });

@@ -6,7 +6,7 @@
  * stale-hook detector in gsd-check-update.js only matched JavaScript comment
  * syntax (//) — not bash comment syntax (#).
  *
- * Result: every session showed "⚠ stale hooks — run /gsd-update" immediately
+ * Result: every session showed "⚠ stale hooks — run /brief-update" immediately
  * after a fresh install, because the detector saw hookVersion: 'unknown' for
  * all three bash hooks.
  *

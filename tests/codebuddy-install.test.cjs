@@ -90,7 +90,7 @@ describe('CodeBuddy markdown conversion', () => {
     const result = convertClaudeToCodebuddyMarkdown(input);
 
     assert.ok(result.includes('CodeBuddy reads CODEBUDDY.md before using .codebuddy/skills/.'), result);
-    assert.ok(result.includes('/gsd-plan-phase'), result);
+    assert.ok(result.includes('/brief-plan-phase'), result);
     assert.ok(result.includes('{{GSD_ARGS}}'), result);
     // CodeBuddy uses the same tool names as Claude Code — no conversion needed
     assert.ok(result.includes('Bash('), result);
@@ -106,7 +106,7 @@ description: Initialize a project
 Use .claude/skills/ and /gsd:help.
 `;
     const agent = `---
-name: gsd-planner
+name: brief-planner
 description: Planner agent
 tools: Read, Write
 color: blue
@@ -120,9 +120,9 @@ Read CLAUDE.md before acting.
 
     assert.ok(convertedCommand.includes('name: gsd-new-project'), convertedCommand);
     assert.ok(convertedCommand.includes('.codebuddy/skills/'), convertedCommand);
-    assert.ok(convertedCommand.includes('/gsd-help'), convertedCommand);
+    assert.ok(convertedCommand.includes('/brief-help'), convertedCommand);
 
-    assert.ok(convertedAgent.includes('name: gsd-planner'), convertedAgent);
+    assert.ok(convertedAgent.includes('name: brief-planner'), convertedAgent);
     assert.ok(!convertedAgent.includes('color:'), convertedAgent);
     assert.ok(convertedAgent.includes('CODEBUDDY.md'), convertedAgent);
   });
@@ -177,16 +177,16 @@ describe('CodeBuddy local install/uninstall', () => {
     assert.ok(result.settingsPath, 'should have settingsPath (CodeBuddy supports hooks)');
 
     assert.ok(fs.existsSync(path.join(targetDir, 'skills', 'gsd-help', 'SKILL.md')));
-    assert.ok(fs.existsSync(path.join(targetDir, 'get-shit-done', 'VERSION')));
+    assert.ok(fs.existsSync(path.join(targetDir, 'brief', 'VERSION')));
     assert.ok(fs.existsSync(path.join(targetDir, 'agents')));
 
     const manifest = writeManifest(targetDir, 'codebuddy');
-    assert.ok(Object.keys(manifest.files).some(file => file.startsWith('skills/gsd-help/')), JSON.stringify(manifest));
+    assert.ok(Object.keys(manifest.files).some(file => file.startsWith('skills/brief-help/')), JSON.stringify(manifest));
 
     uninstall(false, 'codebuddy');
 
     assert.ok(!fs.existsSync(path.join(targetDir, 'skills', 'gsd-help')), 'CodeBuddy skill directory removed');
-    assert.ok(!fs.existsSync(path.join(targetDir, 'get-shit-done')), 'get-shit-done removed');
+    assert.ok(!fs.existsSync(path.join(targetDir, 'brief')), 'brief removed');
   });
 });
 
@@ -246,12 +246,12 @@ describe('E2E: CodeBuddy uninstall skills cleanup', () => {
     const targetDir = path.join(tmpDir, '.codebuddy');
     install(false, 'codebuddy');
 
-    assert.ok(fs.existsSync(path.join(targetDir, 'get-shit-done', 'VERSION')),
+    assert.ok(fs.existsSync(path.join(targetDir, 'brief', 'VERSION')),
       'engine exists before uninstall');
 
     uninstall(false, 'codebuddy');
 
-    assert.ok(!fs.existsSync(path.join(targetDir, 'get-shit-done')),
-      'get-shit-done engine should be removed after CodeBuddy uninstall');
+    assert.ok(!fs.existsSync(path.join(targetDir, 'brief')),
+      'brief engine should be removed after CodeBuddy uninstall');
   });
 });

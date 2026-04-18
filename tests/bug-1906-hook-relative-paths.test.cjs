@@ -5,7 +5,7 @@
  * hooks resolve correctly regardless of the shell's current working directory.
  *
  * The original bug: local install hook commands used bare relative paths like
- * `node .claude/hooks/gsd-context-monitor.js`. Claude Code persists the bash
+ * `node .claude/hooks/brief-context-monitor.js`. Claude Code persists the bash
  * tool's cwd between calls, so a single `cd subdir && …` early in a session
  * permanently broke every hook for the rest of that session.
  *

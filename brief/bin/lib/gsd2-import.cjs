@@ -420,7 +420,7 @@ function buildPreview(gsd2Data, artifacts) {
   lines.push('');
   lines.push('Cannot migrate automatically:');
   lines.push('  - GSD-2 cost/token ledger (no v1 equivalent)');
-  lines.push('  - GSD-2 database state (rebuilt from files on first /gsd-health)');
+  lines.push('  - GSD-2 database state (rebuilt from files on first /brief-health)');
   lines.push('  - VS Code extension state');
 
   return lines.join('\n');
@@ -442,7 +442,7 @@ function writePlanningDir(artifacts, planningRoot) {
 // ─── Command Handler ──────────────────────────────────────────────────────────
 
 /**
- * Entry point called from gsd-tools.cjs.
+ * Entry point called from brief-tools.cjs.
  * Supports: --force, --dry-run, --path <dir>
  */
 function cmdFromGsd2(args, cwd, raw) {

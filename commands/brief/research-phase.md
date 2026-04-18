@@ -1,6 +1,6 @@
 ---
 name: gsd:research-phase
-description: Research how to implement a phase (standalone - usually use /gsd-plan-phase instead)
+description: Research how to implement a phase (standalone - usually use /brief-plan-phase instead)
 argument-hint: "[phase]"
 allowed-tools:
   - Read
@@ -9,9 +9,9 @@ allowed-tools:
 ---
 
 <objective>
-Research how to implement a phase. Spawns gsd-phase-researcher agent with phase context.
+Research how to implement a phase. Spawns brief-phase-researcher agent with phase context.
 
-**Note:** This is a standalone research command. For most workflows, use `/gsd-plan-phase` which integrates research automatically.
+**Note:** This is a standalone research command. For most workflows, use `/brief-plan-phase` which integrates research automatically.
 
 **Use this command when:**
 - You want to research without planning yet
@@ -24,8 +24,8 @@ Research how to implement a phase. Spawns gsd-phase-researcher agent with phase 
 </objective>
 
 <available_agent_types>
-Valid GSD subagent types (use exact names — do not fall back to 'general-purpose'):
-- gsd-phase-researcher — Researches technical approaches for a phase
+Valid BRIEF subagent types (use exact names — do not fall back to 'general-purpose'):
+- brief-phase-researcher — Researches technical approaches for a phase
 </available_agent_types>
 
 <context>
@@ -47,7 +47,7 @@ Extract from init JSON: `phase_dir`, `phase_number`, `phase_name`, `phase_found`
 
 Resolve researcher model:
 ```bash
-RESEARCHER_MODEL=$(gsd-sdk query resolve-model gsd-phase-researcher --raw)
+RESEARCHER_MODEL=$(gsd-sdk query resolve-model brief-phase-researcher --raw)
 ```
 
 ## 1. Validate Phase
@@ -77,7 +77,7 @@ Use paths from INIT (do not inline file contents in orchestrator context):
 
 Present summary with phase description and what files the researcher will load.
 
-## 4. Spawn gsd-phase-researcher Agent
+## 4. Spawn brief-phase-researcher Agent
 
 Research modes: ecosystem (default), feasibility, implementation, comparison.
 
@@ -115,7 +115,7 @@ Mode: ecosystem
 </additional_context>
 
 <downstream_consumer>
-Your RESEARCH.md will be loaded by `/gsd-plan-phase` which uses specific sections:
+Your RESEARCH.md will be loaded by `/brief-plan-phase` which uses specific sections:
 - `## Standard Stack` → Plans use these libraries
 - `## Architecture Patterns` → Task structure follows these
 - `## Don't Hand-Roll` → Tasks NEVER build custom solutions for listed problems
@@ -142,7 +142,7 @@ Write to: .planning/phases/${PHASE}-{slug}/${PHASE}-RESEARCH.md
 ```
 Task(
   prompt=filled_prompt,
-  subagent_type="gsd-phase-researcher",
+  subagent_type="brief-phase-researcher",
   model="{researcher_model}",
   description="Research Phase {phase}"
 )
@@ -178,7 +178,7 @@ Continue research for Phase {phase_number}: {phase_name}
 ```
 Task(
   prompt=continuation_prompt,
-  subagent_type="gsd-phase-researcher",
+  subagent_type="brief-phase-researcher",
   model="{researcher_model}",
   description="Continue research Phase {phase}"
 )
@@ -189,7 +189,7 @@ Task(
 <success_criteria>
 - [ ] Phase validated against roadmap
 - [ ] Existing research checked
-- [ ] gsd-phase-researcher spawned with context
+- [ ] brief-phase-researcher spawned with context
 - [ ] Checkpoints handled correctly
 - [ ] User knows next steps
 </success_criteria>

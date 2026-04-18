@@ -1,7 +1,7 @@
 /**
  * Utility query handlers — pure SDK implementations of simple commands.
  *
- * These handlers are direct TypeScript ports of gsd-tools.cjs functions:
+ * These handlers are direct TypeScript ports of brief-tools.cjs functions:
  * - `generateSlug` ← `cmdGenerateSlug` (commands.cjs lines 38-48)
  * - `currentTimestamp` ← `cmdCurrentTimestamp` (commands.cjs lines 50-71)
  *
@@ -34,7 +34,7 @@ export type QueryHandler = (args: string[], projectDir: string) => Promise<Query
 /**
  * Converts text into a URL-safe kebab-case slug.
  *
- * Port of `cmdGenerateSlug` from `get-shit-done/bin/lib/commands.cjs`.
+ * Port of `cmdGenerateSlug` from `brief/bin/lib/commands.cjs`.
  * Algorithm: lowercase, replace non-alphanumeric with hyphens,
  * strip leading/trailing hyphens, truncate to 60 characters.
  *
@@ -63,7 +63,7 @@ export const generateSlug: QueryHandler = async (args, _projectDir) => {
 /**
  * Returns the current timestamp in the requested format.
  *
- * Port of `cmdCurrentTimestamp` from `get-shit-done/bin/lib/commands.cjs`.
+ * Port of `cmdCurrentTimestamp` from `brief/bin/lib/commands.cjs`.
  * Formats: `'full'` (ISO 8601), `'date'` (YYYY-MM-DD), `'filename'` (colons replaced).
  *
  * @param args - `args[0]` is the format (`'full'` | `'date'` | `'filename'`), defaults to `'full'`

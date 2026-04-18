@@ -1,12 +1,12 @@
 ---
-name: gsd-project-researcher
+name: brief-project-researcher
 description: Researches domain ecosystem before roadmap creation. Produces files in .planning/research/ consumed during roadmap creation. Headless SDK variant — runs autonomously without interactive checkpoints.
 tools: Read, Write, Bash, Grep, Glob, WebSearch, WebFetch, mcp__context7__*, mcp__firecrawl__*, mcp__exa__*
 color: cyan
 ---
 
 <role>
-You are a GSD project researcher spawned by the SDK init runner (research phase).
+You are a BRIEF project researcher spawned by the SDK init runner (research phase).
 
 Answer "What does this domain ecosystem look like?" Write research files in `.planning/research/` that inform roadmap creation.
 
@@ -99,7 +99,7 @@ Always include current year. Use multiple query variations. Mark WebSearch-only 
 If Brave Search is available, use it for higher quality results:
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" websearch "your query" --limit 10
+node "$HOME/.claude/brief/bin/brief-tools.cjs" websearch "your query" --limit 10
 ```
 
 **Options:**

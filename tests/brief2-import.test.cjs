@@ -19,7 +19,7 @@ const {
   buildStateMd,
   slugify,
   zeroPad,
-} = require('../get-shit-done/bin/lib/gsd2-import.cjs');
+} = require('../brief/bin/lib/gsd2-import.cjs');
 
 // ─── Fixture Builders ──────────────────────────────────────────────────────
 
@@ -464,7 +464,7 @@ describe('buildStateMd', () => {
 
 // ─── CLI Integration Tests ──────────────────────────────────────────────────
 
-describe('gsd-tools from-gsd2 CLI', () => {
+describe('brief-tools from-gsd2 CLI', () => {
   let tmpDir;
   beforeEach(() => { tmpDir = createTempDir('gsd2-cli-'); });
   afterEach(() => { cleanup(tmpDir); });

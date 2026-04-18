@@ -7,15 +7,15 @@ believe based on evidence, and ask the user only to correct what's wrong.
 </purpose>
 
 <available_agent_types>
-Valid GSD subagent types (use exact names — do not fall back to 'general-purpose'):
-- gsd-assumptions-analyzer — Analyzes codebase to surface implementation assumptions
+Valid BRIEF subagent types (use exact names — do not fall back to 'general-purpose'):
+- brief-assumptions-analyzer — Analyzes codebase to surface implementation assumptions
 </available_agent_types>
 
 <downstream_awareness>
 **CONTEXT.md feeds into:**
 
-1. **gsd-phase-researcher** — Reads CONTEXT.md to know WHAT to research
-2. **gsd-planner** — Reads CONTEXT.md to know WHAT decisions are locked
+1. **brief-phase-researcher** — Reads CONTEXT.md to know WHAT to research
+2. **brief-planner** — Reads CONTEXT.md to know WHAT decisions are locked
 
 **Your job:** Capture decisions clearly enough that downstream agents can act on them
 without asking the user again. Output is identical to discuss mode — same CONTEXT.md format.
@@ -66,7 +66,7 @@ Phase number from argument (required).
 ```bash
 INIT=$(gsd-sdk query init.phase-op "${PHASE}")
 if [[ "$INIT" == @file:* ]]; then INIT=$(cat "${INIT#@file:}"); fi
-AGENT_SKILLS_ANALYZER=$(gsd-sdk query agent-skills gsd-assumptions-analyzer 2>/dev/null)
+AGENT_SKILLS_ANALYZER=$(gsd-sdk query agent-skills brief-assumptions-analyzer 2>/dev/null)
 ```
 
 Parse JSON for: `commit_docs`, `phase_found`, `phase_dir`, `phase_number`, `phase_name`,
@@ -77,7 +77,7 @@ Parse JSON for: `commit_docs`, `phase_found`, `phase_dir`, `phase_number`, `phas
 ```
 Phase [X] not found in roadmap.
 
-Use /gsd-progress to see available phases.
+Use /brief-progress to see available phases.
 ```
 Exit workflow.
 
@@ -197,7 +197,7 @@ cat .planning/METHODOLOGY.md 2>/dev/null || true
 **If METHODOLOGY.md exists:**
 - Parse each named lens: its diagnoses, recommendations, and triggering conditions
 - Store as internal `<active_lenses>` for use in deep_codebase_analysis and present_assumptions
-- When spawning the gsd-assumptions-analyzer, pass the lens list so it can flag which lenses apply
+- When spawning the brief-assumptions-analyzer, pass the lens list so it can flag which lenses apply
 - When presenting assumptions, append a "Methodology" section showing which lenses were applied
   and what they flagged (if anything)
 
@@ -230,13 +230,13 @@ Identify reusable assets, established patterns, integration points, and creative
 </step>
 
 <step name="deep_codebase_analysis">
-Spawn a `gsd-assumptions-analyzer` agent to deeply analyze the codebase for this phase. This
+Spawn a `brief-assumptions-analyzer` agent to deeply analyze the codebase for this phase. This
 keeps raw file contents out of the main context window, protecting token budget.
 
 **Resolve calibration tier (if USER-PROFILE.md exists):**
 
 ```bash
-PROFILE_PATH="$HOME/.claude/get-shit-done/USER-PROFILE.md"
+PROFILE_PATH="$HOME/.claude/brief/USER-PROFILE.md"
 ```
 
 If file exists at PROFILE_PATH:
@@ -254,7 +254,7 @@ If no USER-PROFILE.md: calibration_tier = "standard"
 **Spawn Explore subagent:**
 
 ```
-Task(subagent_type="gsd-assumptions-analyzer", prompt="""
+Task(subagent_type="brief-assumptions-analyzer", prompt="""
 Analyze the codebase for Phase {PHASE}: {phase_name}.
 
 Phase goal: {roadmap_description}
@@ -599,13 +599,13 @@ Created: .planning/phases/${PADDED_PHASE}-${SLUG}/${PADDED_PHASE}-CONTEXT.md
 
 `/clear` then:
 
-`/gsd-plan-phase ${PHASE}`
+`/brief-plan-phase ${PHASE}`
 
 ---
 
 **Also available:**
-- `/gsd-plan-phase ${PHASE} --skip-research` — plan without research
-- `/gsd-ui-phase ${PHASE}` — generate UI design contract (if frontend work)
+- `/brief-plan-phase ${PHASE} --skip-research` — plan without research
+- `/brief-ui-phase ${PHASE}` — generate UI design contract (if frontend work)
 - Review/edit CONTEXT.md before continuing
 
 ---
@@ -638,7 +638,7 @@ gsd-sdk query config-set workflow._auto_chain_active true
 Display banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► AUTO-ADVANCING TO PLAN
+ BRIEF ► AUTO-ADVANCING TO PLAN
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Context captured (assumptions mode). Launching plan-phase...

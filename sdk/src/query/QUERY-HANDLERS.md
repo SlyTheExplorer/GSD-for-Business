@@ -6,7 +6,7 @@ This document records contracts for the typed query layer consumed by `gsd-sdk q
 
 - **Longest-prefix match** on argv (`resolveQueryArgv` in `registry.ts`): tries joined keys `a.b.c` then `a b c` for each prefix length, longest first. Example: `state update status X` → handler `state.update` with args `[status, X]`.
 - **Dotted single token**: one token like `init.new-project` matches the registry; if the first pass finds no handler, a single dotted token is split and matching runs again (same helper as above).
-- **No CJS passthrough**: if nothing matches a registered handler, the CLI exits with an error. Operations not ported to the query registry (e.g. `audit-open`, `graphify`, `from-gsd2`, `state validate`) must use `node …/gsd-tools.cjs` directly — see `docs/CLI-TOOLS.md`.
+- **No CJS passthrough**: if nothing matches a registered handler, the CLI exits with an error. Operations not ported to the query registry (e.g. `audit-open`, `graphify`, `from-gsd2`, `state validate`) must use `node …/brief-tools.cjs` directly — see `docs/CLI-TOOLS.md`.
 - **Output**: JSON written to stdout for successful handler results.
 
 ## Error handling

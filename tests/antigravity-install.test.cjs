@@ -108,14 +108,14 @@ describe('getConfigDirFromHome (Antigravity)', () => {
 describe('convertClaudeToAntigravityContent', () => {
   describe('global install path replacements', () => {
     test('replaces ~/. claude/ with ~/.gemini/antigravity/', () => {
-      const input = 'See ~/.claude/get-shit-done/workflows/';
+      const input = 'See ~/.claude/brief/workflows/';
       const result = convertClaudeToAntigravityContent(input, true);
-      assert.ok(result.includes('~/.gemini/antigravity/get-shit-done/workflows/'), result);
+      assert.ok(result.includes('~/.gemini/antigravity/brief/workflows/'), result);
       assert.ok(!result.includes('~/.claude/'), result);
     });
 
     test('replaces $HOME/.claude/ with $HOME/.gemini/antigravity/', () => {
-      const input = 'path.join($HOME/.claude/get-shit-done)';
+      const input = 'path.join($HOME/.claude/brief)';
       const result = convertClaudeToAntigravityContent(input, true);
       assert.ok(result.includes('$HOME/.gemini/antigravity/'), result);
       assert.ok(!result.includes('$HOME/.claude/'), result);
@@ -124,40 +124,40 @@ describe('convertClaudeToAntigravityContent', () => {
 
   describe('local install path replacements', () => {
     test('replaces ~/.claude/ with .agent/ for local installs', () => {
-      const input = 'See ~/.claude/get-shit-done/';
+      const input = 'See ~/.claude/brief/';
       const result = convertClaudeToAntigravityContent(input, false);
-      assert.ok(result.includes('.agent/get-shit-done/'), result);
+      assert.ok(result.includes('.agent/brief/'), result);
       assert.ok(!result.includes('~/.claude/'), result);
     });
 
     test('replaces ./.claude/ with ./.agent/', () => {
-      const input = 'path ./.claude/hooks/gsd-check-update.js';
+      const input = 'path ./.claude/hooks/brief-check-update.js';
       const result = convertClaudeToAntigravityContent(input, false);
       assert.ok(result.includes('./.agent/hooks/'), result);
       assert.ok(!result.includes('./.claude/'), result);
     });
 
     test('replaces .claude/ with .agent/', () => {
-      const input = 'node .claude/hooks/gsd-statusline.js';
+      const input = 'node .claude/hooks/brief-statusline.js';
       const result = convertClaudeToAntigravityContent(input, false);
-      assert.ok(result.includes('.agent/hooks/gsd-statusline.js'), result);
+      assert.ok(result.includes('.agent/hooks/brief-statusline.js'), result);
       assert.ok(!result.includes('.claude/'), result);
     });
   });
 
   describe('command name conversion', () => {
-    test('converts /gsd:command to /gsd-command', () => {
+    test('converts /gsd:command to /brief-command', () => {
       const input = 'Run /gsd:new-project to start';
       const result = convertClaudeToAntigravityContent(input, true);
-      assert.ok(result.includes('/gsd-new-project'), result);
+      assert.ok(result.includes('/brief-new-project'), result);
       assert.ok(!result.includes('gsd:'), result);
     });
 
     test('converts all gsd: references', () => {
       const input = '/gsd:plan-phase and /gsd:execute-phase';
       const result = convertClaudeToAntigravityContent(input, false);
-      assert.ok(result.includes('/gsd-plan-phase'), result);
-      assert.ok(result.includes('/gsd-execute-phase'), result);
+      assert.ok(result.includes('/brief-plan-phase'), result);
+      assert.ok(result.includes('/brief-execute-phase'), result);
     });
   });
 
@@ -182,7 +182,7 @@ allowed-tools:
   - Agent
 ---
 
-Initialize new project at ~/.claude/get-shit-done/workflows/new-project.md
+Initialize new project at ~/.claude/brief/workflows/new-project.md
 `;
 
   test('produces name and description only in frontmatter', () => {
@@ -198,7 +198,7 @@ Initialize new project at ~/.claude/get-shit-done/workflows/new-project.md
 
   test('applies path replacement in body', () => {
     const result = convertClaudeCommandToAntigravitySkill(claudeCommand, 'gsd-new-project', false);
-    assert.ok(result.includes('.agent/get-shit-done/'), result);
+    assert.ok(result.includes('.agent/brief/'), result);
     assert.ok(!result.includes('~/.claude/'), result);
   });
 
@@ -215,7 +215,7 @@ description: test skill
 Run /gsd:new-project to get started.
 `;
     const result = convertClaudeCommandToAntigravitySkill(content, 'gsd-test', false);
-    assert.ok(result.includes('/gsd-new-project'), result);
+    assert.ok(result.includes('/brief-new-project'), result);
     assert.ok(!result.includes('gsd:'), result);
   });
 
@@ -231,18 +231,18 @@ Run /gsd:new-project to get started.
 
 describe('convertClaudeAgentToAntigravityAgent', () => {
   const claudeAgent = `---
-name: gsd-executor
+name: brief-executor
 description: Executes GSD plans with atomic commits
 tools: Read, Write, Edit, Bash, Glob, Grep, Task
 color: blue
 ---
 
-Execute plans from ~/.claude/get-shit-done/workflows/execute-phase.md
+Execute plans from ~/.claude/brief/workflows/execute-phase.md
 `;
 
   test('preserves name and description', () => {
     const result = convertClaudeAgentToAntigravityAgent(claudeAgent, false);
-    assert.ok(result.includes('name: gsd-executor'), result);
+    assert.ok(result.includes('name: brief-executor'), result);
     assert.ok(result.includes('description: Executes GSD plans'), result);
   });
 
@@ -264,13 +264,13 @@ Execute plans from ~/.claude/get-shit-done/workflows/execute-phase.md
 
   test('applies path replacement in body', () => {
     const result = convertClaudeAgentToAntigravityAgent(claudeAgent, false);
-    assert.ok(result.includes('.agent/get-shit-done/'), result);
+    assert.ok(result.includes('.agent/brief/'), result);
     assert.ok(!result.includes('~/.claude/'), result);
   });
 
   test('uses global path for global installs', () => {
     const result = convertClaudeAgentToAntigravityAgent(claudeAgent, true);
-    assert.ok(result.includes('~/.gemini/antigravity/get-shit-done/'), result);
+    assert.ok(result.includes('~/.gemini/antigravity/brief/'), result);
   });
 
   test('excludes Task tool (filtered by convertGeminiToolName)', () => {
@@ -389,12 +389,12 @@ describe('writeManifest (Antigravity)', () => {
     const skillsDir = path.join(tmpDir, 'skills', 'gsd-help');
     fs.mkdirSync(skillsDir, { recursive: true });
     fs.writeFileSync(path.join(skillsDir, 'SKILL.md'), '---\nname: gsd-help\ndescription: Help\n---\n');
-    const gsdDir = path.join(tmpDir, 'get-shit-done');
+    const gsdDir = path.join(tmpDir, 'brief');
     fs.mkdirSync(gsdDir, { recursive: true });
     fs.writeFileSync(path.join(gsdDir, 'VERSION'), '1.0.0');
     const agentsDir = path.join(tmpDir, 'agents');
     fs.mkdirSync(agentsDir, { recursive: true });
-    fs.writeFileSync(path.join(agentsDir, 'gsd-executor.md'), '---\nname: gsd-executor\n---\n');
+    fs.writeFileSync(path.join(agentsDir, 'brief-executor.md'), '---\nname: brief-executor\n---\n');
   });
 
   afterEach(() => {

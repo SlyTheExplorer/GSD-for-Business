@@ -1,7 +1,7 @@
 /**
  * Roadmap query handlers — ROADMAP.md analysis and phase lookup.
  *
- * Ported from get-shit-done/bin/lib/roadmap.cjs and core.cjs.
+ * Ported from brief/bin/lib/roadmap.cjs and core.cjs.
  * Provides roadmap.analyze (multi-pass parsing with disk correlation)
  * and roadmap.get-phase (single phase section extraction).
  *

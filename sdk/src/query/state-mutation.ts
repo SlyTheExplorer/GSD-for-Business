@@ -1,7 +1,7 @@
 /**
  * STATE.md mutation handlers — write operations with lockfile atomicity.
  *
- * Ported from get-shit-done/bin/lib/state.cjs.
+ * Ported from brief/bin/lib/state.cjs.
  * Provides all STATE.md mutation commands: update, patch, begin-phase,
  * advance-plan, record-metric, update-progress, add-decision, add-blocker,
  * resolve-blocker, record-session.

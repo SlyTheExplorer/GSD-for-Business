@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Tests for get-shit-done/bin/lib/graphify.cjs
+ * Tests for brief/bin/lib/graphify.cjs
  *
  * Covers: config gate on/off (TEST-03), graceful degradation (TEST-04),
  * subprocess helper (FOUND-04), presence detection (FOUND-02),
@@ -32,7 +32,7 @@ const {
   // Build (Phase 3)
   graphifyBuild,
   writeSnapshot,
-} = require('../get-shit-done/bin/lib/graphify.cjs');
+} = require('../brief/bin/lib/graphify.cjs');
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -144,7 +144,7 @@ describe('disabledResponse', () => {
   test('returns disabled:true with enable instructions', () => {
     const result = disabledResponse();
     assert.strictEqual(result.disabled, true);
-    assert.ok(result.message.includes('gsd-tools config-set graphify.enabled true'));
+    assert.ok(result.message.includes('brief-tools config-set graphify.enabled true'));
   });
 });
 

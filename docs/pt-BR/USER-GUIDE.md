@@ -1,4 +1,4 @@
-# Guia do Usuário do GSD
+# Guia do Usuário do BRIEF
 
 Referência detalhada de workflows, troubleshooting e configuração. Para setup rápido, veja o [README](../../README.pt-BR.md).
 
@@ -23,28 +23,28 @@ Referência detalhada de workflows, troubleshooting e configuração. Para setup
 
 Fluxo recomendado por fase:
 
-1. `/gsd-discuss-phase [N]` — trava preferências de implementação
-2. `/gsd-ui-phase [N]` — contrato visual para fases frontend
-3. `/gsd-plan-phase [N]` — pesquisa + plano + validação
-4. `/gsd-execute-phase [N]` — execução em ondas paralelas
-5. `/gsd-verify-work [N]` — UAT manual com diagnóstico
-6. `/gsd-ship [N]` — cria PR (opcional)
+1. `/brief-discuss-phase [N]` — trava preferências de implementação
+2. `/brief-ui-phase [N]` — contrato visual para fases frontend
+3. `/brief-plan-phase [N]` — pesquisa + plano + validação
+4. `/brief-execute-phase [N]` — execução em ondas paralelas
+5. `/brief-verify-work [N]` — UAT manual com diagnóstico
+6. `/brief-ship [N]` — cria PR (opcional)
 
 Para iniciar projeto novo:
 
 ```bash
-/gsd-new-project
+/brief-new-project
 ```
 
 Para seguir automaticamente o próximo passo:
 
 ```bash
-/gsd-next
+/brief-next
 ```
 
 ### Nyquist Validation
 
-Durante `plan-phase`, o GSD pode mapear requisitos para comandos de teste automáticos antes da implementação. Isso gera `{phase}-VALIDATION.md` e aumenta a confiabilidade de verificação pós-execução.
+Durante `plan-phase`, o BRIEF pode mapear requisitos para comandos de teste automáticos antes da implementação. Isso gera `{phase}-VALIDATION.md` e aumenta a confiabilidade de verificação pós-execução.
 
 Desativar:
 
@@ -58,7 +58,7 @@ Desativar:
 
 ### Modo de discussão por suposições
 
-Com `workflow.discuss_mode: "assumptions"`, o GSD analisa o código antes de perguntar, apresenta suposições estruturadas e pede apenas correções.
+Com `workflow.discuss_mode: "assumptions"`, o BRIEF analisa o código antes de perguntar, apresenta suposições estruturadas e pede apenas correções.
 
 ---
 
@@ -68,13 +68,13 @@ Com `workflow.discuss_mode: "assumptions"`, o GSD analisa o código antes de per
 
 | Comando | Descrição |
 |---------|-----------|
-| `/gsd-ui-phase [N]` | Gera contrato de design `UI-SPEC.md` para a fase |
-| `/gsd-ui-review [N]` | Auditoria visual retroativa em 6 pilares |
+| `/brief-ui-phase [N]` | Gera contrato de design `UI-SPEC.md` para a fase |
+| `/brief-ui-review [N]` | Auditoria visual retroativa em 6 pilares |
 
 ### Quando usar
 
-- Rode `/gsd-ui-phase` depois de `/gsd-discuss-phase` e antes de `/gsd-plan-phase`.
-- Rode `/gsd-ui-review` após execução/validação para avaliar qualidade visual e consistência.
+- Rode `/brief-ui-phase` depois de `/brief-discuss-phase` e antes de `/brief-plan-phase`.
+- Rode `/brief-ui-review` após execução/validação para avaliar qualidade visual e consistência.
 
 ### Configurações relacionadas
 
@@ -92,14 +92,14 @@ Com `workflow.discuss_mode: "assumptions"`, o GSD analisa o código antes de per
 Ideias fora da sequência ativa vão para backlog:
 
 ```bash
-/gsd-add-backlog "Camada GraphQL"
-/gsd-add-backlog "Responsividade mobile"
+/brief-add-backlog "Camada GraphQL"
+/brief-add-backlog "Responsividade mobile"
 ```
 
 Promover/revisar:
 
 ```bash
-/gsd-review-backlog
+/brief-review-backlog
 ```
 
 ### Seeds
@@ -107,7 +107,7 @@ Promover/revisar:
 Seeds guardam ideias futuras com condição de gatilho:
 
 ```bash
-/gsd-plant-seed "Adicionar colaboração real-time quando infra de WebSocket estiver pronta"
+/brief-plant-seed "Adicionar colaboração real-time quando infra de WebSocket estiver pronta"
 ```
 
 ### Threads persistentes
@@ -115,9 +115,9 @@ Seeds guardam ideias futuras com condição de gatilho:
 Threads são contexto leve entre sessões:
 
 ```bash
-/gsd-thread
-/gsd-thread fix-deploy-key-auth
-/gsd-thread "Investigar timeout TCP"
+/brief-thread
+/brief-thread fix-deploy-key-auth
+/brief-thread "Investigar timeout TCP"
 ```
 
 ---
@@ -128,10 +128,10 @@ Workstreams permitem trabalho paralelo sem colisão de estado de planejamento.
 
 | Comando | Função |
 |---------|--------|
-| `/gsd-workstreams create <name>` | Cria workstream isolado |
-| `/gsd-workstreams switch <name>` | Troca workstream ativo |
-| `/gsd-workstreams list` | Lista workstreams |
-| `/gsd-workstreams complete <name>` | Finaliza e arquiva workstream |
+| `/brief-workstreams create <name>` | Cria workstream isolado |
+| `/brief-workstreams switch <name>` | Troca workstream ativo |
+| `/brief-workstreams list` | Lista workstreams |
+| `/brief-workstreams complete <name>` | Finaliza e arquiva workstream |
 
 `workstreams` compartilham o mesmo código/git, mas isolam artefatos de `.planning/`.
 
@@ -139,7 +139,7 @@ Workstreams permitem trabalho paralelo sem colisão de estado de planejamento.
 
 ## Segurança
 
-O GSD aplica defesa em profundidade:
+O BRIEF aplica defesa em profundidade:
 
 - prevenção de path traversal em entradas de arquivo
 - detecção de prompt injection em texto do usuário
@@ -156,27 +156,27 @@ Para arquivos sensíveis, use deny list no Claude Code.
 
 | Comando | Quando usar |
 |---------|-------------|
-| `/gsd-new-project` | Início de projeto |
-| `/gsd-discuss-phase [N]` | Definir preferências antes do plano |
-| `/gsd-plan-phase [N]` | Criar e validar planos |
-| `/gsd-execute-phase [N]` | Executar planos em ondas |
-| `/gsd-verify-work [N]` | UAT manual |
-| `/gsd-ship [N]` | Gerar PR da fase |
-| `/gsd-next` | Próximo passo automático |
+| `/brief-new-project` | Início de projeto |
+| `/brief-discuss-phase [N]` | Definir preferências antes do plano |
+| `/brief-plan-phase [N]` | Criar e validar planos |
+| `/brief-execute-phase [N]` | Executar planos em ondas |
+| `/brief-verify-work [N]` | UAT manual |
+| `/brief-ship [N]` | Gerar PR da fase |
+| `/brief-next` | Próximo passo automático |
 
 ### Gestão e utilidades
 
 | Comando | Quando usar |
 |---------|-------------|
-| `/gsd-progress` | Ver status atual |
-| `/gsd-resume-work` | Retomar sessão |
-| `/gsd-pause-work` | Pausar com handoff |
-| `/gsd-session-report` | Resumo da sessão |
-| `/gsd-quick` | Tarefa ad-hoc com garantias GSD |
-| `/gsd-debug [desc]` | Debug sistemático |
-| `/gsd-forensics` | Diagnóstico de workflow quebrado |
-| `/gsd-settings` | Ajustar workflow/modelos |
-| `/gsd-set-profile <profile>` | Troca rápida de perfil |
+| `/brief-progress` | Ver status atual |
+| `/brief-resume-work` | Retomar sessão |
+| `/brief-pause-work` | Pausar com handoff |
+| `/brief-session-report` | Resumo da sessão |
+| `/brief-quick` | Tarefa ad-hoc com garantias BRIEF |
+| `/brief-debug [desc]` | Debug sistemático |
+| `/brief-forensics` | Diagnóstico de workflow quebrado |
+| `/brief-settings` | Ajustar workflow/modelos |
+| `/brief-set-profile <profile>` | Troca rápida de perfil |
 
 Para lista completa e flags avançadas, consulte [Command Reference](../COMMANDS.md).
 
@@ -224,35 +224,35 @@ Detalhes completos: [Configuration Reference](../CONFIGURATION.md).
 
 ```bash
 claude --dangerously-skip-permissions
-/gsd-new-project
-/gsd-discuss-phase 1
-/gsd-ui-phase 1
-/gsd-plan-phase 1
-/gsd-execute-phase 1
-/gsd-verify-work 1
-/gsd-ship 1
+/brief-new-project
+/brief-discuss-phase 1
+/brief-ui-phase 1
+/brief-plan-phase 1
+/brief-execute-phase 1
+/brief-verify-work 1
+/brief-ship 1
 ```
 
 ### Código já existente
 
 ```bash
-/gsd-map-codebase
-/gsd-new-project
+/brief-map-codebase
+/brief-new-project
 ```
 
 ### Correção rápida
 
 ```bash
-/gsd-quick
+/brief-quick
 > "Corrigir botão de login no mobile Safari"
 ```
 
 ### Preparação para release
 
 ```bash
-/gsd-audit-milestone
-/gsd-plan-milestone-gaps
-/gsd-complete-milestone
+/brief-audit-milestone
+/brief-plan-milestone-gaps
+/brief-complete-milestone
 ```
 
 ---
@@ -265,11 +265,11 @@ claude --dangerously-skip-permissions
 
 ### Sessão longa degradando contexto
 
-Use `/clear` entre etapas grandes e retome com `/gsd-resume-work` ou `/gsd-progress`.
+Use `/clear` entre etapas grandes e retome com `/brief-resume-work` ou `/brief-progress`.
 
 ### Plano desalinhado
 
-Rode `/gsd-discuss-phase [N]` antes do plano e valide suposições com `/gsd-list-phase-assumptions [N]`.
+Rode `/brief-discuss-phase [N]` antes do plano e valide suposições com `/brief-list-phase-assumptions [N]`.
 
 ### Execução falhou ou saiu com stubs
 
@@ -280,7 +280,7 @@ Replaneje com escopo menor (tarefas menores por plano).
 Use perfil budget:
 
 ```bash
-/gsd-set-profile budget
+/brief-set-profile budget
 ```
 
 ### Runtime não-Claude (Codex/OpenCode/Gemini/Kilo)
@@ -293,13 +293,13 @@ Use `resolve_model_ids: "omit"` para deixar o runtime resolver modelos padrão.
 
 | Problema | Solução |
 |---------|---------|
-| Perdeu contexto | `/gsd-resume-work` ou `/gsd-progress` |
+| Perdeu contexto | `/brief-resume-work` ou `/brief-progress` |
 | Fase deu errado | `git revert` + replanejar |
-| Precisa alterar escopo | `/gsd-add-phase`, `/gsd-insert-phase`, `/gsd-remove-phase` |
-| Bug em workflow | `/gsd-forensics` |
-| Correção pontual | `/gsd-quick` |
-| Custo alto | `/gsd-set-profile budget` |
-| Não sabe próximo passo | `/gsd-next` |
+| Precisa alterar escopo | `/brief-add-phase`, `/brief-insert-phase`, `/brief-remove-phase` |
+| Bug em workflow | `/brief-forensics` |
+| Correção pontual | `/brief-quick` |
+| Custo alto | `/brief-set-profile budget` |
+| Não sabe próximo passo | `/brief-next` |
 
 ---
 

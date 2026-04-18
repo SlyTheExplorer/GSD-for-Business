@@ -1,8 +1,8 @@
 /**
  * GSD Workspace Tests
  *
- * Tests for /gsd-new-workspace, /gsd-list-workspaces, /gsd-remove-workspace
- * init functions and integration with gsd-tools routing.
+ * Tests for /brief-new-workspace, /brief-list-workspaces, /brief-remove-workspace
+ * init functions and integration with brief-tools routing.
  */
 
 const { test, describe, beforeEach, afterEach } = require('node:test');
@@ -12,7 +12,7 @@ const path = require('path');
 const os = require('os');
 const { execSync } = require('child_process');
 const { runGsdTools, createTempDir, cleanup } = require('./helpers.cjs');
-const { detectChildRepos } = require('../get-shit-done/bin/lib/init.cjs');
+const { detectChildRepos } = require('../brief/bin/lib/init.cjs');
 
 // ─── detectChildRepos ────────────────────────────────────────────────────────
 
@@ -75,7 +75,7 @@ describe('detectChildRepos', () => {
   });
 });
 
-// ─── cmdInitNewWorkspace via gsd-tools ──────────────────────────────────────
+// ─── cmdInitNewWorkspace via brief-tools ──────────────────────────────────────
 
 describe('init new-workspace', () => {
   let tmpDir;
@@ -119,7 +119,7 @@ describe('init new-workspace', () => {
   });
 });
 
-// ─── cmdInitListWorkspaces via gsd-tools ────────────────────────────────────
+// ─── cmdInitListWorkspaces via brief-tools ────────────────────────────────────
 
 describe('init list-workspaces', () => {
   let tmpDir;
@@ -166,7 +166,7 @@ describe('init list-workspaces', () => {
   });
 });
 
-// ─── cmdInitRemoveWorkspace via gsd-tools ───────────────────────────────────
+// ─── cmdInitRemoveWorkspace via brief-tools ───────────────────────────────────
 
 describe('init remove-workspace', () => {
   let tmpDir;
@@ -337,7 +337,7 @@ describe('workspace command files', () => {
   });
 
   test('new-workspace workflow exists', () => {
-    const content = fs.readFileSync(path.join(baseDir, 'get-shit-done/workflows/new-workspace.md'), 'utf8');
+    const content = fs.readFileSync(path.join(baseDir, 'brief/workflows/new-workspace.md'), 'utf8');
     assert.ok(
       content.includes('init new-workspace') || content.includes('init.new-workspace'),
       'expected init new-workspace (CJS) or gsd-sdk query init.new-workspace'
@@ -348,7 +348,7 @@ describe('workspace command files', () => {
   });
 
   test('list-workspaces workflow exists', () => {
-    const content = fs.readFileSync(path.join(baseDir, 'get-shit-done/workflows/list-workspaces.md'), 'utf8');
+    const content = fs.readFileSync(path.join(baseDir, 'brief/workflows/list-workspaces.md'), 'utf8');
     assert.ok(
       content.includes('init list-workspaces') || content.includes('init.list-workspaces'),
       'expected init list-workspaces or gsd-sdk query init.list-workspaces'
@@ -356,7 +356,7 @@ describe('workspace command files', () => {
   });
 
   test('remove-workspace workflow exists', () => {
-    const content = fs.readFileSync(path.join(baseDir, 'get-shit-done/workflows/remove-workspace.md'), 'utf8');
+    const content = fs.readFileSync(path.join(baseDir, 'brief/workflows/remove-workspace.md'), 'utf8');
     assert.ok(
       content.includes('init remove-workspace') || content.includes('init.remove-workspace'),
       'expected init remove-workspace or gsd-sdk query init.remove-workspace'
@@ -365,12 +365,12 @@ describe('workspace command files', () => {
   });
 });
 
-// ─── Routing in gsd-tools ───────────────────────────────────────────────────
+// ─── Routing in brief-tools ───────────────────────────────────────────────────
 
-describe('workspace routing in gsd-tools', () => {
+describe('workspace routing in brief-tools', () => {
   test('init new-workspace is routed correctly', () => {
     const toolsContent = fs.readFileSync(
-      path.join(__dirname, '..', 'get-shit-done', 'bin', 'gsd-tools.cjs'),
+      path.join(__dirname, '..', 'brief', 'bin', 'brief-tools.cjs'),
       'utf8'
     );
     assert.ok(toolsContent.includes("case 'new-workspace'"));
@@ -379,7 +379,7 @@ describe('workspace routing in gsd-tools', () => {
 
   test('init list-workspaces is routed correctly', () => {
     const toolsContent = fs.readFileSync(
-      path.join(__dirname, '..', 'get-shit-done', 'bin', 'gsd-tools.cjs'),
+      path.join(__dirname, '..', 'brief', 'bin', 'brief-tools.cjs'),
       'utf8'
     );
     assert.ok(toolsContent.includes("case 'list-workspaces'"));
@@ -388,7 +388,7 @@ describe('workspace routing in gsd-tools', () => {
 
   test('init remove-workspace is routed correctly', () => {
     const toolsContent = fs.readFileSync(
-      path.join(__dirname, '..', 'get-shit-done', 'bin', 'gsd-tools.cjs'),
+      path.join(__dirname, '..', 'brief', 'bin', 'brief-tools.cjs'),
       'utf8'
     );
     assert.ok(toolsContent.includes("case 'remove-workspace'"));

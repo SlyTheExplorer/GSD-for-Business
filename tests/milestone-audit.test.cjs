@@ -17,7 +17,7 @@ describe('audit.cjs module (#2158)', () => {
   });
 
   test('auditOpenArtifacts returns structured result with counts', () => {
-    const { auditOpenArtifacts } = require('../get-shit-done/bin/lib/audit.cjs');
+    const { auditOpenArtifacts } = require('../brief/bin/lib/audit.cjs');
     const result = auditOpenArtifacts(tmpDir);
     assert.ok(typeof result === 'object', 'result must be object');
     assert.ok(typeof result.counts === 'object', 'result must have counts');
@@ -26,7 +26,7 @@ describe('audit.cjs module (#2158)', () => {
   });
 
   test('auditOpenArtifacts handles missing planning directories gracefully', () => {
-    const { auditOpenArtifacts } = require('../get-shit-done/bin/lib/audit.cjs');
+    const { auditOpenArtifacts } = require('../brief/bin/lib/audit.cjs');
     // tmpDir has .planning/ but no debug/ or threads/ subdirs
     const result = auditOpenArtifacts(tmpDir);
     assert.strictEqual(result.counts.total, 0, 'empty project should have 0 open items');
@@ -34,7 +34,7 @@ describe('audit.cjs module (#2158)', () => {
   });
 
   test('auditOpenArtifacts detects open debug sessions', () => {
-    const { auditOpenArtifacts } = require('../get-shit-done/bin/lib/audit.cjs');
+    const { auditOpenArtifacts } = require('../brief/bin/lib/audit.cjs');
     // Create a fake debug session
     const debugDir = path.join(tmpDir, '.planning', 'debug');
     fs.mkdirSync(debugDir, { recursive: true });
@@ -53,7 +53,7 @@ describe('audit.cjs module (#2158)', () => {
   });
 
   test('auditOpenArtifacts ignores resolved debug sessions', () => {
-    const { auditOpenArtifacts } = require('../get-shit-done/bin/lib/audit.cjs');
+    const { auditOpenArtifacts } = require('../brief/bin/lib/audit.cjs');
     const resolvedDir = path.join(tmpDir, '.planning', 'debug', 'resolved');
     fs.mkdirSync(resolvedDir, { recursive: true });
     fs.writeFileSync(path.join(resolvedDir, 'old-bug.md'), [
@@ -68,7 +68,7 @@ describe('audit.cjs module (#2158)', () => {
   });
 
   test('formatAuditReport returns string with header', () => {
-    const { auditOpenArtifacts, formatAuditReport } = require('../get-shit-done/bin/lib/audit.cjs');
+    const { auditOpenArtifacts, formatAuditReport } = require('../brief/bin/lib/audit.cjs');
     const result = auditOpenArtifacts(tmpDir);
     const report = formatAuditReport(result);
     assert.ok(typeof report === 'string');
@@ -76,7 +76,7 @@ describe('audit.cjs module (#2158)', () => {
   });
 
   test('formatAuditReport shows all clear when no open items', () => {
-    const { auditOpenArtifacts, formatAuditReport } = require('../get-shit-done/bin/lib/audit.cjs');
+    const { auditOpenArtifacts, formatAuditReport } = require('../brief/bin/lib/audit.cjs');
     const result = auditOpenArtifacts(tmpDir);
     const report = formatAuditReport(result);
     assert.ok(report.includes('clear') || report.includes('0 items') || report.includes('no open'),
@@ -86,7 +86,7 @@ describe('audit.cjs module (#2158)', () => {
 
 describe('complete-milestone workflow has pre-close audit gate (#2158)', () => {
   const completeMilestoneContent = fs.readFileSync(
-    path.join(__dirname, '..', 'get-shit-done', 'workflows', 'complete-milestone.md'),
+    path.join(__dirname, '..', 'brief', 'workflows', 'complete-milestone.md'),
     'utf8'
   );
 
@@ -113,7 +113,7 @@ describe('complete-milestone workflow has pre-close audit gate (#2158)', () => {
 
 describe('verify-work workflow has phase artifact check (#2157)', () => {
   const verifyWorkContent = fs.readFileSync(
-    path.join(__dirname, '..', 'get-shit-done', 'workflows', 'verify-work.md'),
+    path.join(__dirname, '..', 'brief', 'workflows', 'verify-work.md'),
     'utf8'
   );
 
@@ -134,7 +134,7 @@ describe('verify-work workflow has phase artifact check (#2157)', () => {
 
 describe('state.md template has Deferred Items section (#2158)', () => {
   const stateTemplate = fs.readFileSync(
-    path.join(__dirname, '..', 'get-shit-done', 'templates', 'state.md'),
+    path.join(__dirname, '..', 'brief', 'templates', 'state.md'),
     'utf8'
   );
 
@@ -145,7 +145,7 @@ describe('state.md template has Deferred Items section (#2158)', () => {
 });
 
 describe('audit-open CLI command — ReferenceError regression (#2236)', () => {
-  // The audit-open case in gsd-tools.cjs called bare output() instead of
+  // The audit-open case in brief-tools.cjs called bare output() instead of
   // core.output(), crashing with ReferenceError: output is not defined
   // on every invocation. These tests exercise the CLI dispatch directly so
   // a regression at the call site is caught even if the lib tests all pass.

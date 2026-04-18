@@ -12,7 +12,7 @@ const { output, loadConfig, resolveModelInternal, pathExistsInternal, toPosixPat
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const GSD_MARKER = '<!-- generated-by: gsd-doc-writer -->';
+const GSD_MARKER = '<!-- generated-by: brief-doc-writer -->';
 
 const SKIP_DIRS = new Set([
   'node_modules', '.git', '.planning', '.claude', '__pycache__',
@@ -240,7 +240,7 @@ function detectMonorepoWorkspaces(cwd) {
  * resolution. Follows the cmdInitMapCodebase pattern.
  *
  * @example
- * node gsd-tools.cjs docs-init --raw
+ * node brief-tools.cjs docs-init --raw
  *
  * @param {string} cwd - Project root directory
  * @param {boolean} raw - Pass raw JSON flag through to output()
@@ -248,7 +248,7 @@ function detectMonorepoWorkspaces(cwd) {
 function cmdDocsInit(cwd, raw) {
   const config = loadConfig(cwd);
   const result = {
-    doc_writer_model: resolveModelInternal(cwd, 'gsd-doc-writer'),
+    doc_writer_model: resolveModelInternal(cwd, 'brief-doc-writer'),
     commit_docs: config.commit_docs,
     existing_docs: scanExistingDocs(cwd),
     project_type: detectProjectType(cwd),

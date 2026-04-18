@@ -201,8 +201,8 @@ Missing artifacts: {list or "none"}
 
 Next steps:
 - Review extracted learnings for accuracy
-- /gsd-progress — see overall project state
-- /gsd-execute-phase {next} — continue to next phase
+- /brief-progress — see overall project state
+- /brief-execute-phase {next} — continue to next phase
 
 ---------------------------------------------------------------
 ```

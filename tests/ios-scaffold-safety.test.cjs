@@ -17,17 +17,17 @@ const fs = require('fs');
 const path = require('path');
 
 const IOS_SCAFFOLD_REF = path.join(
-  __dirname, '..', 'get-shit-done', 'references', 'ios-scaffold.md'
+  __dirname, '..', 'brief', 'references', 'ios-scaffold.md'
 );
 const EXECUTOR_AGENT = path.join(
-  __dirname, '..', 'agents', 'gsd-executor.md'
+  __dirname, '..', 'agents', 'brief-executor.md'
 );
 const UNIVERSAL_ANTI_PATTERNS = path.join(
-  __dirname, '..', 'get-shit-done', 'references', 'universal-anti-patterns.md'
+  __dirname, '..', 'brief', 'references', 'universal-anti-patterns.md'
 );
 
 describe('ios-scaffold.md reference exists and contains XcodeGen guidance', () => {
-  test('reference file exists at get-shit-done/references/ios-scaffold.md', () => {
+  test('reference file exists at brief/references/ios-scaffold.md', () => {
     assert.ok(
       fs.existsSync(IOS_SCAFFOLD_REF),
       `Expected iOS scaffold reference at ${IOS_SCAFFOLD_REF}`
@@ -102,12 +102,12 @@ describe('ios-scaffold.md reference exists and contains XcodeGen guidance', () =
   });
 });
 
-describe('gsd-executor.md references ios-scaffold guidance', () => {
+describe('brief-executor.md references ios-scaffold guidance', () => {
   test('executor agent references ios-scaffold.md', () => {
     const content = fs.readFileSync(EXECUTOR_AGENT, 'utf-8');
     assert.ok(
       content.includes('ios-scaffold.md') || content.includes('ios-scaffold'),
-      'gsd-executor.md must reference ios-scaffold.md for iOS app scaffold guidance'
+      'brief-executor.md must reference ios-scaffold.md for iOS app scaffold guidance'
     );
   });
 });

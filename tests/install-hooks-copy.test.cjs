@@ -165,11 +165,11 @@ describe('install.js source correctness', () => {
     );
   });
 
-  test('Codex hook path does not use get-shit-done/hooks/ subdirectory', () => {
-    // The Codex hook should resolve to targetDir/hooks/, not targetDir/get-shit-done/hooks/
+  test('Codex hook path does not use brief/hooks/ subdirectory', () => {
+    // The Codex hook should resolve to targetDir/hooks/, not targetDir/brief/hooks/
     assert.ok(
-      !src.includes("'get-shit-done', 'hooks', 'gsd-check-update"),
-      'Codex hook should not use get-shit-done/hooks/ path segment'
+      !src.includes("'brief', 'hooks', 'gsd-check-update"),
+      'Codex hook should not use brief/hooks/ path segment'
     );
   });
 
@@ -336,7 +336,7 @@ describe('uninstall settings cleanup preserves user hooks', () => {
     const entries = [{
       matcher: 'Bash',
       hooks: [
-        { type: 'command', command: 'node /path/to/gsd-prompt-guard.js' },
+        { type: 'command', command: 'node /path/to/brief-prompt-guard.js' },
         { type: 'command', command: 'bash /my/custom-lint.sh' },
       ],
     }];
@@ -350,8 +350,8 @@ describe('uninstall settings cleanup preserves user hooks', () => {
   test('entry with only GSD hooks is fully removed', () => {
     const entries = [{
       hooks: [
-        { type: 'command', command: 'node /path/to/gsd-check-update.js' },
-        { type: 'command', command: 'node /path/to/gsd-statusline.js' },
+        { type: 'command', command: 'node /path/to/brief-check-update.js' },
+        { type: 'command', command: 'node /path/to/brief-statusline.js' },
       ],
     }];
 
@@ -375,7 +375,7 @@ describe('uninstall settings cleanup preserves user hooks', () => {
   test('non-array hook entries are preserved during uninstall (#1825)', () => {
     const entries = [
       { type: 'custom', command: 'echo hello' },
-      { matcher: 'Bash', hooks: [{ type: 'command', command: 'node /path/to/gsd-prompt-guard.js' }] },
+      { matcher: 'Bash', hooks: [{ type: 'command', command: 'node /path/to/brief-prompt-guard.js' }] },
       { url: 'https://example.com/webhook' },
     ];
 
@@ -387,15 +387,15 @@ describe('uninstall settings cleanup preserves user hooks', () => {
 
   test('all GSD hook names are recognized by isGsdHookCommand', () => {
     const gsdCommands = [
-      'node /path/gsd-check-update.js',
-      'node /path/gsd-statusline.js',
-      'bash /path/gsd-session-state.sh',
-      'node /path/gsd-context-monitor.js',
-      'bash /path/gsd-phase-boundary.sh',
-      'node /path/gsd-prompt-guard.js',
-      'node /path/gsd-read-guard.js',
-      'bash /path/gsd-validate-commit.sh',
-      'node /path/gsd-workflow-guard.js',
+      'node /path/brief-check-update.js',
+      'node /path/brief-statusline.js',
+      'bash /path/brief-session-state.sh',
+      'node /path/brief-context-monitor.js',
+      'bash /path/brief-phase-boundary.sh',
+      'node /path/brief-prompt-guard.js',
+      'node /path/brief-read-guard.js',
+      'bash /path/brief-validate-commit.sh',
+      'node /path/brief-workflow-guard.js',
     ];
 
     for (const cmd of gsdCommands) {
@@ -425,7 +425,7 @@ describe('Codex legacy gsd-update-check migration', () => {
       '# GSD Hooks',
       '[[hooks]]',
       'event = "SessionStart"',
-      'command = "node /old/path/gsd-update-check.js"',
+      'command = "node /old/path/brief-update-check.js"',
       '',
     ].join('\n');
 
@@ -443,7 +443,7 @@ describe('Codex legacy gsd-update-check migration', () => {
       '# GSD Hooks',
       '[[hooks]]',
       'event = "SessionStart"',
-      'command = "node /old/path/gsd-update-check.js"',
+      'command = "node /old/path/brief-update-check.js"',
       '',
     ].join('\r\n');
 

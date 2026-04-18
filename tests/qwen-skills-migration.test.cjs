@@ -2,7 +2,7 @@
  * GSD Tools Tests - Qwen Code Skills Migration
  *
  * Tests for installing GSD for Qwen Code using the standard
- * skills/gsd-xxx/SKILL.md format (same open standard as Claude Code 2.1.88+).
+ * skills/brief-xxx/SKILL.md format (same open standard as Claude Code 2.1.88+).
  *
  * Uses node:test and node:assert (NOT Jest).
  */
@@ -128,7 +128,7 @@ describe('Qwen Code: copyCommandsAsClaudeSkills', () => {
     }
   });
 
-  test('creates skills/gsd-xxx/SKILL.md directory structure', () => {
+  test('creates skills/brief-xxx/SKILL.md directory structure', () => {
     // Create source command files
     const srcDir = path.join(tmpDir, 'src', 'commands', 'gsd');
     fs.mkdirSync(srcDir, { recursive: true });
@@ -168,7 +168,7 @@ describe('Qwen Code: copyCommandsAsClaudeSkills', () => {
       'description: Next step',
       '---',
       '',
-      'Reference: @~/.claude/get-shit-done/workflows/next.md',
+      'Reference: @~/.claude/brief/workflows/next.md',
     ].join('\n'));
 
     const skillsDir = path.join(tmpDir, 'dest', 'skills');
@@ -188,7 +188,7 @@ describe('Qwen Code: copyCommandsAsClaudeSkills', () => {
       'description: Plan phase',
       '---',
       '',
-      'Reference: $HOME/.claude/get-shit-done/workflows/plan.md',
+      'Reference: $HOME/.claude/brief/workflows/plan.md',
     ].join('\n'));
 
     const skillsDir = path.join(tmpDir, 'dest', 'skills');
@@ -229,7 +229,7 @@ describe('Qwen Code: copyCommandsAsClaudeSkills', () => {
       '---',
       'name: gsd:execute',
       'description: Execute phase',
-      'agent: gsd-executor',
+      'agent: brief-executor',
       'allowed-tools:',
       '  - Read',
       '  - Bash',
@@ -243,7 +243,7 @@ describe('Qwen Code: copyCommandsAsClaudeSkills', () => {
     copyCommandsAsClaudeSkills(srcDir, skillsDir, 'gsd', '/test/', 'qwen', false);
 
     const content = fs.readFileSync(path.join(skillsDir, 'gsd-execute', 'SKILL.md'), 'utf8');
-    assert.ok(content.includes('agent: gsd-executor'), 'agent field preserved');
+    assert.ok(content.includes('agent: brief-executor'), 'agent field preserved');
   });
 });
 
@@ -256,7 +256,7 @@ describe('Qwen Code: SKILL.md format validation', () => {
       'name: gsd:review',
       'description: Code review with quality checks',
       'argument-hint: "[PR number or branch]"',
-      'agent: gsd-code-reviewer',
+      'agent: brief-verifier',
       'allowed-tools:',
       '  - Read',
       '  - Grep',

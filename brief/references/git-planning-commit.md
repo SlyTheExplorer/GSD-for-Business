@@ -1,6 +1,6 @@
 # Git Planning Commit
 
-Commit planning artifacts via `gsd-sdk query commit`, which checks `commit_docs` config and gitignore status (same behavior as legacy `gsd-tools.cjs commit`).
+Commit planning artifacts via `gsd-sdk query commit`, which checks `commit_docs` config and gitignore status (same behavior as legacy `brief-tools.cjs commit`).
 
 ## Commit via CLI
 

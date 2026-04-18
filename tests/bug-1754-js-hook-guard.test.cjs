@@ -85,8 +85,8 @@ describe('bug #1754: .js hook registration guards', () => {
     );
 
     // Count unique hook file existence checks (pattern: path.join(targetDir, 'hooks', 'gsd-*.js'))
-    const jsGuards = (registrationSection.match(/gsd-[\w-]+\.js.*not found at target/g) || []);
-    const shGuards = (registrationSection.match(/gsd-[\w-]+\.sh.*not found at target/g) || []);
+    const jsGuards = (registrationSection.match(/brief-[\w-]+\.js.*not found at target/g) || []);
+    const shGuards = (registrationSection.match(/brief-[\w-]+\.sh.*not found at target/g) || []);
 
     assert.ok(
       jsGuards.length >= JS_HOOKS.length,

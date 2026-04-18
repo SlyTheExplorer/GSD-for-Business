@@ -2,7 +2,7 @@
  * Workspace-aware state resolution — scopes .planning/ paths to a
  * GSD_WORKSTREAM or GSD_PROJECT environment context.
  *
- * Port of planningDir() workspace logic from get-shit-done/bin/lib/core.cjs
+ * Port of planningDir() workspace logic from brief/bin/lib/core.cjs
  * (line 669+). Provides WorkspaceContext reading and validated path scoping.
  *
  * Security: workspace names are validated to reject path traversal (T-14-05).

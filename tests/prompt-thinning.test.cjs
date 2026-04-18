@@ -13,11 +13,11 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-const EXECUTE_PHASE = path.join(__dirname, '..', 'get-shit-done', 'workflows', 'execute-phase.md');
-const EXECUTOR_AGENT = path.join(__dirname, '..', 'agents', 'gsd-executor.md');
-const PLANNER_AGENT = path.join(__dirname, '..', 'agents', 'gsd-planner.md');
-const EXECUTOR_EXAMPLES_REF = path.join(__dirname, '..', 'get-shit-done', 'references', 'executor-examples.md');
-const PLANNER_ANTIPATTERNS_REF = path.join(__dirname, '..', 'get-shit-done', 'references', 'planner-antipatterns.md');
+const EXECUTE_PHASE = path.join(__dirname, '..', 'brief', 'workflows', 'execute-phase.md');
+const EXECUTOR_AGENT = path.join(__dirname, '..', 'agents', 'brief-executor.md');
+const PLANNER_AGENT = path.join(__dirname, '..', 'agents', 'brief-planner.md');
+const EXECUTOR_EXAMPLES_REF = path.join(__dirname, '..', 'brief', 'references', 'executor-examples.md');
+const PLANNER_ANTIPATTERNS_REF = path.join(__dirname, '..', 'brief', 'references', 'planner-antipatterns.md');
 
 describe('prompt thinning — sub-200K context window support (#1978)', () => {
 
@@ -47,22 +47,22 @@ describe('prompt thinning — sub-200K context window support (#1978)', () => {
     });
   });
 
-  describe('gsd-executor.md — reference to extracted examples', () => {
+  describe('brief-executor.md — reference to extracted examples', () => {
     test('references executor-examples.md for extended examples', () => {
       const content = fs.readFileSync(EXECUTOR_AGENT, 'utf-8');
       assert.ok(
         content.includes('executor-examples.md'),
-        'gsd-executor.md must reference executor-examples.md for extended deviation/checkpoint examples'
+        'brief-executor.md must reference executor-examples.md for extended deviation/checkpoint examples'
       );
     });
   });
 
-  describe('gsd-planner.md — reference to extracted anti-patterns', () => {
+  describe('brief-planner.md — reference to extracted anti-patterns', () => {
     test('references planner-antipatterns.md for extended anti-patterns', () => {
       const content = fs.readFileSync(PLANNER_AGENT, 'utf-8');
       assert.ok(
         content.includes('planner-antipatterns.md'),
-        'gsd-planner.md must reference planner-antipatterns.md for extended checkpoint anti-patterns and specificity examples'
+        'brief-planner.md must reference planner-antipatterns.md for extended checkpoint anti-patterns and specificity examples'
       );
     });
   });
@@ -71,7 +71,7 @@ describe('prompt thinning — sub-200K context window support (#1978)', () => {
     test('file exists', () => {
       assert.ok(
         fs.existsSync(EXECUTOR_EXAMPLES_REF),
-        'get-shit-done/references/executor-examples.md must exist'
+        'brief/references/executor-examples.md must exist'
       );
     });
 
@@ -104,7 +104,7 @@ describe('prompt thinning — sub-200K context window support (#1978)', () => {
     test('file exists', () => {
       assert.ok(
         fs.existsSync(PLANNER_ANTIPATTERNS_REF),
-        'get-shit-done/references/planner-antipatterns.md must exist'
+        'brief/references/planner-antipatterns.md must exist'
       );
     });
 

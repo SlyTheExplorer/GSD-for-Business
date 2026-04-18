@@ -1,7 +1,7 @@
 /**
  * Workstream query handlers — list, create, set, status, complete, progress.
  *
- * Ported from get-shit-done/bin/lib/workstream.cjs.
+ * Ported from brief/bin/lib/workstream.cjs.
  * Manages .planning/workstreams/ directory for multi-workstream projects.
  *
  * @example
@@ -91,7 +91,7 @@ export const workstreamCreate: QueryHandler = async (args, projectDir) => {
 
   const baseDir = planningRoot(projectDir);
   if (!existsSync(baseDir)) {
-    return { data: { created: false, reason: '.planning/ directory not found — run /gsd-new-project first' } };
+    return { data: { created: false, reason: '.planning/ directory not found — run /brief-new-project first' } };
   }
 
   const wsRoot = workstreamsDir(projectDir);

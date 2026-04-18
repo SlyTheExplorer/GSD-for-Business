@@ -14,8 +14,8 @@ const fs = require('fs');
 const path = require('path');
 
 describe('plan-phase chain flag preservation (#1620)', () => {
-  const planPath = path.join(__dirname, '..', 'get-shit-done', 'workflows', 'plan-phase.md');
-  const discussPath = path.join(__dirname, '..', 'get-shit-done', 'workflows', 'discuss-phase.md');
+  const planPath = path.join(__dirname, '..', 'brief', 'workflows', 'plan-phase.md');
+  const discussPath = path.join(__dirname, '..', 'brief', 'workflows', 'discuss-phase.md');
 
   test('plan-phase sync-flag guard checks both --auto AND --chain', () => {
     const content = fs.readFileSync(planPath, 'utf8');

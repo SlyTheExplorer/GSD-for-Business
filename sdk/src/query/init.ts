@@ -5,7 +5,7 @@
  * that CJS init.cjs produces, enabling workflow migration. Each handler
  * follows the QueryHandler signature and returns { data: <flat JSON> }.
  *
- * Port of get-shit-done/bin/lib/init.cjs (13 of 16 handlers).
+ * Port of brief/bin/lib/init.cjs (13 of 16 handlers).
  * The 3 complex handlers (new-project, progress, manager) are in init-complex.ts.
  *
  * @example
@@ -83,7 +83,7 @@ function getLatestCompletedMilestone(projectDir: string): { version: string; nam
  */
 function checkAgentsInstalled(): { agents_installed: boolean; missing_agents: string[] } {
   const agentsDir = process.env.GSD_AGENTS_DIR
-    || join(homedir(), '.claude', 'get-shit-done', 'agents');
+    || join(homedir(), '.claude', 'brief', 'agents');
   const expectedAgents = Object.keys(MODEL_PROFILES);
 
   if (!existsSync(agentsDir)) {
@@ -203,8 +203,8 @@ export const initExecutePhase: QueryHandler = async (args, projectDir) => {
   const phase_req_ids = extractReqIds(roadmapPhase);
 
   const [executorModel, verifierModel] = await Promise.all([
-    getModelAlias('gsd-executor', projectDir),
-    getModelAlias('gsd-verifier', projectDir),
+    getModelAlias('brief-executor', projectDir),
+    getModelAlias('brief-verifier', projectDir),
   ]);
 
   const milestone = await getMilestoneInfo(projectDir);
@@ -282,9 +282,9 @@ export const initPlanPhase: QueryHandler = async (args, projectDir) => {
   const phase_req_ids = extractReqIds(roadmapPhase);
 
   const [researcherModel, plannerModel, checkerModel] = await Promise.all([
-    getModelAlias('gsd-phase-researcher', projectDir),
-    getModelAlias('gsd-planner', projectDir),
-    getModelAlias('gsd-plan-checker', projectDir),
+    getModelAlias('brief-phase-researcher', projectDir),
+    getModelAlias('brief-planner', projectDir),
+    getModelAlias('brief-plan-checker', projectDir),
   ]);
 
   const phaseFound = !!(phaseInfo && phaseInfo.found);
@@ -363,9 +363,9 @@ export const initNewMilestone: QueryHandler = async (_args, projectDir) => {
   } catch { /* intentionally empty */ }
 
   const [researcherModel, synthesizerModel, roadmapperModel] = await Promise.all([
-    getModelAlias('gsd-project-researcher', projectDir),
-    getModelAlias('gsd-research-synthesizer', projectDir),
-    getModelAlias('gsd-roadmapper', projectDir),
+    getModelAlias('brief-project-researcher', projectDir),
+    getModelAlias('brief-research-synthesizer', projectDir),
+    getModelAlias('brief-roadmapper', projectDir),
   ]);
 
   const result: Record<string, unknown> = {
@@ -424,10 +424,10 @@ export const initQuick: QueryHandler = async (args, projectDir) => {
     : null;
 
   const [plannerModel, executorModel, checkerModel, verifierModel] = await Promise.all([
-    getModelAlias('gsd-planner', projectDir),
-    getModelAlias('gsd-executor', projectDir),
-    getModelAlias('gsd-plan-checker', projectDir),
-    getModelAlias('gsd-verifier', projectDir),
+    getModelAlias('brief-planner', projectDir),
+    getModelAlias('brief-executor', projectDir),
+    getModelAlias('brief-plan-checker', projectDir),
+    getModelAlias('brief-verifier', projectDir),
   ]);
 
   const result: Record<string, unknown> = {
@@ -498,8 +498,8 @@ export const initVerifyWork: QueryHandler = async (args, projectDir) => {
   const { phaseInfo } = await getPhaseInfoWithFallback(phase, projectDir);
 
   const [plannerModel, checkerModel] = await Promise.all([
-    getModelAlias('gsd-planner', projectDir),
-    getModelAlias('gsd-plan-checker', projectDir),
+    getModelAlias('brief-planner', projectDir),
+    getModelAlias('brief-plan-checker', projectDir),
   ]);
 
   const result: Record<string, unknown> = {
@@ -754,7 +754,7 @@ export const initMapCodebase: QueryHandler = async (_args, projectDir) => {
     existingMaps = readdirSync(codebaseDir).filter(f => f.endsWith('.md'));
   } catch { /* intentionally empty */ }
 
-  const mapperModel = await getModelAlias('gsd-codebase-mapper', projectDir);
+  const mapperModel = await getModelAlias('brief-codebase-mapper', projectDir);
 
   const result: Record<string, unknown> = {
     mapper_model: mapperModel,

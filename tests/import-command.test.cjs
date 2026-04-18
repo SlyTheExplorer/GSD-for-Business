@@ -1,7 +1,7 @@
 /**
  * Import Command Tests — import-command.test.cjs
  *
- * Structural assertions for the /gsd-import command and workflow files.
+ * Structural assertions for the /brief-import command and workflow files.
  */
 
 const { describe, test } = require('node:test');
@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 
 const CMD_PATH = path.join(__dirname, '..', 'commands', 'gsd', 'import.md');
-const WF_PATH = path.join(__dirname, '..', 'get-shit-done', 'workflows', 'import.md');
+const WF_PATH = path.join(__dirname, '..', 'brief', 'workflows', 'import.md');
 
 // ─── File Existence ────────────────────────────────────────────────────────────
 
@@ -20,7 +20,7 @@ describe('import command file structure', () => {
   });
 
   test('workflow file exists', () => {
-    assert.ok(fs.existsSync(WF_PATH), 'get-shit-done/workflows/import.md should exist');
+    assert.ok(fs.existsSync(WF_PATH), 'brief/workflows/import.md should exist');
   });
 });
 
@@ -49,8 +49,8 @@ describe('import command references', () => {
 
   test('references the import workflow', () => {
     assert.ok(
-      content.includes('@~/.claude/get-shit-done/workflows/import.md'),
-      'command should reference the workflow via @~/.claude/get-shit-done/workflows/import.md'
+      content.includes('@~/.claude/brief/workflows/import.md'),
+      'command should reference the workflow via @~/.claude/brief/workflows/import.md'
     );
   });
 });
@@ -107,14 +107,14 @@ describe('import workflow content', () => {
 
   test('includes plan-checker validation gate', () => {
     assert.ok(
-      content.includes('gsd-plan-checker'),
-      'workflow should delegate validation to gsd-plan-checker'
+      content.includes('brief-plan-checker'),
+      'workflow should delegate validation to brief-plan-checker'
     );
   });
 
   test('no-args usage display is present', () => {
     assert.ok(
-      content.includes('Usage: /gsd-import'),
+      content.includes('Usage: /brief-import'),
       'workflow should display usage when no arguments provided'
     );
   });

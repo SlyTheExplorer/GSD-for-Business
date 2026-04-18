@@ -29,7 +29,7 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-const { scanForInjection, INJECTION_PATTERNS } = require('../get-shit-done/bin/lib/security.cjs');
+const { scanForInjection, INJECTION_PATTERNS } = require('../brief/bin/lib/security.cjs');
 
 // ─── Configuration ──────────────────────────────────────────────────────────
 
@@ -39,8 +39,8 @@ const PROJECT_ROOT = path.join(__dirname, '..');
 const SCAN_DIRS = [
   'agents',
   'commands',
-  'get-shit-done/workflows',
-  'get-shit-done/bin/lib',
+  'brief/workflows',
+  'brief/bin/lib',
   'hooks',
 ];
 
@@ -50,12 +50,12 @@ const SCAN_EXTS = new Set(['.md', '.cjs', '.js', '.json']);
 // Files that legitimately reference injection patterns (e.g., security docs, this test)
 // or exceed the 50K size threshold due to legitimate workflow complexity
 const ALLOWLIST = new Set([
-  'get-shit-done/bin/lib/security.cjs',        // The security module itself
-  'get-shit-done/workflows/discuss-phase.md',  // Large workflow (~50K) with power mode + i18n
-  'get-shit-done/workflows/execute-phase.md',  // Large orchestration workflow (~51K) with wave execution + code-review gate
-  'get-shit-done/workflows/plan-phase.md',      // Large orchestration workflow (~51K) with TDD mode integration
-  'hooks/gsd-prompt-guard.js',                  // The prompt guard hook
-  'hooks/gsd-read-injection-scanner.js',        // The read injection scanner (contains patterns)
+  'brief/bin/lib/security.cjs',        // The security module itself
+  'brief/workflows/discuss-phase.md',  // Large workflow (~50K) with power mode + i18n
+  'brief/workflows/execute-phase.md',  // Large orchestration workflow (~51K) with wave execution + code-review gate
+  'brief/workflows/plan-phase.md',      // Large orchestration workflow (~51K) with TDD mode integration
+  'hooks/brief-prompt-guard.js',                  // The prompt guard hook
+  'hooks/brief-read-injection-scanner.js',        // The read injection scanner (contains patterns)
   'tests/security.test.cjs',                    // Security tests
   'tests/prompt-injection-scan.test.cjs',       // This file
 ]);

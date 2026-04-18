@@ -5,19 +5,19 @@ You are a thinking partner, not an interviewer. The user is the visionary — yo
 </purpose>
 
 <required_reading>
-@~/.claude/get-shit-done/references/domain-probes.md
-@~/.claude/get-shit-done/references/gate-prompts.md
-@~/.claude/get-shit-done/references/universal-anti-patterns.md
+@~/.claude/brief/references/domain-probes.md
+@~/.claude/brief/references/gate-prompts.md
+@~/.claude/brief/references/universal-anti-patterns.md
 </required_reading>
 
 <downstream_awareness>
 **CONTEXT.md feeds into:**
 
-1. **gsd-phase-researcher** — Reads CONTEXT.md to know WHAT to research
+1. **brief-phase-researcher** — Reads CONTEXT.md to know WHAT to research
    - "User wants card-based layout" → researcher investigates card component patterns
    - "Infinite scroll decided" → researcher looks into virtualization libraries
 
-2. **gsd-planner** — Reads CONTEXT.md to know WHAT decisions are locked
+2. **brief-planner** — Reads CONTEXT.md to know WHAT decisions are locked
    - "Pull-to-refresh on mobile" → planner includes that in task specs
    - "Claude's Discretion: loading skeleton" → planner can decide approach
 
@@ -133,7 +133,7 @@ This is required for Claude Code remote sessions (`/rc` mode) where the Claude A
 cannot forward TUI menu selections back to the host.
 
 Enable text mode:
-- Per-session: pass `--text` flag to any command (e.g., `/gsd-discuss-phase --text`)
+- Per-session: pass `--text` flag to any command (e.g., `/brief-discuss-phase --text`)
 - Per-project: `gsd-sdk query config-set workflow.text_mode true`
 
 Text mode applies to ALL workflows in the session, not just discuss-phase.
@@ -141,7 +141,7 @@ Text mode applies to ALL workflows in the session, not just discuss-phase.
 
 <process>
 
-**Express path available:** If you already have a PRD or acceptance criteria document, use `/gsd-plan-phase {phase} --prd path/to/prd.md` to skip this discussion and go straight to planning.
+**Express path available:** If you already have a PRD or acceptance criteria document, use `/brief-plan-phase {phase} --prd path/to/prd.md` to skip this discussion and go straight to planning.
 
 <step name="initialize" priority="first">
 Phase number from argument (required).
@@ -160,7 +160,7 @@ Parse JSON for: `commit_docs`, `phase_found`, `phase_dir`, `phase_number`, `phas
 ```
 Phase [X] not found in roadmap.
 
-Use /gsd-progress ${GSD_WS} to see available phases.
+Use /brief-progress ${GSD_WS} to see available phases.
 ```
 Exit workflow.
 
@@ -168,7 +168,7 @@ Exit workflow.
 
 **Power mode** — If `--power` is present in ARGUMENTS:
 - Skip interactive questioning entirely
-- Read and execute @~/.claude/get-shit-done/workflows/discuss-phase-power.md end-to-end
+- Read and execute @~/.claude/brief/workflows/discuss-phase-power.md end-to-end
 - Do not continue with the steps below
 
 **All mode** — If `--all` is present in ARGUMENTS:
@@ -216,7 +216,7 @@ Write these answers inline before continuing. If a blocking anti-pattern cannot 
 </step>
 
 <step name="check_spec">
-Check if a SPEC.md (from `/gsd-spec-phase`) exists for this phase. SPEC.md locks requirements before implementation decisions — if present, this discussion focuses on HOW to implement, not WHAT to build.
+Check if a SPEC.md (from `/brief-spec-phase`) exists for this phase. SPEC.md locks requirements before implementation decisions — if present, this discussion focuses on HOW to implement, not WHAT to build.
 
 ```bash
 ls ${phase_dir}/*-SPEC.md 2>/dev/null | grep -v AI-SPEC | head -1 || true
@@ -235,7 +235,7 @@ ls ${phase_dir}/*-SPEC.md 2>/dev/null | grep -v AI-SPEC | head -1 || true
 
 **If no SPEC.md is found:** Continue to `check_existing` with `spec_loaded = false` (default behavior unchanged).
 
-**Note:** SPEC.md files named `AI-SPEC.md` (from `/gsd-ai-integration-phase`) are excluded — those serve a different purpose.
+**Note:** SPEC.md files named `AI-SPEC.md` (from `/brief-ai-integration-phase`) are excluded — those serve a different purpose.
 </step>
 
 <step name="check_existing">
@@ -291,7 +291,7 @@ Check `has_plans` and `plan_count` from init. **If `has_plans` is true:**
 - header: "Plans exist"
 - question: "Phase [X] already has {plan_count} plan(s) created without user context. Your decisions here won't affect existing plans unless you replan."
 - options:
-  - "Continue and replan after" — Capture context, then run /gsd-plan-phase {X} ${GSD_WS} to replan
+  - "Continue and replan after" — Capture context, then run /brief-plan-phase {X} ${GSD_WS} to replan
   - "View existing plans" — Show plans before deciding
   - "Cancel" — Skip discuss-phase
 
@@ -476,7 +476,7 @@ Check if advisor mode should activate:
 
 1. Check for USER-PROFILE.md:
    ```bash
-   PROFILE_PATH="$HOME/.claude/get-shit-done/USER-PROFILE.md"
+   PROFILE_PATH="$HOME/.claude/brief/USER-PROFILE.md"
    ```
    ADVISOR_MODE = file exists at PROFILE_PATH → true, otherwise → false
 
@@ -492,7 +492,7 @@ Check if advisor mode should activate:
 
 3. Resolve model for advisor agents:
    ```bash
-   ADVISOR_MODEL=$(gsd-sdk query resolve-model gsd-advisor-researcher --raw)
+   ADVISOR_MODEL=$(gsd-sdk query resolve-model brief-advisor-researcher --raw)
    ```
 
 If ADVISOR_MODE is false, skip all advisor-specific steps — workflow proceeds with existing conversational flow unchanged.
@@ -502,7 +502,7 @@ If ADVISOR_MODE is false, skip all advisor-specific steps — workflow proceeds 
 Check USER-PROFILE.md for communication preferences that indicate a non-technical product owner:
 
 ```bash
-PROFILE_CONTENT=$(cat "$HOME/.claude/get-shit-done/USER-PROFILE.md" 2>/dev/null || true)
+PROFILE_CONTENT=$(cat "$HOME/.claude/brief/USER-PROFILE.md" 2>/dev/null || true)
 ```
 
 Set NON_TECHNICAL_OWNER = true if ANY of the following are present in USER-PROFILE.md:
@@ -627,7 +627,7 @@ After user selects gray areas in present_gray_areas, spawn parallel research age
 2. For EACH user-selected gray area, spawn a Task() in parallel:
 
    Task(
-     prompt="First, read @~/.claude/agents/gsd-advisor-researcher.md for your role and instructions.
+     prompt="First, read @~/.claude/agents/brief-advisor-researcher.md for your role and instructions.
 
      <gray_area>{area_name}: {area_description from gray area identification}</gray_area>
      <phase_context>{phase_goal and description from ROADMAP.md}</phase_context>
@@ -907,7 +907,7 @@ Write after each area:
 }
 ```
 
-This is a structured checkpoint, not the final CONTEXT.md — the `write_context` step still produces the canonical output. But if the session dies, the next `/gsd-discuss-phase` invocation can detect this checkpoint and offer to resume from it instead of starting from scratch.
+This is a structured checkpoint, not the final CONTEXT.md — the `write_context` step still produces the canonical output. But if the session dies, the next `/brief-discuss-phase` invocation can detect this checkpoint and offer to resume from it instead of starting from scratch.
 
 **On session resume:** In the `check_existing` step, also check for `*-DISCUSS-CHECKPOINT.json`. If found and no CONTEXT.md exists:
 - Display: "Found interrupted discussion checkpoint ({N} areas completed). Resume from checkpoint?"
@@ -1092,14 +1092,14 @@ Created: .planning/phases/${PADDED_PHASE}-${SLUG}/${PADDED_PHASE}-CONTEXT.md
 
 `/clear` then:
 
-`/gsd-plan-phase ${PHASE} ${GSD_WS}`
+`/brief-plan-phase ${PHASE} ${GSD_WS}`
 
 ---
 
 **Also available:**
-- `/gsd-discuss-phase ${PHASE} --chain ${GSD_WS}` — re-run with auto plan+execute after
-- `/gsd-plan-phase ${PHASE} --skip-research ${GSD_WS}` — plan without research
-- `/gsd-ui-phase ${PHASE} ${GSD_WS}` — generate UI design contract before planning (if phase has frontend work)
+- `/brief-discuss-phase ${PHASE} --chain ${GSD_WS}` — re-run with auto plan+execute after
+- `/brief-plan-phase ${PHASE} --skip-research ${GSD_WS}` — plan without research
+- `/brief-ui-phase ${PHASE} ${GSD_WS}` — generate UI design contract before planning (if phase has frontend work)
 - Review/edit CONTEXT.md before continuing
 
 ---
@@ -1208,7 +1208,7 @@ gsd-sdk query config-set workflow._auto_chain_active true
 Display banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► AUTO-ADVANCING TO PLAN
+ BRIEF ► AUTO-ADVANCING TO PLAN
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Context captured. Launching plan-phase...
@@ -1225,29 +1225,29 @@ This keeps the auto-advance chain flat — discuss, plan, and execute all run at
 - **PHASE COMPLETE** → Full chain succeeded. Display:
   ```
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   GSD ► PHASE ${PHASE} COMPLETE
+   BRIEF ► PHASE ${PHASE} COMPLETE
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   Auto-advance pipeline finished: discuss → plan → execute
 
   /clear then:
 
-  Next: /gsd-discuss-phase ${NEXT_PHASE} ${WAS_CHAIN ? "--chain" : "--auto"} ${GSD_WS}
+  Next: /brief-discuss-phase ${NEXT_PHASE} ${WAS_CHAIN ? "--chain" : "--auto"} ${GSD_WS}
   ```
 - **PLANNING COMPLETE** → Planning done, execution didn't complete:
   ```
   Auto-advance partial: Planning complete, execution did not finish.
-  Continue: /gsd-execute-phase ${PHASE} ${GSD_WS}
+  Continue: /brief-execute-phase ${PHASE} ${GSD_WS}
   ```
 - **PLANNING INCONCLUSIVE / CHECKPOINT** → Stop chain:
   ```
   Auto-advance stopped: Planning needs input.
-  Continue: /gsd-plan-phase ${PHASE} ${GSD_WS}
+  Continue: /brief-plan-phase ${PHASE} ${GSD_WS}
   ```
 - **GAPS FOUND** → Stop chain:
   ```
   Auto-advance stopped: Gaps found during execution.
-  Continue: /gsd-plan-phase ${PHASE} --gaps ${GSD_WS}
+  Continue: /brief-plan-phase ${PHASE} --gaps ${GSD_WS}
   ```
 
 **If none of `--auto`, `--chain`, nor config enabled:**
@@ -1261,7 +1261,7 @@ When `--power` flag is present in ARGUMENTS, skip interactive questioning and ex
 
 The power user mode generates ALL questions upfront into machine-readable and human-friendly files, then waits for the user to answer at their own pace before processing all answers in a single pass.
 
-**Full step-by-step instructions:** @~/.claude/get-shit-done/workflows/discuss-phase-power.md
+**Full step-by-step instructions:** @~/.claude/brief/workflows/discuss-phase-power.md
 
 **Summary of flow:**
 1. Run the same phase analysis (gray area identification) as standard mode

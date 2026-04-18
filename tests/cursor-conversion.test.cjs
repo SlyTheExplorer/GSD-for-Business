@@ -44,14 +44,14 @@ description: Plan a phase
 
 Next:
 /gsd:execute-phase 17
-/gsd-help
+/brief-help
 gsd:progress
 `;
 
     const result = convertClaudeCommandToCursorSkill(input, 'gsd-plan-phase');
 
-    assert.ok(result.includes('/gsd-execute-phase 17'), 'slash command remains slash-prefixed');
-    assert.ok(result.includes('/gsd-help'), 'existing slash command is preserved');
+    assert.ok(result.includes('/brief-execute-phase 17'), 'slash command remains slash-prefixed');
+    assert.ok(result.includes('/brief-help'), 'existing slash command is preserved');
     assert.ok(result.includes('gsd-progress'), 'non-slash gsd: references still normalize');
     assert.ok(!result.includes('/gsd:execute-phase'), 'legacy colon command form is removed');
   });
@@ -60,7 +60,7 @@ gsd:progress
 describe('convertClaudeAgentToCursorAgent', () => {
   test('writes unquoted Cursor agent name in frontmatter', () => {
     const input = `---
-name: gsd-planner
+name: brief-planner
 description: Planner agent
 tools: Read, Write
 color: green
@@ -75,7 +75,7 @@ Planner body
     const nameMatch = result.match(/^name:\s*(.+)$/m);
 
     assert.ok(nameMatch, 'frontmatter contains name field');
-    assert.strictEqual(nameMatch[1], 'gsd-planner', 'agent name is plain scalar');
-    assert.ok(!result.includes('name: "gsd-planner"'), 'quoted agent name is not emitted');
+    assert.strictEqual(nameMatch[1], 'brief-planner', 'agent name is plain scalar');
+    assert.ok(!result.includes('name: "brief-planner"'), 'quoted agent name is not emitted');
   });
 });

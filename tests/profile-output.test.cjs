@@ -13,7 +13,7 @@ const { runGsdTools, createTempProject, createTempGitProject, cleanup } = requir
 const {
   PROFILING_QUESTIONS,
   CLAUDE_INSTRUCTIONS,
-} = require('../get-shit-done/bin/lib/profile-output.cjs');
+} = require('../brief/bin/lib/profile-output.cjs');
 
 // ─── PROFILING_QUESTIONS data ─────────────────────────────────────────────────
 
@@ -168,7 +168,7 @@ describe('generate-claude-md command', () => {
     assert.ok(content.includes('.cursor/skills/'));
     assert.ok(content.includes('.github/skills/'));
     assert.ok(content.includes('.codex/skills/'));
-    assert.ok(!content.includes('get-shit-done/skills'));
+    assert.ok(!content.includes('brief/skills'));
   });
 });
 

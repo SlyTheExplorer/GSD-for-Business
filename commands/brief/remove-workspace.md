@@ -1,6 +1,6 @@
 ---
 name: gsd:remove-workspace
-description: Remove a GSD workspace and clean up worktrees
+description: Remove a BRIEF workspace and clean up worktrees
 argument-hint: "<workspace-name>"
 allowed-tools:
   - Bash
@@ -17,10 +17,10 @@ Remove a workspace directory after confirmation. For worktree strategy, runs `gi
 </objective>
 
 <execution_context>
-@~/.claude/get-shit-done/workflows/remove-workspace.md
-@~/.claude/get-shit-done/references/ui-brand.md
+@~/.claude/brief/workflows/remove-workspace.md
+@~/.claude/brief/references/ui-brand.md
 </execution_context>
 
 <process>
-Execute the remove-workspace workflow from @~/.claude/get-shit-done/workflows/remove-workspace.md end-to-end.
+Execute the remove-workspace workflow from @~/.claude/brief/workflows/remove-workspace.md end-to-end.
 </process>

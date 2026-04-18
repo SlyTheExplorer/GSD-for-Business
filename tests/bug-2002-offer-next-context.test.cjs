@@ -7,8 +7,8 @@
  * recommendation, leaving agents without guidance on the correct first step.
  *
  * Fixed: offer_next now checks for {next}-CONTEXT.md in the phase directory.
- * - If CONTEXT.md is missing: primary suggestion is /gsd-discuss-phase
- * - If CONTEXT.md exists: primary suggestion is /gsd-plan-phase
+ * - If CONTEXT.md is missing: primary suggestion is /brief-discuss-phase
+ * - If CONTEXT.md exists: primary suggestion is /brief-plan-phase
  */
 
 'use strict';
@@ -19,7 +19,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const workflowPath = path.resolve(
-  __dirname, '..', 'get-shit-done', 'workflows', 'execute-phase.md'
+  __dirname, '..', 'brief', 'workflows', 'execute-phase.md'
 );
 
 describe('bug #2002: offer_next checks CONTEXT.md before suggesting next step', () => {
@@ -40,7 +40,7 @@ describe('bug #2002: offer_next checks CONTEXT.md before suggesting next step', 
     );
   });
 
-  test('offer_next presents /gsd-discuss-phase when CONTEXT.md does not exist', () => {
+  test('offer_next presents /brief-discuss-phase when CONTEXT.md does not exist', () => {
     content = content || fs.readFileSync(workflowPath, 'utf-8');
     // Must have a conditional path where discuss-phase is the primary step
     // when CONTEXT.md is missing — look for proximity of "not exist"/"missing"/
@@ -52,12 +52,12 @@ describe('bug #2002: offer_next checks CONTEXT.md before suggesting next step', 
     const offerNextSection = content.slice(offerNextIdx, offerNextIdx + 5000);
     assert.ok(
       /CONTEXT\.md.*does not exist|CONTEXT\.md.*not.*exist|If CONTEXT\.md does/i.test(offerNextSection) ||
-      /gsd-discuss-phase.*recommended|recommended.*gsd-discuss-phase/i.test(offerNextSection),
-      'offer_next must present /gsd-discuss-phase as primary when CONTEXT.md does not exist'
+      /brief-discuss-phase.*recommended|recommended.*gsd-discuss-phase/i.test(offerNextSection),
+      'offer_next must present /brief-discuss-phase as primary when CONTEXT.md does not exist'
     );
   });
 
-  test('offer_next presents /gsd-plan-phase when CONTEXT.md exists', () => {
+  test('offer_next presents /brief-plan-phase when CONTEXT.md exists', () => {
     content = content || fs.readFileSync(workflowPath, 'utf-8');
     const offerNextIdx = content.indexOf('offer_next');
     assert.ok(offerNextIdx !== -1, 'offer_next step must exist');
@@ -65,7 +65,7 @@ describe('bug #2002: offer_next checks CONTEXT.md before suggesting next step', 
     const offerNextSection = content.slice(offerNextIdx, offerNextIdx + 5000);
     assert.ok(
       /CONTEXT\.md.*exists|exists.*CONTEXT\.md|If CONTEXT\.md/i.test(offerNextSection),
-      'offer_next must present /gsd-plan-phase as primary when CONTEXT.md exists'
+      'offer_next must present /brief-plan-phase as primary when CONTEXT.md exists'
     );
   });
 

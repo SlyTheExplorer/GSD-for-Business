@@ -596,15 +596,15 @@ describe('InitRunner', () => {
 
       // Write headless agents (with known marker text)
       await writeFile(
-        join(sdkPromptsDir, 'agents', 'gsd-project-researcher.md'),
+        join(sdkPromptsDir, 'agents', 'brief-project-researcher.md'),
         '# Project Researcher Agent\nSDK_HEADLESS_MARKER_RESEARCHER\n',
       );
       await writeFile(
-        join(sdkPromptsDir, 'agents', 'gsd-research-synthesizer.md'),
+        join(sdkPromptsDir, 'agents', 'brief-research-synthesizer.md'),
         '# Research Synthesizer Agent\nSDK_HEADLESS_MARKER_SYNTHESIZER\n',
       );
       await writeFile(
-        join(sdkPromptsDir, 'agents', 'gsd-roadmapper.md'),
+        join(sdkPromptsDir, 'agents', 'brief-roadmapper.md'),
         '# Roadmapper Agent\nSDK_HEADLESS_MARKER_ROADMAPPER\n',
       );
     });
@@ -640,7 +640,7 @@ describe('InitRunner', () => {
 
       await runner.run('build a todo app');
 
-      // Research calls (indices 1-4) use gsd-project-researcher.md agent def
+      // Research calls (indices 1-4) use brief-project-researcher.md agent def
       const researchPrompt = mockRunSession.mock.calls[1]![0] as string;
       expect(researchPrompt).toContain('SDK_HEADLESS_MARKER_RESEARCHER');
     });
@@ -724,7 +724,7 @@ describe('InitRunner', () => {
     it('buildResearchPrompt output passes through sanitizePrompt (no /gsd: patterns)', async () => {
       // Write an agent def that contains interactive patterns
       await writeFile(
-        join(sdkPromptsDir, 'agents', 'gsd-project-researcher.md'),
+        join(sdkPromptsDir, 'agents', 'brief-project-researcher.md'),
         '# Researcher Agent\nSpawn /gsd:something for analysis.\nSDK_HEADLESS_MARKER_RESEARCHER\n',
       );
 
@@ -741,7 +741,7 @@ describe('InitRunner', () => {
     it('buildRoadmapPrompt output passes through sanitizePrompt (no /gsd: patterns)', async () => {
       // Write agent and templates with interactive patterns
       await writeFile(
-        join(sdkPromptsDir, 'agents', 'gsd-roadmapper.md'),
+        join(sdkPromptsDir, 'agents', 'brief-roadmapper.md'),
         '# Roadmapper Agent\nUse /gsd:execute to run.\nSDK_HEADLESS_MARKER_ROADMAPPER\n',
       );
       await writeFile(

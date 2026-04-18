@@ -12,17 +12,17 @@ allowed-tools:
 **Flags:**
 - `--name` (required) — Workspace name
 - `--repos` — Comma-separated repo paths or names. If omitted, interactive selection from child git repos in cwd
-- `--path` — Target directory. Defaults to `~/gsd-workspaces/<name>`
+- `--path` — Target directory. Defaults to `~/brief-workspaces/<name>`
 - `--strategy` — `worktree` (default, lightweight) or `clone` (fully independent)
 - `--branch` — Branch to checkout. Defaults to `workspace/<name>`
 - `--auto` — Skip interactive questions, use defaults
 </context>
 
 <objective>
-Create a physical workspace directory containing copies of specified git repos (as worktrees or clones) with an independent `.planning/` directory for isolated GSD sessions.
+Create a physical workspace directory containing copies of specified git repos (as worktrees or clones) with an independent `.planning/` directory for isolated BRIEF sessions.
 
 **Use cases:**
-- Multi-repo orchestration: work on a subset of repos in parallel with isolated GSD state
+- Multi-repo orchestration: work on a subset of repos in parallel with isolated BRIEF state
 - Feature branch isolation: create a worktree of the current repo with its own `.planning/`
 
 **Creates:**
@@ -30,15 +30,15 @@ Create a physical workspace directory containing copies of specified git repos (
 - `<path>/.planning/` — independent planning directory
 - `<path>/<repo>/` — git worktree or clone for each specified repo
 
-**After this command:** `cd` into the workspace and run `/gsd-new-project` to initialize GSD.
+**After this command:** `cd` into the workspace and run `/brief-new-project` to initialize BRIEF.
 </objective>
 
 <execution_context>
-@~/.claude/get-shit-done/workflows/new-workspace.md
-@~/.claude/get-shit-done/references/ui-brand.md
+@~/.claude/brief/workflows/new-workspace.md
+@~/.claude/brief/references/ui-brand.md
 </execution_context>
 
 <process>
-Execute the new-workspace workflow from @~/.claude/get-shit-done/workflows/new-workspace.md end-to-end.
+Execute the new-workspace workflow from @~/.claude/brief/workflows/new-workspace.md end-to-end.
 Preserve all workflow gates (validation, approvals, commits, routing).
 </process>
