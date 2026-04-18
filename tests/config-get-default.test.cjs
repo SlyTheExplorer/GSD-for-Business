@@ -16,7 +16,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const os = require('os');
 
-const GSD_TOOLS = path.join(__dirname, '..', 'get-shit-done', 'bin', 'gsd-tools.cjs');
+const GSD_TOOLS = path.join(__dirname, '..', 'brief', 'bin', 'brief-tools.cjs');
 
 describe('config-get --default flag (#1893)', () => {
   let tmpDir;

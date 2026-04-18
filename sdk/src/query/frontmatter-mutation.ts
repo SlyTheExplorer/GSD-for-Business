@@ -1,7 +1,7 @@
 /**
  * Frontmatter mutation handlers — write operations for YAML frontmatter.
  *
- * Ported from get-shit-done/bin/lib/frontmatter.cjs.
+ * Ported from brief/bin/lib/frontmatter.cjs.
  * Provides reconstructFrontmatter (serialization), spliceFrontmatter (replacement),
  * and query handlers for frontmatter.set, frontmatter.merge, frontmatter.validate.
  *

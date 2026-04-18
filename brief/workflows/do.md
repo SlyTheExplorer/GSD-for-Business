@@ -1,5 +1,5 @@
 <purpose>
-Analyze freeform text from the user and route to the most appropriate GSD command. This is a dispatcher — it never does the work itself. Match user intent to the best command, confirm the routing, and hand off.
+Analyze freeform text from the user and route to the most appropriate BRIEF command. This is a dispatcher — it never does the work itself. Match user intent to the best command, confirm the routing, and hand off.
 </purpose>
 
 <required_reading>
@@ -16,7 +16,7 @@ Read all files referenced by the invoking prompt's execution_context before star
 If `$ARGUMENTS` is empty, ask via AskUserQuestion:
 
 ```
-What would you like to do? Describe the task, bug, or idea and I'll route it to the right GSD command.
+What would you like to do? Describe the task, bug, or idea and I'll route it to the right BRIEF command.
 ```
 
 Wait for response before continuing.
@@ -39,31 +39,31 @@ Evaluate `$ARGUMENTS` against these routing rules. Apply the **first matching** 
 
 | If the text describes... | Route to | Why |
 |--------------------------|----------|-----|
-| Starting a new project, "set up", "initialize" | `/gsd-new-project` | Needs full project initialization |
-| Mapping or analyzing an existing codebase | `/gsd-map-codebase` | Codebase discovery |
-| A bug, error, crash, failure, or something broken | `/gsd-debug` | Needs systematic investigation |
-| Exploring, researching, comparing, or "how does X work" | `/gsd-research-phase` | Domain research before planning |
-| Discussing vision, "how should X look", brainstorming | `/gsd-discuss-phase` | Needs context gathering |
-| A complex task: refactoring, migration, multi-file architecture, system redesign | `/gsd-add-phase` | Needs a full phase with plan/build cycle |
-| Planning a specific phase or "plan phase N" | `/gsd-plan-phase` | Direct planning request |
-| Executing a phase or "build phase N", "run phase N" | `/gsd-execute-phase` | Direct execution request |
-| Running all remaining phases automatically | `/gsd-autonomous` | Full autonomous execution |
-| A review or quality concern about existing work | `/gsd-verify-work` | Needs verification |
-| Checking progress, status, "where am I" | `/gsd-progress` | Status check |
-| Resuming work, "pick up where I left off" | `/gsd-resume-work` | Session restoration |
-| A note, idea, or "remember to..." | `/gsd-add-todo` | Capture for later |
-| Adding tests, "write tests", "test coverage" | `/gsd-add-tests` | Test generation |
-| Completing a milestone, shipping, releasing | `/gsd-complete-milestone` | Milestone lifecycle |
-| A specific, actionable, small task (add feature, fix typo, update config) | `/gsd-quick` | Self-contained, single executor |
+| Starting a new project, "set up", "initialize" | `/brief-new-project` | Needs full project initialization |
+| Mapping or analyzing an existing codebase | `/brief-map-codebase` | Codebase discovery |
+| A bug, error, crash, failure, or something broken | `/brief-debug` | Needs systematic investigation |
+| Exploring, researching, comparing, or "how does X work" | `/brief-research-phase` | Domain research before planning |
+| Discussing vision, "how should X look", brainstorming | `/brief-discuss-phase` | Needs context gathering |
+| A complex task: refactoring, migration, multi-file architecture, system redesign | `/brief-add-phase` | Needs a full phase with plan/build cycle |
+| Planning a specific phase or "plan phase N" | `/brief-plan-phase` | Direct planning request |
+| Executing a phase or "build phase N", "run phase N" | `/brief-execute-phase` | Direct execution request |
+| Running all remaining phases automatically | `/brief-autonomous` | Full autonomous execution |
+| A review or quality concern about existing work | `/brief-verify-work` | Needs verification |
+| Checking progress, status, "where am I" | `/brief-progress` | Status check |
+| Resuming work, "pick up where I left off" | `/brief-resume-work` | Session restoration |
+| A note, idea, or "remember to..." | `/brief-add-todo` | Capture for later |
+| Adding tests, "write tests", "test coverage" | `/brief-add-tests` | Test generation |
+| Completing a milestone, shipping, releasing | `/brief-complete-milestone` | Milestone lifecycle |
+| A specific, actionable, small task (add feature, fix typo, update config) | `/brief-quick` | Self-contained, single executor |
 
-**Requires `.planning/` directory:** All routes except `/gsd-new-project`, `/gsd-map-codebase`, `/gsd-help`, and `/gsd-join-discord`. If the project doesn't exist and the route requires it, suggest `/gsd-new-project` first.
+**Requires `.planning/` directory:** All routes except `/brief-new-project`, `/brief-map-codebase`, `/brief-help`, and `/brief-join-discord`. If the project doesn't exist and the route requires it, suggest `/brief-new-project` first.
 
 **Ambiguity handling:** If the text could reasonably match multiple routes, ask the user via AskUserQuestion with the top 2-3 options. For example:
 
 ```
 "Refactor the authentication system" could be:
-1. /gsd-add-phase — Full planning cycle (recommended for multi-file refactors)
-2. /gsd-quick — Quick execution (if scope is small and clear)
+1. /brief-add-phase — Full planning cycle (recommended for multi-file refactors)
+2. /brief-quick — Quick execution (if scope is small and clear)
 
 Which approach fits better?
 ```
@@ -74,7 +74,7 @@ Which approach fits better?
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► ROUTING
+ BRIEF ► ROUTING
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 **Input:** {first 80 chars of $ARGUMENTS}
@@ -86,7 +86,7 @@ Which approach fits better?
 <step name="dispatch">
 **Invoke the chosen command.**
 
-Run the selected `/gsd-*` command, passing `$ARGUMENTS` as args.
+Run the selected `/brief-*` command, passing `$ARGUMENTS` as args.
 
 If the chosen command expects a phase number and one wasn't provided in the text, extract it from context or ask via AskUserQuestion.
 
@@ -97,7 +97,7 @@ After invoking the command, stop. The dispatched command handles everything from
 
 <success_criteria>
 - [ ] Input validated (not empty)
-- [ ] Intent matched to exactly one GSD command
+- [ ] Intent matched to exactly one BRIEF command
 - [ ] Ambiguity resolved via user question (if needed)
 - [ ] Project existence checked for routes that require it
 - [ ] Routing decision displayed before dispatch

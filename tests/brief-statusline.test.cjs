@@ -15,7 +15,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-const { parseStateMd, formatGsdState, readGsdState } = require('../hooks/gsd-statusline.js');
+const { parseStateMd, formatGsdState, readGsdState } = require('../hooks/brief-statusline.js');
 
 // ─── parseStateMd ───────────────────────────────────────────────────────────
 

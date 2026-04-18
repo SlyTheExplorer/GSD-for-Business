@@ -5,8 +5,8 @@ const path = require('path');
 
 describe('MCP tool usage in GSD agents', () => {
   const agentFiles = [
-    path.join(__dirname, '..', 'agents', 'gsd-executor.md'),
-    path.join(__dirname, '..', 'agents', 'gsd-planner.md'),
+    path.join(__dirname, '..', 'agents', 'brief-executor.md'),
+    path.join(__dirname, '..', 'agents', 'brief-planner.md'),
   ];
 
   for (const agentFile of agentFiles) {
@@ -23,7 +23,7 @@ describe('MCP tool usage in GSD agents', () => {
     });
   }
 
-  test('gsd-executor.md explicitly instructs to use available MCP tools', () => {
+  test('brief-executor.md explicitly instructs to use available MCP tools', () => {
     const content = fs.readFileSync(agentFiles[0], 'utf-8');
     assert.ok(
       content.includes('MCP') || content.includes('mcp__'),

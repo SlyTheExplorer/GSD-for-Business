@@ -1,4 +1,4 @@
-# GSD Configuration Reference
+# BRIEF Configuration Reference
 
 > Full configuration schema, workflow toggles, model profiles, and git branching options. For feature context, see [Feature Reference](FEATURES.md).
 
@@ -6,7 +6,7 @@
 
 ## Configuration File
 
-GSD stores project settings in `.planning/config.json`. Created during `/gsd-new-project`, updated via `/gsd-settings`.
+BRIEF stores project settings in `.planning/config.json`. Created during `/brief-new-project`, updated via `/brief-settings`.
 
 ### Full Schema
 
@@ -111,7 +111,7 @@ GSD stores project settings in `.planning/config.json`. Created during `/gsd-new
 | `project_code` | string | any short string | (none) | Prefix for phase directory names (e.g., `"ABC"` produces `ABC-01-setup/`). Added in v1.31 |
 | `response_language` | string | language code | (none) | Language for agent responses (e.g., `"pt"`, `"ko"`, `"ja"`). Propagates to all spawned agents for cross-phase language consistency. Added in v1.32 |
 | `context_profile` | string | `dev`, `research`, `review` | (none) | Execution context preset that applies a pre-configured bundle of mode, model, and workflow settings for the current type of work. Added in v1.34 |
-| `claude_md_path` | string | any file path | (none) | Custom output path for the generated CLAUDE.md file. Useful for monorepos or projects that need CLAUDE.md in a non-root location. When set, GSD writes its CLAUDE.md content to this path instead of the project root. Added in v1.36 |
+| `claude_md_path` | string | any file path | (none) | Custom output path for the generated CLAUDE.md file. Useful for monorepos or projects that need CLAUDE.md in a non-root location. When set, BRIEF writes its CLAUDE.md content to this path instead of the project root. Added in v1.36 |
 
 > **Note:** `granularity` was renamed from `depth` in v1.22.3. Existing configs are auto-migrated.
 
@@ -129,20 +129,20 @@ All workflow toggles follow the **absent = enabled** pattern. If a key is missin
 | `workflow.auto_advance` | boolean | `false` | Auto-chain discuss → plan → execute without stopping |
 | `workflow.nyquist_validation` | boolean | `true` | Test coverage mapping during plan-phase research |
 | `workflow.ui_phase` | boolean | `true` | Generate UI design contracts for frontend phases |
-| `workflow.ui_safety_gate` | boolean | `true` | Prompt to run /gsd-ui-phase for frontend phases during plan-phase |
+| `workflow.ui_safety_gate` | boolean | `true` | Prompt to run /brief-ui-phase for frontend phases during plan-phase |
 | `workflow.node_repair` | boolean | `true` | Autonomous task repair on verification failure |
 | `workflow.node_repair_budget` | number | `2` | Max repair attempts per failed task |
 | `workflow.research_before_questions` | boolean | `false` | Run research before discussion questions instead of after |
-| `workflow.discuss_mode` | string | `'discuss'` | Controls how `/gsd-discuss-phase` gathers context. `'discuss'` (default) asks questions one-by-one. `'assumptions'` reads the codebase first, generates structured assumptions with confidence levels, and only asks you to correct what's wrong. Added in v1.28 |
-| `workflow.skip_discuss` | boolean | `false` | When `true`, `/gsd-autonomous` bypasses the discuss-phase entirely, writing minimal CONTEXT.md from the ROADMAP phase goal. Useful for projects where developer preferences are fully captured in PROJECT.md/REQUIREMENTS.md. Added in v1.28 |
+| `workflow.discuss_mode` | string | `'discuss'` | Controls how `/brief-discuss-phase` gathers context. `'discuss'` (default) asks questions one-by-one. `'assumptions'` reads the codebase first, generates structured assumptions with confidence levels, and only asks you to correct what's wrong. Added in v1.28 |
+| `workflow.skip_discuss` | boolean | `false` | When `true`, `/brief-autonomous` bypasses the discuss-phase entirely, writing minimal CONTEXT.md from the ROADMAP phase goal. Useful for projects where developer preferences are fully captured in PROJECT.md/REQUIREMENTS.md. Added in v1.28 |
 | `workflow.text_mode` | boolean | `false` | Replaces AskUserQuestion TUI menus with plain-text numbered lists. Required for Claude Code remote sessions (`/rc` mode) where TUI menus don't render. Can also be set per-session with `--text` flag on discuss-phase. Added in v1.28 |
 | `workflow.use_worktrees` | boolean | `true` | When `false`, disables git worktree isolation for parallel execution. Users who prefer sequential execution or whose environment does not support worktrees can disable this. Added in v1.31 |
-| `workflow.code_review` | boolean | `true` | Enable `/gsd-code-review` and `/gsd-code-review-fix` commands. When `false`, the commands exit with a configuration gate message. Added in v1.34 |
-| `workflow.code_review_depth` | string | `standard` | Default review depth for `/gsd-code-review`: `quick` (pattern-matching only), `standard` (per-file analysis), or `deep` (cross-file with import graphs). Can be overridden per-run with `--depth=`. Added in v1.34 |
+| `workflow.code_review` | boolean | `true` | Enable `/brief-code-review` and `/brief-code-review-fix` commands. When `false`, the commands exit with a configuration gate message. Added in v1.34 |
+| `workflow.code_review_depth` | string | `standard` | Default review depth for `/brief-code-review`: `quick` (pattern-matching only), `standard` (per-file analysis), or `deep` (cross-file with import graphs). Can be overridden per-run with `--depth=`. Added in v1.34 |
 | `workflow.plan_bounce` | boolean | `false` | Run external validation script against generated plans. When enabled, the plan-phase orchestrator pipes each PLAN.md through the script specified by `plan_bounce_script` and blocks on non-zero exit. Added in v1.36 |
 | `workflow.plan_bounce_script` | string | (none) | Path to the external script invoked for plan bounce validation. Receives the PLAN.md path as its first argument. Required when `plan_bounce` is `true`. Added in v1.36 |
 | `workflow.plan_bounce_passes` | number | `2` | Number of sequential bounce passes to run. Each pass feeds the previous pass's output back into the validator. Higher values increase rigor at the cost of latency. Added in v1.36 |
-| `workflow.code_review_command` | string | (none) | Shell command for external code review integration in `/gsd-ship`. Receives changed file paths via stdin. Non-zero exit blocks the ship workflow. Added in v1.36 |
+| `workflow.code_review_command` | string | (none) | Shell command for external code review integration in `/brief-ship`. Receives changed file paths via stdin. Non-zero exit blocks the ship workflow. Added in v1.36 |
 | `workflow.tdd_mode` | boolean | `false` | Enable TDD pipeline as a first-class execution mode. When `true`, the planner aggressively applies `type: tdd` to eligible tasks (business logic, APIs, validations, algorithms) and the executor enforces RED/GREEN/REFACTOR gate sequence. An end-of-phase collaborative review checkpoint verifies gate compliance. Added in v1.37 |
 | `workflow.cross_ai_execution` | boolean | `false` | Delegate phase execution to an external AI CLI instead of spawning local executor agents. Useful for leveraging a different model's strengths for specific phases. Added in v1.36 |
 | `workflow.cross_ai_command` | string | (none) | Shell command template for cross-AI execution. Receives the phase prompt via stdin. Must produce SUMMARY.md-compatible output. Required when `cross_ai_execution` is `true`. Added in v1.36 |
@@ -176,7 +176,7 @@ If `.planning/` is in `.gitignore`, `commit_docs` is automatically `false` regar
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
 | `hooks.context_warnings` | boolean | `true` | Show context window usage warnings via context monitor hook |
-| `hooks.workflow_guard` | boolean | `false` | Warn when file edits happen outside GSD workflow context (advises using `/gsd-quick` or `/gsd-fast`) |
+| `hooks.workflow_guard` | boolean | `false` | Warn when file edits happen outside BRIEF workflow context (advises using `/brief-quick` or `/brief-fast`) |
 
 The prompt injection guard hook (`gsd-prompt-guard.js`) is always active and cannot be disabled — it's a security feature, not a workflow toggle.
 
@@ -192,7 +192,7 @@ To keep planning artifacts out of git:
 
 ## Agent Skills Injection
 
-Inject custom skill files into GSD subagent prompts. Skills are read by agents at spawn time, giving them project-specific instructions beyond what CLAUDE.md provides.
+Inject custom skill files into BRIEF subagent prompts. Skills are read by agents at spawn time, giving them project-specific instructions beyond what CLAUDE.md provides.
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
@@ -205,9 +205,9 @@ Add an `agent_skills` section to `.planning/config.json` mapping agent types to 
 ```json
 {
   "agent_skills": {
-    "gsd-executor": ["skills/testing-standards", "skills/api-conventions"],
-    "gsd-planner": ["skills/architecture-rules"],
-    "gsd-verifier": ["skills/acceptance-criteria"]
+    "brief-executor": ["skills/testing-standards", "skills/api-conventions"],
+    "brief-planner": ["skills/architecture-rules"],
+    "brief-verifier": ["skills/acceptance-criteria"]
   }
 }
 ```
@@ -216,25 +216,22 @@ Each path must be a directory containing a `SKILL.md` file. Paths are validated 
 
 ### Supported Agent Types
 
-Any GSD agent type can receive skills. Common types:
+Any BRIEF agent type can receive skills. Common types:
 
-- `gsd-executor` -- executes implementation plans
-- `gsd-planner` -- creates phase plans
+- `brief-executor` -- executes implementation plans
+- `brief-planner` -- creates phase plans
 - `gsd-checker` -- verifies plan quality
-- `gsd-verifier` -- post-execution verification
+- `brief-verifier` -- post-execution verification
 - `gsd-researcher` -- phase research
-- `gsd-project-researcher` -- new-project research
-- `gsd-debugger` -- diagnostic agents
-- `gsd-codebase-mapper` -- codebase analysis
+- `brief-project-researcher` -- new-project research
+- `brief-codebase-mapper` -- codebase analysis
 - `gsd-advisor` -- discuss-phase advisors
-- `gsd-ui-researcher` -- UI design contract creation
-- `gsd-ui-checker` -- UI spec verification
-- `gsd-roadmapper` -- roadmap creation
+- `brief-roadmapper` -- roadmap creation
 - `gsd-synthesizer` -- research synthesis
 
 ### How It Works
 
-At spawn time, workflows call `node gsd-tools.cjs agent-skills <type>` to load configured skills. If skills exist for the agent type, they are injected as an `<agent_skills>` block in the Task() prompt:
+At spawn time, workflows call `node brief-tools.cjs agent-skills <type>` to load configured skills. If skills exist for the agent type, they are injected as an `<agent_skills>` block in the Task() prompt:
 
 ```xml
 <agent_skills>
@@ -251,7 +248,7 @@ If no skills are configured, the block is omitted (zero overhead).
 Set skills via the CLI:
 
 ```bash
-node gsd-tools.cjs config-set agent_skills.gsd-executor '["skills/my-skill"]'
+node brief-tools.cjs config-set agent_skills.brief-executor '["skills/my-skill"]'
 ```
 
 ---
@@ -264,16 +261,16 @@ Toggle optional capabilities via the `features.*` config namespace. Feature flag
 |---------|------|---------|-------------|
 | `features.thinking_partner` | boolean | `false` | Enable thinking partner analysis at workflow decision points |
 | `features.global_learnings` | boolean | `false` | Enable cross-project learnings pipeline (auto-copy at phase completion, planner injection) |
-| `intel.enabled` | boolean | `false` | Enable queryable codebase intelligence system. When `true`, `/gsd-intel` commands build and query a JSON index in `.planning/intel/`. Added in v1.34 |
+| `intel.enabled` | boolean | `false` | Enable queryable codebase intelligence system. When `true`, `/brief-intel` commands build and query a JSON index in `.planning/intel/`. Added in v1.34 |
 
 ### Usage
 
 ```bash
 # Enable a feature
-node gsd-tools.cjs config-set features.global_learnings true
+node brief-tools.cjs config-set features.global_learnings true
 
 # Disable a feature
-node gsd-tools.cjs config-set features.thinking_partner false
+node brief-tools.cjs config-set features.thinking_partner false
 ```
 
 The `features.*` namespace is a dynamic key pattern — new feature flags can be added without modifying `VALID_CONFIG_KEYS`. Any key matching `features.<name>` is accepted by the config system.
@@ -302,7 +299,7 @@ The `features.*` namespace is a dynamic key pattern — new feature flags can be
 | `git.branching_strategy` | enum | `none` | `none`, `phase`, or `milestone` |
 | `git.phase_branch_template` | string | `gsd/phase-{phase}-{slug}` | Branch name template for phase strategy |
 | `git.milestone_branch_template` | string | `gsd/{milestone}-{slug}` | Branch name template for milestone strategy |
-| `git.quick_branch_template` | string or null | `null` | Optional branch name template for `/gsd-quick` tasks |
+| `git.quick_branch_template` | string or null | `null` | Optional branch name template for `/brief-quick` tasks |
 
 ### Strategy Comparison
 
@@ -372,7 +369,7 @@ Settings for the security enforcement feature (v1.31). All follow the **absent =
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
-| `security_enforcement` | boolean | `true` | Enable threat-model-anchored security verification via `/gsd-secure-phase`. When `false`, security checks are skipped entirely |
+| `security_enforcement` | boolean | `true` | Enable threat-model-anchored security verification via `/brief-secure-phase`. When `false`, security checks are skipped entirely |
 | `security_asvs_level` | number (1-3) | `1` | OWASP ASVS verification level. Level 1 = opportunistic, Level 2 = standard, Level 3 = comprehensive |
 | `security_block_on` | string | `"high"` | Minimum severity that blocks phase advancement. Options: `"high"`, `"medium"`, `"low"` |
 
@@ -380,7 +377,7 @@ Settings for the security enforcement feature (v1.31). All follow the **absent =
 
 ## Review Settings
 
-Configure per-CLI model selection for `/gsd-review`. When set, overrides the CLI's default model for that reviewer.
+Configure per-CLI model selection for `/brief-review`. When set, overrides the CLI's default model for that reviewer.
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
@@ -410,7 +407,7 @@ Falls back to each CLI's configured default when a key is absent. Added in v1.35
 
 ## Manager Passthrough Flags
 
-Configure per-step flags that `/gsd-manager` appends to each dispatched command. This allows customizing how the manager runs discuss, plan, and execute steps without manual flag entry.
+Configure per-step flags that `/brief-manager` appends to each dispatched command. This allows customizing how the manager runs discuss, plan, and execute steps without manual flag entry.
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
@@ -432,7 +429,7 @@ Configure per-step flags that `/gsd-manager` appends to each dispatched command.
 }
 ```
 
-Invalid flag tokens are sanitized and logged as warnings. Only recognized GSD flags are passed through.
+Invalid flag tokens are sanitized and logged as warnings. Only recognized BRIEF flags are passed through.
 
 ---
 
@@ -442,18 +439,16 @@ Invalid flag tokens are sanitized and logged as warnings. Only recognized GSD fl
 
 | Agent | `quality` | `balanced` | `budget` | `inherit` |
 |-------|-----------|------------|----------|-----------|
-| gsd-planner | Opus | Opus | Sonnet | Inherit |
-| gsd-roadmapper | Opus | Sonnet | Sonnet | Inherit |
-| gsd-executor | Opus | Sonnet | Sonnet | Inherit |
-| gsd-phase-researcher | Opus | Sonnet | Haiku | Inherit |
-| gsd-project-researcher | Opus | Sonnet | Haiku | Inherit |
-| gsd-research-synthesizer | Sonnet | Sonnet | Haiku | Inherit |
-| gsd-debugger | Opus | Sonnet | Sonnet | Inherit |
-| gsd-codebase-mapper | Sonnet | Haiku | Haiku | Inherit |
-| gsd-verifier | Sonnet | Sonnet | Haiku | Inherit |
-| gsd-plan-checker | Sonnet | Sonnet | Haiku | Inherit |
-| gsd-integration-checker | Sonnet | Sonnet | Haiku | Inherit |
-| gsd-nyquist-auditor | Sonnet | Sonnet | Haiku | Inherit |
+| brief-planner | Opus | Opus | Sonnet | Inherit |
+| brief-roadmapper | Opus | Sonnet | Sonnet | Inherit |
+| brief-executor | Opus | Sonnet | Sonnet | Inherit |
+| brief-phase-researcher | Opus | Sonnet | Haiku | Inherit |
+| brief-project-researcher | Opus | Sonnet | Haiku | Inherit |
+| brief-research-synthesizer | Sonnet | Sonnet | Haiku | Inherit |
+| brief-codebase-mapper | Sonnet | Haiku | Haiku | Inherit |
+| brief-verifier | Sonnet | Sonnet | Haiku | Inherit |
+| brief-plan-checker | Sonnet | Sonnet | Haiku | Inherit |
+| brief-nyquist-auditor | Sonnet | Sonnet | Haiku | Inherit |
 
 ### Per-Agent Overrides
 
@@ -463,8 +458,8 @@ Override specific agents without changing the entire profile:
 {
   "model_profile": "balanced",
   "model_overrides": {
-    "gsd-executor": "opus",
-    "gsd-planner": "haiku"
+    "brief-executor": "opus",
+    "brief-planner": "haiku"
   }
 }
 ```
@@ -473,7 +468,7 @@ Valid override values: `opus`, `sonnet`, `haiku`, `inherit`, or any fully-qualif
 
 ### Non-Claude Runtimes (Codex, OpenCode, Gemini CLI, Kilo)
 
-When GSD is installed for a non-Claude runtime, the installer automatically sets `resolve_model_ids: "omit"` in `~/.gsd/defaults.json`. This causes GSD to return an empty model parameter for all agents, so each agent uses whatever model the runtime is configured with. No additional setup is needed for the default case.
+When BRIEF is installed for a non-Claude runtime, the installer automatically sets `resolve_model_ids: "omit"` in `~/.gsd/defaults.json`. This causes BRIEF to return an empty model parameter for all agents, so each agent uses whatever model the runtime is configured with. No additional setup is needed for the default case.
 
 If you want different agents to use different models, use `model_overrides` with fully-qualified model IDs that your runtime recognizes:
 
@@ -481,10 +476,9 @@ If you want different agents to use different models, use `model_overrides` with
 {
   "resolve_model_ids": "omit",
   "model_overrides": {
-    "gsd-planner": "o3",
-    "gsd-executor": "o4-mini",
-    "gsd-debugger": "o3",
-    "gsd-codebase-mapper": "o4-mini"
+    "brief-planner": "o3",
+    "brief-executor": "o4-mini",
+    "brief-codebase-mapper": "o4-mini"
   }
 }
 ```
@@ -537,4 +531,4 @@ Save settings as global defaults for future projects:
 
 **Location:** `~/.gsd/defaults.json`
 
-When `/gsd-new-project` creates a new `config.json`, it reads global defaults and merges them as the starting configuration. Per-project settings always override globals.
+When `/brief-new-project` creates a new `config.json`, it reads global defaults and merges them as the starting configuration. Per-project settings always override globals.

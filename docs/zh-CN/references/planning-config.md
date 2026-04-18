@@ -36,19 +36,19 @@
 - 用户必须将 `.planning/` 添加到 `.gitignore`
 - 适用于：OSS 贡献、客户项目、保持规划私有
 
-**使用 gsd-tools.cjs（推荐）：**
+**使用 brief-tools.cjs（推荐）：**
 
 ```bash
 # 提交时自动检查 commit_docs + gitignore：
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "docs: update state" --files .planning/STATE.md
+node "$HOME/.claude/brief/bin/brief-tools.cjs" commit "docs: update state" --files .planning/STATE.md
 
 # 通过 state load 加载配置（返回 JSON）：
-INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state load)
+INIT=$(node "$HOME/.claude/brief/bin/brief-tools.cjs" state load)
 if [[ "$INIT" == @file:* ]]; then INIT=$(cat "${INIT#@file:}"); fi
 # commit_docs 在 JSON 输出中可用
 
 # 或使用包含 commit_docs 的 init 命令：
-INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" init execute-phase "1")
+INIT=$(node "$HOME/.claude/brief/bin/brief-tools.cjs" init execute-phase "1")
 if [[ "$INIT" == @file:* ]]; then INIT=$(cat "${INIT#@file:}"); fi
 # commit_docs 包含在所有 init 命令输出中
 ```
@@ -58,7 +58,7 @@ if [[ "$INIT" == @file:* ]]; then INIT=$(cat "${INIT#@file:}"); fi
 **通过 CLI 提交（自动处理检查）：**
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "docs: update state" --files .planning/STATE.md
+node "$HOME/.claude/brief/bin/brief-tools.cjs" commit "docs: update state" --files .planning/STATE.md
 ```
 
 CLI 在内部检查 `commit_docs` 配置和 gitignore 状态 —— 无需手动条件判断。
@@ -76,7 +76,7 @@ CLI 在内部检查 `commit_docs` 配置和 gitignore 状态 —— 无需手动
 - 在应该包含 `.planning/` 的广泛 rg 搜索中添加 `--no-ignore`
 - 仅在搜索整个仓库并期望 `.planning/` 匹配时需要
 
-**注意：** 大多数 GSD 操作使用直接文件读取或显式路径，无论 gitignore 状态如何都有效。
+**注意：** 大多数 BRIEF 操作使用直接文件读取或显式路径，无论 gitignore 状态如何都有效。
 
 </search_behavior>
 
@@ -119,7 +119,7 @@ CLI 在内部检查 `commit_docs` 配置和 gitignore 状态 —— 无需手动
 
 **当 `git.branching_strategy: "none"`（默认）：**
 - 所有工作提交到当前分支
-- 标准 GSD 行为
+- 标准 BRIEF 行为
 
 **当 `git.branching_strategy: "phase"`：**
 - `execute-phase` 在执行前创建/切换到分支
@@ -146,14 +146,14 @@ CLI 在内部检查 `commit_docs` 配置和 gitignore 状态 —— 无需手动
 
 使用 `init execute-phase` 返回所有配置为 JSON：
 ```bash
-INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" init execute-phase "1")
+INIT=$(node "$HOME/.claude/brief/bin/brief-tools.cjs" init execute-phase "1")
 if [[ "$INIT" == @file:* ]]; then INIT=$(cat "${INIT#@file:}"); fi
 # JSON 输出包含：branching_strategy, phase_branch_template, milestone_branch_template
 ```
 
 或使用 `state load` 获取配置值：
 ```bash
-INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state load)
+INIT=$(node "$HOME/.claude/brief/bin/brief-tools.cjs" state load)
 if [[ "$INIT" == @file:* ]]; then INIT=$(cat "${INIT#@file:}"); fi
 # 从 JSON 解析 branching_strategy, phase_branch_template, milestone_branch_template
 ```

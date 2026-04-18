@@ -22,7 +22,7 @@ const {
   validateShellArg,
   validatePromptStructure,
   scanEntropyAnomalies,
-} = require('../get-shit-done/bin/lib/security.cjs');
+} = require('../brief/bin/lib/security.cjs');
 
 // ─── Path Traversal Prevention ──────────────────────────────────────────────
 
@@ -477,7 +477,7 @@ describe('gsd-statusline session_id path traversal', () => {
   };
 
   test('does not write bridge file for session_id with ../ traversal', () => {
-    const maliciousId = '../../../etc/gsd-test';
+    const maliciousId = '../../../etc/brief-test';
     const bridgePath = path.join(tmpDir, 'claude-ctx-' + maliciousId + '.json');
     try { fs.unlinkSync(bridgePath); } catch { /* intentionally empty */ }
 
@@ -673,7 +673,7 @@ describe('validatePromptStructure', () => {
     const text = [
       '<purpose>Act as a planner</purpose>',
       '<required_reading>PLAN.md</required_reading>',
-      '<available_agent_types>gsd-executor</available_agent_types>',
+      '<available_agent_types>brief-executor</available_agent_types>',
     ].join('\n');
     const result = validatePromptStructure(text, 'agent');
     assert.ok(result.valid);

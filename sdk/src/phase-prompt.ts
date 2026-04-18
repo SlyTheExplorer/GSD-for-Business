@@ -76,7 +76,7 @@ export class PromptFactory {
     projectAgentsDir?: string;
     sdkPromptsDir?: string;
   }) {
-    const gsdInstallDir = options?.gsdInstallDir ?? join(homedir(), '.claude', 'get-shit-done');
+    const gsdInstallDir = options?.gsdInstallDir ?? join(homedir(), '.claude', 'brief');
     this.workflowsDir = join(gsdInstallDir, 'workflows');
     this.agentsDir = options?.agentsDir ?? join(homedir(), '.claude', 'agents');
     this.projectAgentsDir = options?.projectAgentsDir;

@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-const GSD_ROOT = path.join(__dirname, '..', 'get-shit-done');
+const GSD_ROOT = path.join(__dirname, '..', 'brief');
 
 describe('Thinking Partner Integration (#1726)', () => {
   // Reference doc tests

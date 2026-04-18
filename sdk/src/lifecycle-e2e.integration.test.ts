@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url';
 
 import { GSD } from './index.js';
 import { InitRunner } from './init-runner.js';
-import { GSDTools, resolveGsdToolsPath } from './gsd-tools.js';
+import { GSDTools, resolveGsdToolsPath } from './brief-tools.js';
 import { GSDEventStream } from './event-stream.js';
 import { GSDEventType, PhaseStepType } from './types.js';
 import type { GSDEvent, PhaseRunnerResult, RoadmapAnalysis } from './types.js';

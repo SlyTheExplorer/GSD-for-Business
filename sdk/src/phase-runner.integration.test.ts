@@ -1,5 +1,5 @@
 /**
- * Integration test — proves PhaseRunner state machine works against real gsd-tools.cjs.
+ * Integration test — proves PhaseRunner state machine works against real brief-tools.cjs.
  *
  * Creates a temp `.planning/` directory structure, instantiates real GSDTools,
  * and exercises the state machine. Sessions will fail (no Claude CLI in CI) but
@@ -12,7 +12,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
-import { GSDTools, resolveGsdToolsPath } from './gsd-tools.js';
+import { GSDTools, resolveGsdToolsPath } from './brief-tools.js';
 import { PhaseRunner } from './phase-runner.js';
 import type { PhaseRunnerDeps } from './phase-runner.js';
 import { ContextEngine } from './context-engine.js';
@@ -66,7 +66,7 @@ async function createTempPlanningDir(): Promise<string> {
 
 // ─── Test suite ──────────────────────────────────────────────────────────────
 
-describe.skipIf(!gsdToolsAvailable)('Integration: PhaseRunner against real gsd-tools.cjs', () => {
+describe.skipIf(!gsdToolsAvailable)('Integration: PhaseRunner against real brief-tools.cjs', () => {
   let tmpDir: string;
   let tools: GSDTools;
 
@@ -214,7 +214,7 @@ describe.skipIf(!gsdToolsAvailable)('Integration: PhaseRunner against real gsd-t
       maxBudgetPerStep: 0.10,
     });
 
-    // Proves the full wiring works: GSD → PhaseRunner → GSDTools → gsd-tools.cjs
+    // Proves the full wiring works: GSD → PhaseRunner → GSDTools → brief-tools.cjs
     expect(result.phaseNumber).toBe('01');
     expect(result.phaseName).toBe('integration-test');
     expect(result.steps.length).toBeGreaterThanOrEqual(1);

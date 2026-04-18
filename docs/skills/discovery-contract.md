@@ -1,6 +1,6 @@
 # Skill Discovery Contract
 
-> Canonical rules for scanning, inventorying, and rendering GSD skills.
+> Canonical rules for scanning, inventorying, and rendering BRIEF skills.
 
 ## Root Categories
 
@@ -27,7 +27,7 @@ These roots are used for managed runtime installs and inventory reporting.
 
 ### Deprecated Import-Only Root
 
-- `~/.claude/get-shit-done/skills/`
+- `~/.claude/brief/skills/`
 
 This root is kept for legacy migration only. Inventory code may report it, but new installs should not write here.
 
@@ -44,7 +44,7 @@ This is not a skills root. Discovery code only checks whether it exists so inven
 - Use the directory name when `name` is missing.
 - Extract trigger hints from body lines that match `TRIGGER when: ...`.
 - Treat `gsd-*` directories as installed framework skills.
-- Treat `~/.claude/get-shit-done/skills/` entries as deprecated/import-only.
+- Treat `~/.claude/brief/skills/` entries as deprecated/import-only.
 - Treat `~/.claude/commands/gsd/` as legacy command installation metadata, not skills.
 
 ## Scanner Behavior
@@ -55,14 +55,14 @@ This is not a skills root. Discovery code only checks whether it exists so inven
 - Scans project roots plus managed global roots.
 - Does not scan the deprecated import-only root.
 
-### `get-shit-done/bin/lib/profile-output.cjs`
+### `brief/bin/lib/profile-output.cjs`
 
 - Builds the project `CLAUDE.md` skills section.
 - Scans project roots only.
 - Skips `gsd-*` directories so the project section stays focused on user/project skills.
 - Adds `.codex/skills/` to the project discovery set.
 
-### `get-shit-done/bin/lib/init.cjs`
+### `brief/bin/lib/init.cjs`
 
 - Generates the skill inventory object for `skill-manifest`.
 - Reports `skills`, `roots`, `installation`, and `counts`.
@@ -75,7 +75,7 @@ This is not a skills root. Discovery code only checks whether it exists so inven
 
 - `skills`: normalized skill entries
 - `roots`: the canonical roots that were checked
-- `installation`: summary booleans for installed GSD skills and legacy Claude commands
+- `installation`: summary booleans for installed BRIEF skills and legacy Claude commands
 - `counts`: small inventory counts for downstream consumers
 
 Each skill entry includes:

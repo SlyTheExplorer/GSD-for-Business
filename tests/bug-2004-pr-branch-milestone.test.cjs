@@ -1,7 +1,7 @@
 /**
  * Regression tests for bug #2004
  *
- * /gsd-pr-branch must not exclude milestone archive and structural planning
+ * /brief-pr-branch must not exclude milestone archive and structural planning
  * commits. The previous implementation filtered ALL .planning/-only commits,
  * including STATE.md, ROADMAP.md, MILESTONES.md, and milestones/** updates
  * that are needed to preserve repository planning state after a merge.
@@ -22,7 +22,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const workflowPath = path.resolve(
-  __dirname, '..', 'get-shit-done', 'workflows', 'pr-branch.md'
+  __dirname, '..', 'brief', 'workflows', 'pr-branch.md'
 );
 
 describe('bug #2004: pr-branch preserves structural planning commits', () => {

@@ -32,7 +32,7 @@ const {
   detectSubRepos,
   planningDir,
   timeAgo,
-} = require('../get-shit-done/bin/lib/core.cjs');
+} = require('../brief/bin/lib/core.cjs');
 
 // ─── loadConfig ────────────────────────────────────────────────────────────────
 
@@ -89,9 +89,9 @@ describe('loadConfig', () => {
 
   // Bug: loadConfig previously omitted model_overrides from return value
   test('returns model_overrides when present (REG-01)', () => {
-    writeConfig({ model_overrides: { 'gsd-executor': 'opus' } });
+    writeConfig({ model_overrides: { 'brief-executor': 'opus' } });
     const config = loadConfig(tmpDir);
-    assert.deepStrictEqual(config.model_overrides, { 'gsd-executor': 'opus' });
+    assert.deepStrictEqual(config.model_overrides, { 'brief-executor': 'opus' });
   });
 
   test('returns model_overrides as null when not in config', () => {
@@ -159,7 +159,7 @@ describe('loadConfig', () => {
     // Verify that loadConfig's unknown-key check uses config-set's VALID_CONFIG_KEYS
     // as its source of truth. If a new key is added to config-set, it should
     // automatically be recognized by loadConfig without a separate update.
-    const { VALID_CONFIG_KEYS } = require('../get-shit-done/bin/lib/config.cjs');
+    const { VALID_CONFIG_KEYS } = require('../brief/bin/lib/config.cjs');
     // Every top-level key from VALID_CONFIG_KEYS should be recognized
     const topLevelKeys = [...VALID_CONFIG_KEYS].map(k => k.split('.')[0]);
     for (const key of topLevelKeys) {
@@ -276,7 +276,7 @@ describe('resolveModelInternal', () => {
 
   describe('model profile structural validation', () => {
     test('all known agents resolve to a valid string for each profile', () => {
-      const knownAgents = ['gsd-planner', 'gsd-executor', 'gsd-phase-researcher', 'gsd-codebase-mapper'];
+      const knownAgents = ['brief-planner', 'brief-executor', 'brief-phase-researcher', 'brief-codebase-mapper'];
       const profiles = ['quality', 'balanced', 'budget', 'inherit'];
       const validValues = ['inherit', 'sonnet', 'haiku', 'opus'];
 
@@ -293,7 +293,7 @@ describe('resolveModelInternal', () => {
     });
 
     test('inherit profile forces all known agents to inherit model', () => {
-      const knownAgents = ['gsd-planner', 'gsd-executor', 'gsd-phase-researcher', 'gsd-codebase-mapper'];
+      const knownAgents = ['brief-planner', 'brief-executor', 'brief-phase-researcher', 'brief-codebase-mapper'];
       writeConfig({ model_profile: 'inherit' });
       for (const agent of knownAgents) {
         assert.strictEqual(resolveModelInternal(tmpDir, agent), 'inherit');
@@ -305,25 +305,25 @@ describe('resolveModelInternal', () => {
     test('per-agent override takes precedence over profile', () => {
       writeConfig({
         model_profile: 'balanced',
-        model_overrides: { 'gsd-executor': 'haiku' },
+        model_overrides: { 'brief-executor': 'haiku' },
       });
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-executor'), 'haiku');
+      assert.strictEqual(resolveModelInternal(tmpDir, 'brief-executor'), 'haiku');
     });
 
     test('opus override resolves to opus', () => {
       writeConfig({
-        model_overrides: { 'gsd-executor': 'opus' },
+        model_overrides: { 'brief-executor': 'opus' },
       });
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-executor'), 'opus');
+      assert.strictEqual(resolveModelInternal(tmpDir, 'brief-executor'), 'opus');
     });
 
     test('agents not in override fall back to profile', () => {
       writeConfig({
         model_profile: 'quality',
-        model_overrides: { 'gsd-executor': 'haiku' },
+        model_overrides: { 'brief-executor': 'haiku' },
       });
-      // gsd-planner not overridden, should use quality profile -> opus
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-planner'), 'opus');
+      // brief-planner not overridden, should use quality profile -> opus
+      assert.strictEqual(resolveModelInternal(tmpDir, 'brief-planner'), 'opus');
     });
   });
 
@@ -340,15 +340,15 @@ describe('resolveModelInternal', () => {
 
     test('defaults to balanced profile when model_profile missing', () => {
       writeConfig({});
-      // balanced profile, gsd-planner -> opus
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-planner'), 'opus');
+      // balanced profile, brief-planner -> opus
+      assert.strictEqual(resolveModelInternal(tmpDir, 'brief-planner'), 'opus');
     });
   });
 
   describe('resolve_model_ids: "omit"', () => {
     test('returns empty string for known agents', () => {
       writeConfig({ resolve_model_ids: 'omit' });
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-planner'), '');
+      assert.strictEqual(resolveModelInternal(tmpDir, 'brief-planner'), '');
     });
 
     test('returns empty string for unknown agents', () => {
@@ -359,14 +359,14 @@ describe('resolveModelInternal', () => {
     test('still respects model_overrides even when omit', () => {
       writeConfig({
         resolve_model_ids: 'omit',
-        model_overrides: { 'gsd-planner': 'openai/gpt-5.4' },
+        model_overrides: { 'brief-planner': 'openai/gpt-5.4' },
       });
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-planner'), 'openai/gpt-5.4');
+      assert.strictEqual(resolveModelInternal(tmpDir, 'brief-planner'), 'openai/gpt-5.4');
     });
 
     test('returns empty string with inherit profile', () => {
       writeConfig({ resolve_model_ids: 'omit', model_profile: 'inherit' });
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-planner'), '');
+      assert.strictEqual(resolveModelInternal(tmpDir, 'brief-planner'), '');
     });
   });
 });
@@ -1077,7 +1077,7 @@ describe('stale hook path', () => {
       path.join(__dirname, '..', 'hooks', 'gsd-check-update-worker.js'), 'utf-8'
     );
     // Hooks are installed at configDir/hooks/ (e.g. ~/.claude/hooks/),
-    // not configDir/get-shit-done/hooks/ which doesn't exist (#1421)
+    // not configDir/brief/hooks/ which doesn't exist (#1421)
     assert.ok(
       content.includes("path.join(configDir, 'hooks')"),
       'stale hook check must look in configDir/hooks/ where hooks are actually installed'
@@ -1107,12 +1107,12 @@ describe('shared cache directory (#1421)', () => {
     // Statusline must check the shared cache path first
     assert.ok(
       content.includes("path.join(homeDir, '.cache', 'gsd', 'gsd-update-check.json')"),
-      'statusline must check shared cache at ~/.cache/gsd/gsd-update-check.json'
+      'statusline must check shared cache at ~/.cache/gsd/brief-update-check.json'
     );
     // Must fall back to legacy runtime-specific cache for backward compat
     assert.ok(
       content.includes("path.join(claudeDir, 'cache', 'gsd-update-check.json')"),
-      'statusline must fall back to legacy cache at claudeDir/cache/gsd-update-check.json'
+      'statusline must fall back to legacy cache at claudeDir/cache/brief-update-check.json'
     );
     // Shared cache must be checked before legacy (existsSync order matters)
     const sharedIdx = content.indexOf('sharedCacheFile');
@@ -1127,7 +1127,7 @@ describe('shared cache directory (#1421)', () => {
 // ─── resolveWorktreeRoot ─────────────────────────────────────────────────────
 
 describe('resolveWorktreeRoot', () => {
-  const { resolveWorktreeRoot } = require('../get-shit-done/bin/lib/core.cjs');
+  const { resolveWorktreeRoot } = require('../brief/bin/lib/core.cjs');
   let tmpDir;
 
   beforeEach(() => {
@@ -1152,7 +1152,7 @@ describe('resolveWorktreeRoot', () => {
 // ─── resolveWorktreeRoot — linked worktree with .planning/ (#1315) ───────────
 
 describe('resolveWorktreeRoot with linked worktree .planning/', () => {
-  const { resolveWorktreeRoot } = require('../get-shit-done/bin/lib/core.cjs');
+  const { resolveWorktreeRoot } = require('../brief/bin/lib/core.cjs');
   const { execSync: execSyncLocal } = require('child_process');
   // On Windows CI, os.tmpdir() may return 8.3 short paths (RUNNER~1) while
   // git returns long paths (runneradmin). realpathSync.native resolves both.
@@ -1223,7 +1223,7 @@ describe('resolveWorktreeRoot with linked worktree .planning/', () => {
 // ─── monorepo worktree CWD preservation (#1283) ─────────────────────────────
 
 describe('monorepo worktree CWD preservation', () => {
-  const { resolveWorktreeRoot } = require('../get-shit-done/bin/lib/core.cjs');
+  const { resolveWorktreeRoot } = require('../brief/bin/lib/core.cjs');
   let tmpDir;
 
   beforeEach(() => {
@@ -1260,7 +1260,7 @@ describe('monorepo worktree CWD preservation', () => {
 // ─── withPlanningLock ────────────────────────────────────────────────────────
 
 describe('withPlanningLock', () => {
-  const { withPlanningLock, planningDir } = require('../get-shit-done/bin/lib/core.cjs');
+  const { withPlanningLock, planningDir } = require('../brief/bin/lib/core.cjs');
   let tmpDir;
 
   beforeEach(() => {

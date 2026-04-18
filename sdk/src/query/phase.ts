@@ -1,7 +1,7 @@
 /**
  * Phase finding and plan index query handlers.
  *
- * Ported from get-shit-done/bin/lib/phase.cjs and core.cjs.
+ * Ported from brief/bin/lib/phase.cjs and core.cjs.
  * Provides find-phase (directory lookup with archived fallback)
  * and phase-plan-index (plan metadata with wave grouping).
  *

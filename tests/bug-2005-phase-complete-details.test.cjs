@@ -2,7 +2,7 @@
  * Regression tests for bug #2005
  *
  * When the in-progress milestone section is wrapped in a <details> block
- * (the standard /gsd-new-project layout), phase complete silently skips:
+ * (the standard /brief-new-project layout), phase complete silently skips:
  * 1. The plan count update (**Plans:** N/M → X/M plans complete)
  * 2. Mis-reports is_last_phase and next_phase
  *
@@ -21,7 +21,7 @@ const path = require('node:path');
 const os = require('node:os');
 const { execFileSync } = require('node:child_process');
 
-const gsdTools = path.resolve(__dirname, '..', 'get-shit-done', 'bin', 'gsd-tools.cjs');
+const gsdTools = path.resolve(__dirname, '..', 'brief', 'bin', 'brief-tools.cjs');
 
 describe('bug #2005: phase complete updates plan count when milestone is inside <details>', () => {
   let tmpDir;
@@ -48,7 +48,7 @@ describe('bug #2005: phase complete updates plan count when milestone is inside 
   });
 
   test('plan count is updated when current milestone is wrapped in <details>', () => {
-    // This is the standard /gsd-new-project layout: every milestone in <details>
+    // This is the standard /brief-new-project layout: every milestone in <details>
     const phasesDir = path.join(planningDir, 'phases', '01-setup');
     fs.mkdirSync(phasesDir, { recursive: true });
     fs.writeFileSync(

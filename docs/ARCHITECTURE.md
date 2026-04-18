@@ -1,4 +1,4 @@
-# GSD Architecture
+# BRIEF Architecture
 
 > System architecture for contributors and advanced users. For user-facing documentation, see [Feature Reference](FEATURES.md) or [User Guide](USER-GUIDE.md).
 
@@ -21,7 +21,7 @@
 
 ## System Overview
 
-GSD is a **meta-prompting framework** that sits between the user and AI coding agents (Claude Code, Gemini CLI, OpenCode, Kilo, Codex, Copilot, Antigravity, Trae, Cline, Augment Code). It provides:
+BRIEF is a **meta-prompting framework** that sits between the user and AI coding agents (Claude Code, Gemini CLI, OpenCode, Kilo, Codex, Copilot, Antigravity, Trae, Cline, Augment Code). It provides:
 
 1. **Context engineering** — Structured artifacts that give the AI everything it needs per task
 2. **Multi-agent orchestration** — Thin orchestrators that spawn specialized agents with fresh context windows
@@ -31,7 +31,7 @@ GSD is a **meta-prompting framework** that sits between the user and AI coding a
 ```
 ┌──────────────────────────────────────────────────────┐
 │                      USER                            │
-│            /gsd-command [args]                        │
+│            /brief-command [args]                        │
 └─────────────────────┬────────────────────────────────┘
                       │
 ┌─────────────────────▼────────────────────────────────┐
@@ -42,7 +42,7 @@ GSD is a **meta-prompting framework** that sits between the user and AI coding a
                       │
 ┌─────────────────────▼────────────────────────────────┐
 │              WORKFLOW LAYER                           │
-│   get-shit-done/workflows/*.md — Orchestration logic  │
+│   brief/workflows/*.md — Orchestration logic  │
 │   (Reads references, spawns agents, manages state)    │
 └──────┬──────────────┬─────────────────┬──────────────┘
        │              │                 │
@@ -54,7 +54,7 @@ GSD is a **meta-prompting framework** that sits between the user and AI coding a
        │              │                 │
 ┌──────▼──────────────▼─────────────────▼──────────────┐
 │              CLI TOOLS LAYER                          │
-│   gsd-sdk query (sdk/src/query) + gsd-tools.cjs       │
+│   gsd-sdk query (sdk/src/query) + brief-tools.cjs       │
 │   (State, config, phase, roadmap, verify, templates)  │
 └──────────────────────┬───────────────────────────────┘
                        │
@@ -75,8 +75,8 @@ Every agent spawned by an orchestrator gets a clean context window (up to 200K t
 
 ### 2. Thin Orchestrators
 
-Workflow files (`get-shit-done/workflows/*.md`) never do heavy lifting. They:
-- Load context via `gsd-sdk query init.<workflow>` (or legacy `gsd-tools.cjs init <workflow>`)
+Workflow files (`brief/workflows/*.md`) never do heavy lifting. They:
+- Load context via `gsd-sdk query init.<workflow>` (or legacy `brief-tools.cjs init <workflow>`)
 - Spawn specialized agents with focused prompts
 - Collect results and route to the next step
 - Update state between steps
@@ -107,18 +107,18 @@ Multiple layers prevent common failure modes:
 ### Commands (`commands/gsd/*.md`)
 
 User-facing entry points. Each file contains YAML frontmatter (name, description, allowed-tools) and a prompt body that bootstraps the workflow. Commands are installed as:
-- **Claude Code:** Custom slash commands (`/gsd-command-name`)
-- **OpenCode / Kilo:** Slash commands (`/gsd-command-name`)
+- **Claude Code:** Custom slash commands (`/brief-command-name`)
+- **OpenCode / Kilo:** Slash commands (`/brief-command-name`)
 - **Codex:** Skills (`$gsd-command-name`)
-- **Copilot:** Slash commands (`/gsd-command-name`)
+- **Copilot:** Slash commands (`/brief-command-name`)
 - **Antigravity:** Skills
 
 **Total commands:** 75
 
-### Workflows (`get-shit-done/workflows/*.md`)
+### Workflows (`brief/workflows/*.md`)
 
 Orchestration logic that commands reference. Contains the step-by-step process including:
-- Context loading via `gsd-sdk query` init handlers (or legacy `gsd-tools.cjs init`)
+- Context loading via `gsd-sdk query` init handlers (or legacy `brief-tools.cjs init`)
 - Agent spawn instructions with model resolution
 - Gate/checkpoint definitions
 - State update patterns
@@ -136,7 +136,7 @@ Specialized agent definitions with frontmatter specifying:
 
 **Total agents:** 31
 
-### References (`get-shit-done/references/*.md`)
+### References (`brief/references/*.md`)
 
 Shared knowledge documents that workflows and agents `@-reference` (35 total):
 
@@ -172,7 +172,7 @@ Shared knowledge documents that workflows and agents `@-reference` (35 total):
 
 **Thinking model references:**
 
-References for integrating thinking-class models (o3, o4-mini, Gemini 2.5 Pro) into GSD workflows:
+References for integrating thinking-class models (o3, o4-mini, Gemini 2.5 Pro) into BRIEF workflows:
 
 - `thinking-models-debug.md` — Thinking model patterns for debugging workflows
 - `thinking-models-execution.md` — Thinking model patterns for execution agents
@@ -182,15 +182,15 @@ References for integrating thinking-class models (o3, o4-mini, Gemini 2.5 Pro) i
 
 **Modular planner decomposition:**
 
-The planner agent (`agents/gsd-planner.md`) was decomposed from a single monolithic file into a core agent plus reference modules to stay under the 50K character limit imposed by some runtimes:
+The planner agent (`agents/brief-planner.md`) was decomposed from a single monolithic file into a core agent plus reference modules to stay under the 50K character limit imposed by some runtimes:
 
 - `planner-gap-closure.md` — Gap closure mode behavior (reads VERIFICATION.md, targeted replanning)
-- `planner-reviews.md` — Cross-AI review integration (reads REVIEWS.md from `/gsd-review`)
+- `planner-reviews.md` — Cross-AI review integration (reads REVIEWS.md from `/brief-review`)
 - `planner-revision.md` — Plan revision patterns for iterative refinement
 
-### Templates (`get-shit-done/templates/`)
+### Templates (`brief/templates/`)
 
-Markdown templates for all planning artifacts. Used by `gsd-tools.cjs template fill` and `scaffold` commands to create pre-structured files:
+Markdown templates for all planning artifacts. Used by `brief-tools.cjs template fill` and `scaffold` commands to create pre-structured files:
 - `project.md`, `requirements.md`, `roadmap.md`, `state.md` — Core project files
 - `phase-prompt.md` — Phase execution prompt template
 - `summary.md` (+ `summary-minimal.md`, `summary-standard.md`, `summary-complex.md`) — Granularity-aware summary templates
@@ -208,17 +208,17 @@ Runtime hooks that integrate with the host AI agent:
 |------|-------|---------|
 | `gsd-statusline.js` | `statusLine` | Displays model, task, directory, and context usage bar |
 | `gsd-context-monitor.js` | `PostToolUse` / `AfterTool` | Injects agent-facing context warnings at 35%/25% remaining |
-| `gsd-check-update.js` | `SessionStart` | Background check for new GSD versions |
+| `gsd-check-update.js` | `SessionStart` | Background check for new BRIEF versions |
 | `gsd-prompt-guard.js` | `PreToolUse` | Scans `.planning/` writes for prompt injection patterns (advisory) |
-| `gsd-workflow-guard.js` | `PreToolUse` | Detects file edits outside GSD workflow context (advisory, opt-in via `hooks.workflow_guard`) |
+| `gsd-workflow-guard.js` | `PreToolUse` | Detects file edits outside BRIEF workflow context (advisory, opt-in via `hooks.workflow_guard`) |
 | `gsd-read-guard.js` | `PreToolUse` | Advisory guard preventing Edit/Write on files not yet read in the session |
 | `gsd-session-state.sh` | `PostToolUse` | Session state tracking for shell-based runtimes |
 | `gsd-validate-commit.sh` | `PostToolUse` | Commit validation for conventional commit enforcement |
 | `gsd-phase-boundary.sh` | `PostToolUse` | Phase boundary detection for workflow transitions |
 
-### CLI Tools (`get-shit-done/bin/`)
+### CLI Tools (`brief/bin/`)
 
-Node.js CLI utility (`gsd-tools.cjs`) with 19 domain modules:
+Node.js CLI utility (`brief-tools.cjs`) with 19 domain modules:
 
 | Module | Responsibility |
 |--------|---------------|
@@ -251,10 +251,10 @@ Node.js CLI utility (`gsd-tools.cjs`) with 19 domain modules:
 ```
 Orchestrator (workflow .md)
     │
-    ├── Load context: gsd-tools.cjs init <workflow> <phase>
+    ├── Load context: brief-tools.cjs init <workflow> <phase>
     │   Returns JSON with: project info, config, state, phase details
     │
-    ├── Resolve model: gsd-tools.cjs resolve-model <agent-name>
+    ├── Resolve model: brief-tools.cjs resolve-model <agent-name>
     │   Returns: opus | sonnet | haiku | inherit
     │
     ├── Spawn Agent (Task/SubAgent call)
@@ -265,25 +265,23 @@ Orchestrator (workflow .md)
     │
     ├── Collect result
     │
-    └── Update state: gsd-tools.cjs state update/patch/advance-plan
+    └── Update state: brief-tools.cjs state update/patch/advance-plan
 ```
 
 ### Agent Spawn Categories
 
 | Category | Agents | Parallelism |
 |----------|--------|-------------|
-| **Researchers** | gsd-project-researcher, gsd-phase-researcher, gsd-ui-researcher, gsd-advisor-researcher | 4 parallel (stack, features, architecture, pitfalls); advisor spawns during discuss-phase |
-| **Synthesizers** | gsd-research-synthesizer | Sequential (after researchers complete) |
-| **Planners** | gsd-planner, gsd-roadmapper | Sequential |
-| **Checkers** | gsd-plan-checker, gsd-integration-checker, gsd-ui-checker, gsd-nyquist-auditor | Sequential (verification loop, max 3 iterations) |
-| **Executors** | gsd-executor | Parallel within waves, sequential across waves |
-| **Verifiers** | gsd-verifier | Sequential (after all executors complete) |
-| **Mappers** | gsd-codebase-mapper | 4 parallel (tech, arch, quality, concerns) |
-| **Debuggers** | gsd-debugger | Sequential (interactive) |
-| **Auditors** | gsd-ui-auditor, gsd-security-auditor | Sequential |
-| **Doc Writers** | gsd-doc-writer, gsd-doc-verifier | Sequential (writer then verifier) |
-| **Profilers** | gsd-user-profiler | Sequential |
-| **Analyzers** | gsd-assumptions-analyzer | Sequential (during discuss-phase) |
+| **Researchers** | brief-project-researcher, brief-phase-researcher, brief-advisor-researcher | 3 parallel (stack, features, architecture, pitfalls); advisor spawns during discuss-phase |
+| **Synthesizers** | brief-research-synthesizer | Sequential (after researchers complete) |
+| **Planners** | brief-planner, brief-roadmapper | Sequential |
+| **Checkers** | brief-plan-checker, brief-nyquist-auditor | Sequential (verification loop, max 3 iterations) |
+| **Executors** | brief-executor | Parallel within waves, sequential across waves |
+| **Verifiers** | brief-verifier | Sequential (after all executors complete) |
+| **Mappers** | brief-codebase-mapper | 4 parallel (tech, arch, quality, concerns) |
+| **Doc Writers** | brief-doc-writer, brief-doc-verifier | Sequential (writer then verifier) |
+| **Profilers** | brief-user-profiler | Sequential |
+| **Analyzers** | brief-assumptions-analyzer | Sequential (during discuss-phase) |
 
 ### Wave Execution Model
 
@@ -311,7 +309,7 @@ When the context window is 500K+ tokens (1M-class models like Opus 4.6, Sonnet 4
 - **Executor agents** receive prior wave SUMMARY.md files and the phase CONTEXT.md/RESEARCH.md, enabling cross-plan awareness within a phase
 - **Verifier agents** receive all PLAN.md, SUMMARY.md, CONTEXT.md files plus REQUIREMENTS.md, enabling history-aware verification
 
-The orchestrator reads `context_window` from config (`gsd-tools.cjs config-get context_window`) and conditionally includes richer context when the value is >= 500,000. For standard 200K windows, prompts use truncated versions with cache-friendly ordering to maximize context efficiency.
+The orchestrator reads `context_window` from config (`brief-tools.cjs config-get context_window`) and conditionally includes richer context when the value is >= 500,000. For standard 200K windows, prompts use truncated versions with cache-friendly ordering to maximize context efficiency.
 
 #### Parallel Commit Safety
 
@@ -410,8 +408,8 @@ UI-SPEC.md (per phase) ───────────────────
 ```
 ~/.claude/                          # Claude Code (global install)
 ├── commands/gsd/*.md               # 75 slash commands
-├── get-shit-done/
-│   ├── bin/gsd-tools.cjs           # CLI utility
+├── brief/
+│   ├── bin/brief-tools.cjs           # CLI utility
 │   ├── bin/lib/*.cjs               # 19 domain modules
 │   ├── workflows/*.md              # 72 workflow definitions
 │   ├── references/*.md             # 35 shared reference docs
@@ -443,13 +441,13 @@ Equivalent paths for other runtimes:
 ├── STATE.md                # Living memory: position, decisions, blockers, metrics
 ├── config.json             # Workflow configuration
 ├── MILESTONES.md           # Completed milestone archive
-├── research/               # Domain research from /gsd-new-project
+├── research/               # Domain research from /brief-new-project
 │   ├── SUMMARY.md
 │   ├── STACK.md
 │   ├── FEATURES.md
 │   ├── ARCHITECTURE.md
 │   └── PITFALLS.md
-├── codebase/               # Brownfield mapping (from /gsd-map-codebase)
+├── codebase/               # Brownfield mapping (from /brief-map-codebase)
 │   ├── STACK.md
 │   ├── ARCHITECTURE.md
 │   ├── CONVENTIONS.md
@@ -475,13 +473,13 @@ Equivalent paths for other runtimes:
 ├── todos/
 │   ├── pending/            # Captured ideas
 │   └── done/               # Completed todos
-├── threads/               # Persistent context threads (from /gsd-thread)
-├── seeds/                 # Forward-looking ideas (from /gsd-plant-seed)
+├── threads/               # Persistent context threads (from /brief-thread)
+├── seeds/                 # Forward-looking ideas (from /brief-plant-seed)
 ├── debug/                  # Active debug sessions
 │   ├── *.md                # Active sessions
 │   ├── resolved/           # Archived sessions
 │   └── knowledge-base.md   # Persistent debug learnings
-├── ui-reviews/             # Screenshots from /gsd-ui-review (gitignored)
+├── ui-reviews/             # Screenshots from /brief-ui-review (gitignored)
 └── continue-here.md        # Context handoff (from pause-work)
 ```
 
@@ -507,9 +505,9 @@ The installer (`bin/install.js`, ~3,000 lines) handles:
    - Augment Code: Skills-first with full skill conversion and config management
 5. **Path normalization** — Replaces `~/.claude/` paths with runtime-specific paths
 6. **Settings integration** — Registers hooks in runtime's `settings.json`
-7. **Patch backup** — Since v1.17, backs up locally modified files to `gsd-local-patches/` for `/gsd-reapply-patches`
+7. **Patch backup** — Since v1.17, backs up locally modified files to `gsd-local-patches/` for `/brief-reapply-patches`
 8. **Manifest tracking** — Writes `gsd-file-manifest.json` for clean uninstall
-9. **Uninstall mode** — `--uninstall` removes all GSD files, hooks, and settings
+9. **Uninstall mode** — `--uninstall` removes all BRIEF files, hooks, and settings
 
 ### Platform Handling
 
@@ -536,7 +534,7 @@ Runtime Engine (Claude Code / Gemini CLI)
     │
     └── SessionStart event ──► gsd-check-update.js
         Reads: VERSION file
-        Writes: ~/.claude/cache/gsd-update-check.json (spawns background process)
+        Writes: ~/.claude/cache/brief-update-check.json (spawns background process)
 ```
 
 ### Context Monitor Thresholds
@@ -567,24 +565,24 @@ Debounce: 5 tool uses between repeated warnings. Severity escalation (WARNING→
 
 **Workflow Guard** (`gsd-workflow-guard.js`):
 - Triggers on Write/Edit to non-`.planning/` files
-- Detects edits outside GSD workflow context (no active `/gsd-` command or Task subagent)
-- Advises using `/gsd-quick` or `/gsd-fast` for state-tracked changes
+- Detects edits outside BRIEF workflow context (no active `/brief-` command or Task subagent)
+- Advises using `/brief-quick` or `/brief-fast` for state-tracked changes
 - Opt-in via `hooks.workflow_guard: true` (default: false)
 
 ---
 
 ## Runtime Abstraction
 
-GSD supports multiple AI coding runtimes through a unified command/workflow architecture:
+BRIEF supports multiple AI coding runtimes through a unified command/workflow architecture:
 
 | Runtime | Command Format | Agent System | Config Location |
 |---------|---------------|--------------|-----------------|
-| Claude Code | `/gsd-command` | Task spawning | `~/.claude/` |
-| OpenCode | `/gsd-command` | Subagent mode | `~/.config/opencode/` |
-| Kilo | `/gsd-command` | Subagent mode | `~/.config/kilo/` |
-| Gemini CLI | `/gsd-command` | Task spawning | `~/.gemini/` |
+| Claude Code | `/brief-command` | Task spawning | `~/.claude/` |
+| OpenCode | `/brief-command` | Subagent mode | `~/.config/opencode/` |
+| Kilo | `/brief-command` | Subagent mode | `~/.config/kilo/` |
+| Gemini CLI | `/brief-command` | Task spawning | `~/.gemini/` |
 | Codex | `$gsd-command` | Skills | `~/.codex/` |
-| Copilot | `/gsd-command` | Agent delegation | `~/.github/` |
+| Copilot | `/brief-command` | Agent delegation | `~/.github/` |
 | Antigravity | Skills | Skills | `~/.gemini/antigravity/` |
 | Trae | Skills | Skills | `~/.trae/` |
 | Cline | Rules | Rules | `.clinerules` |
@@ -596,6 +594,6 @@ GSD supports multiple AI coding runtimes through a unified command/workflow arch
 2. **Hook event names** — Claude uses `PostToolUse`, Gemini uses `AfterTool`
 3. **Agent frontmatter** — Each runtime has its own agent definition format
 4. **Path conventions** — Each runtime stores config in different directories
-5. **Model references** — `inherit` profile lets GSD defer to runtime's model selection
+5. **Model references** — `inherit` profile lets BRIEF defer to runtime's model selection
 
 The installer handles all translation at install time. Workflows and agents are written in Claude Code's native format and transformed during deployment.

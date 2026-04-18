@@ -1,5 +1,5 @@
 /**
- * GSD Tools Tests - /gsd-next safety gates and prior-phase completeness scan
+ * GSD Tools Tests - /brief-next safety gates and prior-phase completeness scan
  *
  * Validates that the next workflow includes three hard-stop safety gates
  * (checkpoint, error state, verification), a prior-phase completeness scan
@@ -13,8 +13,8 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-describe('/gsd-next safety gates (#1732, #2089)', () => {
-  const workflowPath = path.join(__dirname, '..', 'get-shit-done', 'workflows', 'next.md');
+describe('/brief-next safety gates (#1732, #2089)', () => {
+  const workflowPath = path.join(__dirname, '..', 'brief', 'workflows', 'next.md');
   const commandPath = path.join(__dirname, '..', 'commands', 'gsd', 'next.md');
 
   test('workflow contains safety_gates step', () => {

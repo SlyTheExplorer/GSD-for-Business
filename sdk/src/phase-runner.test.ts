@@ -1103,7 +1103,7 @@ Use TypeScript.`, 'utf-8');
     it('throws PhaseRunnerError when initPhaseOp fails', async () => {
       const deps = makeDeps();
       (deps.tools.initPhaseOp as ReturnType<typeof vi.fn>).mockRejectedValue(
-        new Error('gsd-tools crashed'),
+        new Error('brief-tools crashed'),
       );
 
       const runner = new PhaseRunner(deps);
@@ -1211,7 +1211,7 @@ Use TypeScript.`, 'utf-8');
       const deps = makeDeps({ config });
       (deps.tools.initPhaseOp as ReturnType<typeof vi.fn>).mockResolvedValue(phaseOp);
       (deps.tools.phaseComplete as ReturnType<typeof vi.fn>).mockRejectedValue(
-        new Error('gsd-tools commit failed'),
+        new Error('brief-tools commit failed'),
       );
 
       const runner = new PhaseRunner(deps);

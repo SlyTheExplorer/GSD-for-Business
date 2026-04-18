@@ -1,23 +1,23 @@
 <purpose>
-Create executable phase prompts (PLAN.md files) for a roadmap phase with integrated research and verification. Default flow: Research (if needed) -> Plan -> Verify -> Done. Orchestrates gsd-phase-researcher, gsd-planner, and gsd-plan-checker agents with a revision loop (max 3 iterations).
+Create executable phase prompts (PLAN.md files) for a roadmap phase with integrated research and verification. Default flow: Research (if needed) -> Plan -> Verify -> Done. Orchestrates brief-phase-researcher, brief-planner, and brief-plan-checker agents with a revision loop (max 3 iterations).
 </purpose>
 
 <required_reading>
 Read all files referenced by the invoking prompt's execution_context before starting.
 
-@~/.claude/get-shit-done/references/ui-brand.md
-@~/.claude/get-shit-done/references/revision-loop.md
-@~/.claude/get-shit-done/references/gate-prompts.md
-@~/.claude/get-shit-done/references/agent-contracts.md
-@~/.claude/get-shit-done/references/gates.md
+@~/.claude/brief/references/ui-brand.md
+@~/.claude/brief/references/revision-loop.md
+@~/.claude/brief/references/gate-prompts.md
+@~/.claude/brief/references/agent-contracts.md
+@~/.claude/brief/references/gates.md
 </required_reading>
 
 <available_agent_types>
-Valid GSD subagent types (use exact names — do not fall back to 'general-purpose'):
-- gsd-phase-researcher — Researches technical approaches for a phase
-- gsd-pattern-mapper — Analyzes codebase for existing patterns, produces PATTERNS.md
-- gsd-planner — Creates detailed plans from phase scope
-- gsd-plan-checker — Reviews plan quality before execution
+Valid BRIEF subagent types (use exact names — do not fall back to 'general-purpose'):
+- brief-phase-researcher — Researches technical approaches for a phase
+- brief-pattern-mapper — Analyzes codebase for existing patterns, produces PATTERNS.md
+- brief-planner — Creates detailed plans from phase scope
+- brief-plan-checker — Reviews plan quality before execution
 </available_agent_types>
 
 <process>
@@ -30,13 +30,13 @@ Load all context in one call (paths only to minimize orchestrator context):
 INIT=$(gsd-sdk query init.plan-phase "$PHASE")
 if [[ "$INIT" == @file:* ]]; then INIT=$(cat "${INIT#@file:}"); fi
 AGENT_SKILLS_RESEARCHER=$(gsd-sdk query agent-skills gsd-researcher 2>/dev/null)
-AGENT_SKILLS_PLANNER=$(gsd-sdk query agent-skills gsd-planner 2>/dev/null)
+AGENT_SKILLS_PLANNER=$(gsd-sdk query agent-skills brief-planner 2>/dev/null)
 AGENT_SKILLS_CHECKER=$(gsd-sdk query agent-skills gsd-checker 2>/dev/null)
 CONTEXT_WINDOW=$(gsd-sdk query config-get context_window 2>/dev/null || echo "200000")
 TDD_MODE=$(gsd-sdk query config-get workflow.tdd_mode 2>/dev/null || echo "false")
 ```
 
-When `TDD_MODE` is `true`, the planner agent is instructed to apply `type: tdd` to eligible tasks using heuristics from `references/tdd.md`. The planner's `<required_reading>` is extended to include `@~/.claude/get-shit-done/references/tdd.md` so gate enforcement rules are available during planning.
+When `TDD_MODE` is `true`, the planner agent is instructed to apply `type: tdd` to eligible tasks using heuristics from `references/tdd.md`. The planner's `<required_reading>` is extended to include `@~/.claude/brief/references/tdd.md` so gate enforcement rules are available during planning.
 
 When `CONTEXT_WINDOW >= 500000`, the planner prompt includes the 3 most recent prior phase CONTEXT.md and SUMMARY.md files PLUS any phases explicitly listed in the current phase's `Depends on:` field in ROADMAP.md. Explicit dependencies always load regardless of recency (e.g., Phase 7 declaring `Depends on: Phase 2` always sees Phase 2's context). Bounded recency keeps the planner's context budget focused on recent work.
 
@@ -46,7 +46,7 @@ Parse JSON for: `researcher_model`, `planner_model`, `checker_model`, `research_
 
 **File paths (for <files_to_read> blocks):** `state_path`, `roadmap_path`, `requirements_path`, `context_path`, `research_path`, `verification_path`, `uat_path`, `reviews_path`. These are null if files don't exist.
 
-**If `planning_exists` is false:** Error — run `/gsd-new-project` first.
+**If `planning_exists` is false:** Error — run `/brief-new-project` first.
 
 ## 2. Parse and Normalize Arguments
 
@@ -77,9 +77,9 @@ Error:
 ```
 No REVIEWS.md found for Phase {N}. Run reviews first:
 
-/gsd-review --phase {N}
+/brief-review --phase {N}
 
-Then re-run /gsd-plan-phase {N} --reviews
+Then re-run /brief-plan-phase {N} --reviews
 ```
 Exit workflow.
 
@@ -109,7 +109,7 @@ fi
 2. Display banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► PRD EXPRESS PATH
+ BRIEF ► PRD EXPRESS PATH
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Using PRD: {PRD_FILE}
@@ -239,9 +239,9 @@ If "Run discuss-phase first":
   does not work correctly in nested subcontexts (#1009). Instead, display the command
   and exit so the user runs it as a top-level command:
   ```
-  Run this command first, then re-run /gsd-plan-phase {X} ${GSD_WS}:
+  Run this command first, then re-run /brief-plan-phase {X} ${GSD_WS}:
 
-  /gsd-discuss-phase {X} ${GSD_WS}
+  /brief-discuss-phase {X} ${GSD_WS}
   ```
   **Exit the plan-phase workflow. Do not continue.**
 
@@ -264,19 +264,19 @@ echo "${phase_goal}" | grep -qi "agent\|llm\|rag\|chatbot\|embedding\|langchain\
 **If AI keywords detected AND no AI-SPEC.md:**
 ```
 ◆ Note: This phase appears to involve AI system development.
-  Consider running /gsd-ai-integration-phase {N} before planning to:
+  Consider running /brief-ai-integration-phase {N} before planning to:
   - Select the right framework for your use case
   - Research its docs and best practices
   - Design an evaluation strategy
 
-  Continue planning without AI-SPEC? (non-blocking — /gsd-ai-integration-phase can be run after)
+  Continue planning without AI-SPEC? (non-blocking — /brief-ai-integration-phase can be run after)
 ```
 
 Use AskUserQuestion with options:
 - "Continue — plan without AI-SPEC"
-- "Stop — I'll run /gsd-ai-integration-phase {N} first"
+- "Stop — I'll run /brief-ai-integration-phase {N} first"
 
-If "Stop": Exit with `/gsd-ai-integration-phase {N}` reminder.
+If "Stop": Exit with `/brief-ai-integration-phase {N}` reminder.
 If "Continue": Proceed. (Non-blocking — planner will note AI-SPEC is absent.)
 
 **If `AI_SPEC_FILE` is non-empty:** Extract framework for planner context:
@@ -328,13 +328,13 @@ If user selects "Skip research": skip to step 6.
 Display banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► RESEARCHING PHASE {X}
+ BRIEF ► RESEARCHING PHASE {X}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Spawning researcher...
 ```
 
-### Spawn gsd-phase-researcher
+### Spawn brief-phase-researcher
 
 ```bash
 PHASE_DESC=$(gsd-sdk query roadmap.get-phase "${PHASE}" --pick section)
@@ -349,7 +349,7 @@ Answer: "What do I need to know to PLAN this phase well?"
 </objective>
 
 <files_to_read>
-- {context_path} (USER DECISIONS from /gsd-discuss-phase)
+- {context_path} (USER DECISIONS from /brief-discuss-phase)
 - {requirements_path} (Project requirements)
 - {state_path} (Project decisions and history)
 </files_to_read>
@@ -372,7 +372,7 @@ Write to: {phase_dir}/{phase_num}-RESEARCH.md
 ```
 Task(
   prompt=research_prompt,
-  subagent_type="gsd-phase-researcher",
+  subagent_type="brief-phase-researcher",
   model="{researcher_model}",
   description="Research Phase {phase}"
 )
@@ -401,7 +401,7 @@ grep -l "## Validation Architecture" "${PHASE_DIR}"/*-RESEARCH.md 2>/dev/null ||
 ```
 
 **If found:**
-1. Read template: `~/.claude/get-shit-done/templates/VALIDATION.md`
+1. Read template: `~/.claude/brief/templates/VALIDATION.md`
 2. Write to `${PHASE_DIR}/${PADDED_PHASE}-VALIDATION.md` (use Write tool)
 3. Fill frontmatter: `{N}` → phase number, `{phase-slug}` → slug, `{date}` → current date
 4. Verify:
@@ -429,7 +429,7 @@ SECURITY_BLOCK=$(gsd-sdk query config-get workflow.security_block_on --raw 2>/de
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► SECURITY THREAT MODEL REQUIRED (ASVS L{SECURITY_ASVS})
+ BRIEF ► SECURITY THREAT MODEL REQUIRED (ASVS L{SECURITY_ASVS})
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Each PLAN.md must include a <threat_model> block.
@@ -496,10 +496,10 @@ Output this markdown directly (not as a code block):
 ```
 ## ⚠ UI-SPEC.md missing for Phase {N}
 ▶ Recommended next step:
-`/gsd-ui-phase {N} ${GSD_WS}` — generate UI design contract before planning
+`/brief-ui-phase {N} ${GSD_WS}` — generate UI design contract before planning
 ───────────────────────────────────────────────
 Also available:
-- `/gsd-plan-phase {N} --skip-ui ${GSD_WS}` — plan without UI-SPEC (not recommended for frontend phases)
+- `/brief-plan-phase {N} --skip-ui ${GSD_WS}` — plan without UI-SPEC (not recommended for frontend phases)
 ```
 
 **Exit the plan-phase workflow. Do not continue.**
@@ -611,14 +611,14 @@ VALIDATION_EXISTS=$(ls "${PHASE_DIR}"/*-VALIDATION.md 2>/dev/null | head -1)
 ```
 
 If missing and Nyquist is still enabled/applicable — ask user:
-1. Re-run: `/gsd-plan-phase {PHASE} --research ${GSD_WS}`
+1. Re-run: `/brief-plan-phase {PHASE} --research ${GSD_WS}`
 2. Disable Nyquist with the exact command:
    `gsd-sdk query config-set workflow.nyquist_validation false`
 3. Continue anyway (plans fail Dimension 8)
 
 Proceed to Step 7.8 (or Step 8 if pattern mapper is disabled) only if user selects 2 or 3.
 
-## 7.8. Spawn gsd-pattern-mapper Agent (Optional)
+## 7.8. Spawn brief-pattern-mapper Agent (Optional)
 
 **Skip if** `workflow.pattern_mapper` is explicitly set to `false` in config.json (absent key = enabled). Also skip if no CONTEXT.md and no RESEARCH.md exist for this phase (nothing to extract file lists from).
 
@@ -634,7 +634,7 @@ PATTERN_MAPPER_CFG=$(gsd-sdk query config-get workflow.pattern_mapper 2>/dev/nul
 Display banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► PATTERN MAPPING PHASE {X}
+ BRIEF ► PATTERN MAPPING PHASE {X}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Spawning pattern mapper...
@@ -649,7 +649,7 @@ Pattern mapper prompt:
 **Padded phase:** {padded_phase}
 
 <files_to_read>
-- {context_path} (USER DECISIONS from /gsd-discuss-phase)
+- {context_path} (USER DECISIONS from /brief-discuss-phase)
 - {research_path} (Technical Research)
 </files_to_read>
 
@@ -663,7 +663,7 @@ Spawn with:
 ```
 Task(
   prompt="{above}",
-  subagent_type="gsd-pattern-mapper",
+  subagent_type="brief-pattern-mapper",
   model="{researcher_model}",
 )
 ```
@@ -677,12 +677,12 @@ After pattern mapper completes, update the path variable:
 PATTERNS_PATH="${PHASE_DIR}/${PADDED_PHASE}-PATTERNS.md"
 ```
 
-## 8. Spawn gsd-planner Agent
+## 8. Spawn brief-planner Agent
 
 Display banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► PLANNING PHASE {X}
+ BRIEF ► PLANNING PHASE {X}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Spawning planner...
@@ -699,7 +699,7 @@ Planner prompt:
 - {state_path} (Project State)
 - {roadmap_path} (Roadmap)
 - {requirements_path} (Requirements)
-- {context_path} (USER DECISIONS from /gsd-discuss-phase)
+- {context_path} (USER DECISIONS from /brief-discuss-phase)
 - {research_path} (Technical Research)
 - {PATTERNS_PATH} (Pattern Map — analog files and code excerpts, if exists)
 - {verification_path} (Verification Gaps - if --gaps)
@@ -724,7 +724,7 @@ ${AGENT_SKILLS_PLANNER}
 
 ${TDD_MODE === 'true' ? `
 <tdd_mode_active>
-**TDD Mode is ENABLED.** Apply TDD heuristics from @~/.claude/get-shit-done/references/tdd.md to all eligible tasks:
+**TDD Mode is ENABLED.** Apply TDD heuristics from @~/.claude/brief/references/tdd.md to all eligible tasks:
 - Business logic with defined I/O → type: tdd
 - API endpoints with request/response contracts → type: tdd
 - Data transformations, validation, algorithms → type: tdd
@@ -735,7 +735,7 @@ Each TDD plan gets one feature with RED/GREEN/REFACTOR gate sequence.
 </planning_context>
 
 <downstream_consumer>
-Output consumed by /gsd-execute-phase. Plans need:
+Output consumed by /brief-execute-phase. Plans need:
 - Frontmatter (wave, depends_on, files_modified, autonomous)
 - Tasks in XML format with read_first and acceptance_criteria fields (MANDATORY on every task)
 - Verification criteria
@@ -787,7 +787,7 @@ Every task MUST include these fields — they are NOT optional:
 ```
 Task(
   prompt=filled_prompt,
-  subagent_type="gsd-planner",
+  subagent_type="brief-planner",
   model="{planner_model}",
   description="Plan Phase {phase}"
 )
@@ -829,7 +829,7 @@ rest become a follow-up phase
 
 Use AskUserQuestion with these 3 options.
 
-**If "Split":** Use `/gsd-insert-phase` to create the sub-phases, then replan each.
+**If "Split":** Use `/brief-insert-phase` to create the sub-phases, then replan each.
 **If "Proceed":** Return to planner with instruction to attempt all items at full fidelity, accepting more plans/tasks.
 **If "Prioritize":** Use AskUserQuestion (multiSelect) to let user pick which items are "now" vs "later". Create CONTEXT.md for each sub-phase with the selected items.
 
@@ -858,15 +858,15 @@ Options:
 Use AskUserQuestion for each gap (or batch if multiple gaps).
 
 **If "Add plan":** Return to planner (step 8) with instruction to add plans covering the missing items, preserving existing plans.
-**If "Split":** Use `/gsd-insert-phase` for overflow items, then replan.
+**If "Split":** Use `/brief-insert-phase` for overflow items, then replan.
 **If "Defer":** Record in CONTEXT.md `## Deferred Ideas` with developer's confirmation. Proceed to step 10.
 
-## 10. Spawn gsd-plan-checker Agent
+## 10. Spawn brief-plan-checker Agent
 
 Display banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► VERIFYING PLANS
+ BRIEF ► VERIFYING PLANS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Spawning plan checker...
@@ -883,7 +883,7 @@ Checker prompt:
 - {PHASE_DIR}/*-PLAN.md (Plans to verify)
 - {roadmap_path} (Roadmap)
 - {requirements_path} (Requirements)
-- {context_path} (USER DECISIONS from /gsd-discuss-phase)
+- {context_path} (USER DECISIONS from /brief-discuss-phase)
 - {research_path} (Technical Research — includes Validation Architecture)
 </files_to_read>
 
@@ -904,7 +904,7 @@ ${AGENT_SKILLS_CHECKER}
 ```
 Task(
   prompt=checker_prompt,
-  subagent_type="gsd-plan-checker",
+  subagent_type="brief-plan-checker",
   model="{checker_model}",
   description="Verify Phase {phase} plans"
 )
@@ -942,7 +942,7 @@ Track `stall_reentry_count` (starts at 0; incremented each time "Adjust approach
 
 **If iteration_count < 3:**
 
-Parse issue count from checker return: count BLOCKER + WARNING entries in the YAML issues block (structured output from gsd-plan-checker). If the checker's return contains no YAML issues block (i.e., the plan was approved with no issues), treat `issue_count` as 0 and skip the stall check — the plan passed. Proceed to step 13.
+Parse issue count from checker return: count BLOCKER + WARNING entries in the YAML issues block (structured output from brief-plan-checker). If the checker's return contains no YAML issues block (i.e., the plan was approved with no issues), treat `issue_count` as 0 and skip the stall check — the plan passed. Proceed to step 13.
 
 Display: `Revision iteration {N}/3 -- {blocker_count} blockers, {warning_count} warnings`
 
@@ -959,7 +959,7 @@ Display: `Revision iteration {N}/3 -- {blocker_count} blockers, {warning_count} 
   **If `stall_reentry_count >= 2`:**
     Display: `Stall persists after 2 re-planning attempts. The following issues could not be resolved automatically:`
     List the remaining issues from the checker.
-    Suggest: "Consider resolving these issues manually or running `/gsd-debug` to investigate root causes."
+    Suggest: "Consider resolving these issues manually or running `/brief-debug` to investigate root causes."
     Options: "Proceed anyway" | "Abandon"
     If "Proceed anyway": accept current plans and continue to step 13.
     If "Abandon": stop workflow.
@@ -975,7 +975,7 @@ Revision prompt:
 
 <files_to_read>
 - {PHASE_DIR}/*-PLAN.md (Existing plans)
-- {context_path} (USER DECISIONS from /gsd-discuss-phase)
+- {context_path} (USER DECISIONS from /brief-discuss-phase)
 </files_to_read>
 
 ${AGENT_SKILLS_PLANNER}
@@ -993,7 +993,7 @@ Return what changed.
 ```
 Task(
   prompt=revision_prompt,
-  subagent_type="gsd-planner",
+  subagent_type="brief-planner",
   model="{planner_model}",
   description="Revise Phase {phase} plans"
 )
@@ -1029,7 +1029,7 @@ BOUNCE_SCRIPT=$(gsd-sdk query config-get workflow.plan_bounce_script 2>/dev/null
 Display banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► BOUNCING PLANS (External Refinement)
+ BRIEF ► BOUNCING PLANS (External Refinement)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Script: ${BOUNCE_SCRIPT}
@@ -1061,7 +1061,7 @@ After the script returns, check that the bounced file still has valid YAML front
 
 **After all plans are bounced:**
 
-5. **Re-run plan checker on bounced plans:** Spawn gsd-plan-checker (same as step 10) on all modified plans. If a bounced plan fails the checker, restore original from its pre-bounce.md backup:
+5. **Re-run plan checker on bounced plans:** Spawn brief-plan-checker (same as step 10) on all modified plans. If a bounced plan fails the checker, restore original from its pre-bounce.md backup:
 ```
 ⚠ Bounced plan ${PLAN_FILE} failed checker validation — restoring original from pre-bounce backup.
 ```
@@ -1172,7 +1172,7 @@ fi
 Display banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► AUTO-ADVANCING TO EXECUTE
+ BRIEF ► AUTO-ADVANCING TO EXECUTE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Plans ready. Launching execute-phase...
@@ -1189,19 +1189,19 @@ The `--no-transition` flag tells execute-phase to return status after verificati
 - **PHASE COMPLETE** → Display final summary:
   ```
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   GSD ► PHASE ${PHASE} COMPLETE ✓
+   BRIEF ► PHASE ${PHASE} COMPLETE ✓
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   Auto-advance pipeline finished.
 
-  Next: /gsd-discuss-phase ${NEXT_PHASE} --auto ${GSD_WS}
+  Next: /brief-discuss-phase ${NEXT_PHASE} --auto ${GSD_WS}
   ```
 - **GAPS FOUND / VERIFICATION FAILED** → Display result, stop chain:
   ```
   Auto-advance stopped: Execution needs review.
 
   Review the output above and continue manually:
-  /gsd-execute-phase ${PHASE} ${GSD_WS}
+  /brief-execute-phase ${PHASE} ${GSD_WS}
   ```
 
 **If neither `--auto` nor config enabled:**
@@ -1213,7 +1213,7 @@ Route to `<offer_next>` (existing behavior).
 Output this markdown directly (not as a code block):
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► PHASE {X} PLANNED ✓
+ BRIEF ► PHASE {X} PLANNED ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 **Phase {X}: {Name}** — {N} plan(s) in {M} wave(s)
@@ -1234,15 +1234,15 @@ Verification: {Passed | Passed with override | Skipped}
 
 /clear then:
 
-/gsd-execute-phase {X} ${GSD_WS}
+/brief-execute-phase {X} ${GSD_WS}
 
 ───────────────────────────────────────────────────────────────
 
 **Also available:**
 - cat .planning/phases/{phase-dir}/*-PLAN.md — review plans
-- /gsd-plan-phase {X} --research — re-research first
-- /gsd-review --phase {X} --all — peer review plans with external AIs
-- /gsd-plan-phase {X} --reviews — replan incorporating review feedback
+- /brief-plan-phase {X} --research — re-research first
+- /brief-review --phase {X} --all — peer review plans with external AIs
+- /brief-plan-phase {X} --reviews — replan incorporating review feedback
 
 ───────────────────────────────────────────────────────────────
 </offer_next>
@@ -1263,11 +1263,11 @@ stdio deadlocks with MCP servers — see Claude Code issue anthropics/claude-cod
    Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\tasks\*" -ErrorAction SilentlyContinue
    ```
 4. **Reduce MCP server count:** Temporarily disable non-essential MCP servers in settings.json
-5. **Retry:** Restart Claude Code and run `/gsd-plan-phase` again
+5. **Retry:** Restart Claude Code and run `/brief-plan-phase` again
 
 If freezes persist, try `--skip-research` to reduce the agent chain from 3 to 2 agents:
 ```
-/gsd-plan-phase N --skip-research
+/brief-plan-phase N --skip-research
 ```
 </windows_troubleshooting>
 
@@ -1277,11 +1277,11 @@ If freezes persist, try `--skip-research` to reduce the agent chain from 3 to 2 
 - [ ] Phase directory created if needed
 - [ ] CONTEXT.md loaded early (step 4) and passed to ALL agents
 - [ ] Research completed (unless --skip-research or --gaps or exists)
-- [ ] gsd-phase-researcher spawned with CONTEXT.md
+- [ ] brief-phase-researcher spawned with CONTEXT.md
 - [ ] Existing plans checked
-- [ ] gsd-planner spawned with CONTEXT.md + RESEARCH.md
+- [ ] brief-planner spawned with CONTEXT.md + RESEARCH.md
 - [ ] Plans created (PLANNING COMPLETE or CHECKPOINT handled)
-- [ ] gsd-plan-checker spawned with CONTEXT.md
+- [ ] brief-plan-checker spawned with CONTEXT.md
 - [ ] Verification passed OR user override OR max iterations with user decision
 - [ ] User sees status between agent spawns
 - [ ] User knows next steps

@@ -1,11 +1,11 @@
 ---
 name: gsd:reapply-patches
-description: Reapply local modifications after a GSD update
+description: Reapply local modifications after a BRIEF update
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 
 <purpose>
-After a GSD update wipes and reinstalls files, this command merges user's previously saved local modifications back into the new version. Uses three-way comparison (pristine baseline, user-modified backup, newly installed version) to reliably distinguish user customizations from version drift.
+After a BRIEF update wipes and reinstalls files, this command merges user's previously saved local modifications back into the new version. Uses three-way comparison (pristine baseline, user-modified backup, newly installed version) to reliably distinguish user customizations from version drift.
 
 **Critical invariant:** Every file in `gsd-local-patches/` was backed up because the installer's hash comparison detected it was modified. The workflow must NEVER conclude "no custom content" for any backed-up file — that is a logical contradiction. When in doubt, classify as CONFLICT requiring user review, not SKIP.
 </purpose>
@@ -28,55 +28,55 @@ PATCHES_DIR=""
 
 # Env overrides first — covers custom config directories used with --config-dir
 if [ -n "$KILO_CONFIG_DIR" ]; then
-  candidate="$(expand_home "$KILO_CONFIG_DIR")/gsd-local-patches"
+  candidate="$(expand_home "$KILO_CONFIG_DIR")/brief-local-patches"
   if [ -d "$candidate" ]; then
     PATCHES_DIR="$candidate"
   fi
 elif [ -n "$KILO_CONFIG" ]; then
-  candidate="$(dirname "$(expand_home "$KILO_CONFIG")")/gsd-local-patches"
+  candidate="$(dirname "$(expand_home "$KILO_CONFIG")")/brief-local-patches"
   if [ -d "$candidate" ]; then
     PATCHES_DIR="$candidate"
   fi
 elif [ -n "$XDG_CONFIG_HOME" ]; then
-  candidate="$(expand_home "$XDG_CONFIG_HOME")/kilo/gsd-local-patches"
+  candidate="$(expand_home "$XDG_CONFIG_HOME")/kilo/brief-local-patches"
   if [ -d "$candidate" ]; then
     PATCHES_DIR="$candidate"
   fi
 fi
 
 if [ -z "$PATCHES_DIR" ] && [ -n "$OPENCODE_CONFIG_DIR" ]; then
-  candidate="$(expand_home "$OPENCODE_CONFIG_DIR")/gsd-local-patches"
+  candidate="$(expand_home "$OPENCODE_CONFIG_DIR")/brief-local-patches"
   if [ -d "$candidate" ]; then
     PATCHES_DIR="$candidate"
   fi
 elif [ -z "$PATCHES_DIR" ] && [ -n "$OPENCODE_CONFIG" ]; then
-  candidate="$(dirname "$(expand_home "$OPENCODE_CONFIG")")/gsd-local-patches"
+  candidate="$(dirname "$(expand_home "$OPENCODE_CONFIG")")/brief-local-patches"
   if [ -d "$candidate" ]; then
     PATCHES_DIR="$candidate"
   fi
 elif [ -z "$PATCHES_DIR" ] && [ -n "$XDG_CONFIG_HOME" ]; then
-  candidate="$(expand_home "$XDG_CONFIG_HOME")/opencode/gsd-local-patches"
+  candidate="$(expand_home "$XDG_CONFIG_HOME")/opencode/brief-local-patches"
   if [ -d "$candidate" ]; then
     PATCHES_DIR="$candidate"
   fi
 fi
 
 if [ -z "$PATCHES_DIR" ] && [ -n "$GEMINI_CONFIG_DIR" ]; then
-  candidate="$(expand_home "$GEMINI_CONFIG_DIR")/gsd-local-patches"
+  candidate="$(expand_home "$GEMINI_CONFIG_DIR")/brief-local-patches"
   if [ -d "$candidate" ]; then
     PATCHES_DIR="$candidate"
   fi
 fi
 
 if [ -z "$PATCHES_DIR" ] && [ -n "$CODEX_HOME" ]; then
-  candidate="$(expand_home "$CODEX_HOME")/gsd-local-patches"
+  candidate="$(expand_home "$CODEX_HOME")/brief-local-patches"
   if [ -d "$candidate" ]; then
     PATCHES_DIR="$candidate"
   fi
 fi
 
 if [ -z "$PATCHES_DIR" ] && [ -n "$CLAUDE_CONFIG_DIR" ]; then
-  candidate="$(expand_home "$CLAUDE_CONFIG_DIR")/gsd-local-patches"
+  candidate="$(expand_home "$CLAUDE_CONFIG_DIR")/brief-local-patches"
   if [ -d "$candidate" ]; then
     PATCHES_DIR="$candidate"
   fi
@@ -84,25 +84,25 @@ fi
 
 # Global install — detect runtime config directory defaults
 if [ -z "$PATCHES_DIR" ]; then
-  if [ -d "$HOME/.config/kilo/gsd-local-patches" ]; then
-    PATCHES_DIR="$HOME/.config/kilo/gsd-local-patches"
-  elif [ -d "$HOME/.config/opencode/gsd-local-patches" ]; then
-    PATCHES_DIR="$HOME/.config/opencode/gsd-local-patches"
-  elif [ -d "$HOME/.opencode/gsd-local-patches" ]; then
-    PATCHES_DIR="$HOME/.opencode/gsd-local-patches"
-  elif [ -d "$HOME/.gemini/gsd-local-patches" ]; then
-    PATCHES_DIR="$HOME/.gemini/gsd-local-patches"
-  elif [ -d "$HOME/.codex/gsd-local-patches" ]; then
-    PATCHES_DIR="$HOME/.codex/gsd-local-patches"
+  if [ -d "$HOME/.config/kilo/brief-local-patches" ]; then
+    PATCHES_DIR="$HOME/.config/kilo/brief-local-patches"
+  elif [ -d "$HOME/.config/opencode/brief-local-patches" ]; then
+    PATCHES_DIR="$HOME/.config/opencode/brief-local-patches"
+  elif [ -d "$HOME/.opencode/brief-local-patches" ]; then
+    PATCHES_DIR="$HOME/.opencode/brief-local-patches"
+  elif [ -d "$HOME/.gemini/brief-local-patches" ]; then
+    PATCHES_DIR="$HOME/.gemini/brief-local-patches"
+  elif [ -d "$HOME/.codex/brief-local-patches" ]; then
+    PATCHES_DIR="$HOME/.codex/brief-local-patches"
   else
-    PATCHES_DIR="$HOME/.claude/gsd-local-patches"
+    PATCHES_DIR="$HOME/.claude/brief-local-patches"
   fi
 fi
 # Local install fallback — check all runtime directories
 if [ ! -d "$PATCHES_DIR" ]; then
   for dir in .config/kilo .kilo .config/opencode .opencode .gemini .codex .claude; do
-    if [ -d "./$dir/gsd-local-patches" ]; then
-      PATCHES_DIR="./$dir/gsd-local-patches"
+    if [ -d "./$dir/brief-local-patches" ]; then
+      PATCHES_DIR="./$dir/brief-local-patches"
       break
     fi
   done
@@ -115,15 +115,15 @@ Read `backup-meta.json` from the patches directory.
 ```
 No local patches found. Nothing to reapply.
 
-Local patches are automatically saved when you run /gsd-update
-after modifying any GSD workflow, command, or agent files.
+Local patches are automatically saved when you run /brief-update
+after modifying any BRIEF workflow, command, or agent files.
 ```
 Exit.
 
 ## Step 2: Determine baseline for three-way comparison
 
-The quality of the merge depends on having a **pristine baseline** — the original unmodified version of each file from the pre-update GSD release. This enables three-way comparison:
-- **Pristine baseline** (original GSD file before any user edits)
+The quality of the merge depends on having a **pristine baseline** — the original unmodified version of each file from the pre-update BRIEF release. This enables three-way comparison:
+- **Pristine baseline** (original BRIEF file before any user edits)
 - **User's version** (backed up in `gsd-local-patches/`)
 - **New version** (freshly installed after update)
 
@@ -137,7 +137,7 @@ if git -C "$CONFIG_DIR" rev-parse --git-dir >/dev/null 2>&1; then
   HAS_GIT=true
 fi
 ```
-When `HAS_GIT=true`, use `git log` to find the commit where GSD was originally installed (before user edits). For each file, the pristine baseline can be extracted with:
+When `HAS_GIT=true`, use `git log` to find the commit where BRIEF was originally installed (before user edits). For each file, the pristine baseline can be extracted with:
 ```bash
 git -C "$CONFIG_DIR" log --diff-filter=A --format="%H" -- "{file_path}"
 ```
@@ -149,7 +149,7 @@ git -C "$CONFIG_DIR" show {install_commit}:{file_path}
 ### Option B: Pristine snapshot directory
 Check if a `gsd-pristine/` directory exists alongside `gsd-local-patches/`:
 ```bash
-PRISTINE_DIR="$CONFIG_DIR/gsd-pristine"
+PRISTINE_DIR="$CONFIG_DIR/brief-pristine"
 ```
 If it exists, the installer saved pristine copies at install time. Use these as the baseline.
 
@@ -212,7 +212,7 @@ d. **If ALL differences appear to be mechanical drift → still flag as CONFLICT
 When the config directory is a git repo but the pristine install commit can't be found, use commit history to identify user changes:
 ```bash
 # Find non-update commits that touched this file
-git -C "$CONFIG_DIR" log --oneline --no-merges -- "{file_path}" | grep -v "gsd:update\|GSD update\|gsd-install"
+git -C "$CONFIG_DIR" log --oneline --no-merges -- "{file_path}" | grep -v "gsd:update\|BRIEF update\|gsd-install"
 ```
 Each matching commit represents an intentional user modification. Use the commit messages and diffs to understand what was changed and why.
 
@@ -258,7 +258,7 @@ Before proceeding to cleanup, evaluate the Hunk Verification Table produced in S
 **If the Hunk Verification Table is absent** (Step 4 did not produce it), STOP immediately and report to the user:
 ```
 ERROR: Hunk Verification Table is missing. Post-merge verification was not completed.
-Rerun /gsd-reapply-patches to retry with full verification.
+Rerun /brief-reapply-patches to retry with full verification.
 ```
 
 **If any row in the Hunk Verification Table shows `verified: no`**, STOP and report to the user:

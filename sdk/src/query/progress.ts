@@ -1,7 +1,7 @@
 /**
  * Progress query handlers — milestone progress rendering in JSON format.
  *
- * Ported from get-shit-done/bin/lib/commands.cjs (cmdProgressRender, determinePhaseStatus).
+ * Ported from brief/bin/lib/commands.cjs (cmdProgressRender, determinePhaseStatus).
  * Provides progress handler that scans disk for plan/summary counts per phase
  * and determines status via VERIFICATION.md inspection.
  *

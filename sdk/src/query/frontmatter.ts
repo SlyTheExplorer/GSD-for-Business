@@ -1,7 +1,7 @@
 /**
  * Frontmatter parser and query handler.
  *
- * Ported from get-shit-done/bin/lib/frontmatter.cjs and state.cjs.
+ * Ported from brief/bin/lib/frontmatter.cjs and state.cjs.
  * Provides YAML frontmatter extraction from .planning/ artifacts.
  *
  * @example
@@ -188,7 +188,7 @@ export interface MustHavesBlockResult {
 /**
  * Parse a named block from must_haves in raw frontmatter YAML.
  *
- * Port of `parseMustHavesBlock` from `get-shit-done/bin/lib/frontmatter.cjs` lines 195-301.
+ * Port of `parseMustHavesBlock` from `brief/bin/lib/frontmatter.cjs` lines 195-301.
  * Handles 3-level nesting: `must_haves > blockName > [{key: value, ...}]`.
  * Supports simple string items, structured objects with key-value pairs,
  * and nested arrays within items.

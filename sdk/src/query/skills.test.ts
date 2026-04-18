@@ -33,7 +33,7 @@ describe('agentSkills', () => {
     await mkdir(join(tmpDir, '.claude', 'skills', 'orphaned-dir'), { recursive: true });
     await writeSkill(join(homeDir, '.claude', 'skills'), 'global-claude');
     await writeSkill(join(homeDir, '.codex', 'skills'), 'global-codex');
-    await writeSkill(join(homeDir, '.claude', 'get-shit-done', 'skills'), 'legacy-import');
+    await writeSkill(join(homeDir, '.claude', 'brief', 'skills'), 'legacy-import');
     vi.stubEnv('HOME', homeDir);
   });
 
@@ -44,7 +44,7 @@ describe('agentSkills', () => {
   });
 
   it('returns deduped skill names from project and managed global skill dirs', async () => {
-    const r = await agentSkills(['gsd-executor'], tmpDir);
+    const r = await agentSkills(['brief-executor'], tmpDir);
     const data = r.data as Record<string, unknown>;
     const skills = data.skills as string[];
 
@@ -63,7 +63,7 @@ describe('agentSkills', () => {
     await writeSkill(join(tmpDir, '.claude', 'skills'), 'shared-skill');
     await writeSkill(join(tmpDir, '.agents', 'skills'), 'shared-skill');
 
-    const r = await agentSkills(['gsd-executor'], tmpDir);
+    const r = await agentSkills(['brief-executor'], tmpDir);
     const data = r.data as Record<string, unknown>;
     const skills = data.skills as string[];
 

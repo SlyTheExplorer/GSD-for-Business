@@ -88,15 +88,15 @@ export interface ParsedPlan {
 // ─── Init command types ──────────────────────────────────────────────────────
 
 /**
- * JSON output from `gsd-tools.cjs init new-project`.
+ * JSON output from `brief-tools.cjs init new-project`.
  * Describes project state and model configuration for the init workflow.
  */
 export interface InitNewProjectInfo {
-  /** Model resolved for the gsd-project-researcher agent. */
+  /** Model resolved for the brief-project-researcher agent. */
   researcher_model: string;
-  /** Model resolved for the gsd-research-synthesizer agent. */
+  /** Model resolved for the brief-research-synthesizer agent. */
   synthesizer_model: string;
-  /** Model resolved for the gsd-roadmapper agent. */
+  /** Model resolved for the brief-roadmapper agent. */
   roadmapper_model: string;
 
   /** Whether docs should be committed after generation. */
@@ -134,7 +134,7 @@ export interface InitNewProjectInfo {
   /** Absolute project root path (injected by withProjectRoot). */
   project_root?: string;
 
-  /** Allow additional fields from gsd-tools evolution. */
+  /** Allow additional fields from brief-tools evolution. */
   [key: string]: unknown;
 }
 
@@ -197,7 +197,7 @@ export interface PlanResult {
 export interface GSDOptions {
   /** Root directory of the project. */
   projectDir: string;
-  /** Path to gsd-tools.cjs. Falls back to <projectDir>/.claude/, then the bundled repo path, then ~/.claude/. */
+  /** Path to brief-tools.cjs. Falls back to <projectDir>/.claude/, then the bundled repo path, then ~/.claude/. */
   gsdToolsPath?: string;
   /** Model to use for execution sessions. */
   model?: string;
@@ -532,7 +532,7 @@ export interface GSDWaveCompleteEvent extends GSDEventBase {
 // ─── S05: Milestone-level types ──────────────────────────────────────────────
 
 /**
- * Single phase entry from `gsd-tools.cjs roadmap analyze`.
+ * Single phase entry from `brief-tools.cjs roadmap analyze`.
  */
 export interface RoadmapPhaseInfo {
   number: string;
@@ -542,7 +542,7 @@ export interface RoadmapPhaseInfo {
 }
 
 /**
- * Structured output from `gsd-tools.cjs roadmap analyze`.
+ * Structured output from `brief-tools.cjs roadmap analyze`.
  */
 export interface RoadmapAnalysis {
   phases: RoadmapPhaseInfo[];
@@ -609,7 +609,7 @@ export type InitStepName =
  * Configuration overrides for InitRunner.
  */
 export interface InitConfig {
-  /** Model for research sessions (overrides gsd-tools detected model). */
+  /** Model for research sessions (overrides brief-tools detected model). */
   researchModel?: string;
   /** Model for synthesis/roadmap sessions. */
   orchestratorModel?: string;
@@ -845,7 +845,7 @@ export enum PhaseStepType {
 }
 
 /**
- * Structured output from `gsd-tools.cjs init phase-op <N>`.
+ * Structured output from `brief-tools.cjs init phase-op <N>`.
  * Describes the current state of a phase on disk.
  */
 export interface PhaseOpInfo {

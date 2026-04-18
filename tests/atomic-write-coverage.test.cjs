@@ -22,7 +22,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 
-const libDir = path.resolve(__dirname, '..', 'get-shit-done', 'bin', 'lib');
+const libDir = path.resolve(__dirname, '..', 'brief', 'bin', 'lib');
 
 /**
  * Find all fs.writeFileSync(...) call sites in a file.

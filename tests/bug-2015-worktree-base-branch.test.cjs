@@ -18,8 +18,8 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-const EXECUTE_PHASE_PATH = path.join(__dirname, '..', 'get-shit-done', 'workflows', 'execute-phase.md');
-const QUICK_PATH = path.join(__dirname, '..', 'get-shit-done', 'workflows', 'quick.md');
+const EXECUTE_PHASE_PATH = path.join(__dirname, '..', 'brief', 'workflows', 'execute-phase.md');
+const QUICK_PATH = path.join(__dirname, '..', 'brief', 'workflows', 'quick.md');
 
 describe('worktree_branch_check must use reset --hard not reset --soft (#2015)', () => {
 

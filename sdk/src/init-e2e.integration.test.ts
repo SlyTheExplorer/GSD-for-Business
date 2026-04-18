@@ -19,7 +19,7 @@ import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 import { InitRunner } from './init-runner.js';
-import { GSDTools, resolveGsdToolsPath } from './gsd-tools.js';
+import { GSDTools, resolveGsdToolsPath } from './brief-tools.js';
 import { GSDEventStream } from './event-stream.js';
 import { GSDEventType } from './types.js';
 import type { GSDEvent } from './types.js';

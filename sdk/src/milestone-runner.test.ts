@@ -67,7 +67,7 @@ vi.mock('./phase-prompt.js', () => ({
   PHASE_WORKFLOW_MAP: {},
 }));
 
-vi.mock('./gsd-tools.js', () => ({
+vi.mock('./brief-tools.js', () => ({
   // Constructor mock for `new GSDTools(...)` (Vitest 4)
   GSDTools: vi.fn(function GSDToolsMock() {
     return {
@@ -77,11 +77,11 @@ vi.mock('./gsd-tools.js', () => ({
   GSDToolsError: class extends Error {
     name = 'GSDToolsError';
   },
-  resolveGsdToolsPath: vi.fn().mockReturnValue('/mock/gsd-tools.cjs'),
+  resolveGsdToolsPath: vi.fn().mockReturnValue('/mock/brief-tools.cjs'),
 }));
 
 import { GSD } from './index.js';
-import { GSDTools } from './gsd-tools.js';
+import { GSDTools } from './brief-tools.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

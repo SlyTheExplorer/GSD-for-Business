@@ -36,7 +36,7 @@ describe('isValidConfigKey', () => {
 
   it('accepts wildcard agent_skills.* patterns', async () => {
     const { isValidConfigKey } = await import('./config-mutation.js');
-    expect(isValidConfigKey('agent_skills.gsd-planner').valid).toBe(true);
+    expect(isValidConfigKey('agent_skills.brief-planner').valid).toBe(true);
     expect(isValidConfigKey('agent_skills.custom_agent').valid).toBe(true);
   });
 

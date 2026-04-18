@@ -146,8 +146,8 @@ describe('GSDTools workstream injection', () => {
     return scriptPath;
   }
 
-  it('passes --ws flag to gsd-tools.cjs when workstream is set', async () => {
-    const { GSDTools } = await import('./gsd-tools.js');
+  it('passes --ws flag to brief-tools.cjs when workstream is set', async () => {
+    const { GSDTools } = await import('./brief-tools.js');
 
     // Script echoes its arguments as JSON
     const scriptPath = await createScript(
@@ -169,7 +169,7 @@ describe('GSDTools workstream injection', () => {
   });
 
   it('does not pass --ws when workstream is undefined', async () => {
-    const { GSDTools } = await import('./gsd-tools.js');
+    const { GSDTools } = await import('./brief-tools.js');
 
     const scriptPath = await createScript(
       'echo-args-no-ws.cjs',

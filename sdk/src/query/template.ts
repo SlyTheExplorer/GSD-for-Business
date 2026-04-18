@@ -1,7 +1,7 @@
 /**
  * Template handlers — template selection and fill operations.
  *
- * Ported from get-shit-done/bin/lib/template.cjs.
+ * Ported from brief/bin/lib/template.cjs.
  * Provides templateSelect (heuristic template type selection) and
  * templateFill (create file from template with auto-generated frontmatter).
  *

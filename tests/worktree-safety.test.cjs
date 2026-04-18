@@ -4,7 +4,7 @@
  * Three checks:
  * 1. worktree_branch_check in execute-plan.md is NOT labeled as Windows-only
  *    (the bug affects all platforms — no platform qualifier should narrow the fix)
- * 2. gsd-executor.md task_commit_protocol includes post-commit deletion verification
+ * 2. brief-executor.md task_commit_protocol includes post-commit deletion verification
  *    (using --diff-filter=D to catch accidental file deletions per task)
  * 3. execute-phase.md worktree merge section includes pre-merge deletion check
  *    (using --diff-filter=D to block merges that would delete tracked files)
@@ -17,9 +17,9 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-const EXECUTE_PLAN_PATH = path.join(__dirname, '..', 'get-shit-done', 'workflows', 'execute-plan.md');
-const EXECUTOR_AGENT_PATH = path.join(__dirname, '..', 'agents', 'gsd-executor.md');
-const EXECUTE_PHASE_PATH = path.join(__dirname, '..', 'get-shit-done', 'workflows', 'execute-phase.md');
+const EXECUTE_PLAN_PATH = path.join(__dirname, '..', 'brief', 'workflows', 'execute-plan.md');
+const EXECUTOR_AGENT_PATH = path.join(__dirname, '..', 'agents', 'brief-executor.md');
+const EXECUTE_PHASE_PATH = path.join(__dirname, '..', 'brief', 'workflows', 'execute-phase.md');
 
 describe('worktree commit safety hardening (#1977)', () => {
   test('execute-plan worktree_branch_check has no Windows-only platform qualifier', () => {
@@ -57,19 +57,19 @@ describe('worktree commit safety hardening (#1977)', () => {
     );
   });
 
-  test('gsd-executor.md task_commit_protocol includes post-commit deletion verification', () => {
+  test('brief-executor.md task_commit_protocol includes post-commit deletion verification', () => {
     const content = fs.readFileSync(EXECUTOR_AGENT_PATH, 'utf-8');
 
     // Must contain --diff-filter=D deletion check
     assert.ok(
       content.includes('--diff-filter=D'),
-      'gsd-executor.md must include --diff-filter=D deletion verification after each task commit'
+      'brief-executor.md must include --diff-filter=D deletion verification after each task commit'
     );
 
     // Must include a WARNING or notice about deletions
     assert.ok(
       content.includes('WARNING') || content.includes('DELETIONS'),
-      'gsd-executor.md must warn when a commit includes file deletions'
+      'brief-executor.md must warn when a commit includes file deletions'
     );
   });
 

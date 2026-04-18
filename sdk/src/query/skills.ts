@@ -9,8 +9,8 @@
  * ```typescript
  * import { agentSkills } from './skills.js';
  *
- * await agentSkills(['gsd-executor'], '/project');
- * // { data: { agent_type: 'gsd-executor', skills: ['plan', 'verify'], skill_count: 2 } }
+ * await agentSkills(['brief-executor'], '/project');
+ * // { data: { agent_type: 'brief-executor', skills: ['plan', 'verify'], skill_count: 2 } }
  * ```
  */
 

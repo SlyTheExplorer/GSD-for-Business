@@ -1,6 +1,6 @@
-# Documentação do GSD
+# Documentação do BRIEF
 
-Documentação abrangente do framework Get Shit Done (GSD) — um sistema de meta-prompting, engenharia de contexto e desenvolvimento orientado por especificações para agentes de IA.
+Documentação abrangente do framework BRIEF (BRIEF) — um sistema de meta-prompting, engenharia de contexto e desenvolvimento orientado por especificações para agentes de IA.
 
 ## Índice da documentação
 
@@ -12,7 +12,7 @@ Documentação abrangente do framework Get Shit Done (GSD) — um sistema de met
 | [Referência de configuração](CONFIGURATION.md) | Todos os usuários | Schema completo de configuração, toggles e perfis |
 | [Referência de recursos](FEATURES.md) | Todos os usuários | Recursos e requisitos detalhados |
 | [Referência de agentes](AGENTS.md) | Contribuidores, usuários avançados | Agentes especializados, papéis e padrões de orquestração |
-| [Ferramentas CLI](CLI-TOOLS.md) | Contribuidores, autores de agentes | API programática `gsd-tools.cjs` |
+| [Ferramentas CLI](CLI-TOOLS.md) | Contribuidores, autores de agentes | API programática `brief-tools.cjs` |
 | [Monitor de contexto](context-monitor.md) | Todos os usuários | Arquitetura de monitoramento da janela de contexto |
 | [Discuss Mode](workflow-discuss-mode.md) | Todos os usuários | Modo suposições vs entrevista no `discuss-phase` |
 | [Referências](references/) | Todos os usuários | Guias complementares de decisão, verificação e padrões |
@@ -20,11 +20,11 @@ Documentação abrangente do framework Get Shit Done (GSD) — um sistema de met
 
 ## Novidades v1.32
 
-STATE.md consistency gates, `--to N` para execução autônoma parcial, research gate, verifier milestone scope filtering, read-before-edit guard, context reduction, novos runtimes (Trae, Cline, Augment Code), `response_language`, `--power`/`--diagnose` flags, `/gsd-analyze-dependencies`.
+STATE.md consistency gates, `--to N` para execução autônoma parcial, research gate, verifier milestone scope filtering, read-before-edit guard, context reduction, novos runtimes (Trae, Cline, Augment Code), `response_language`, `--power`/`--diagnose` flags, `/brief-analyze-dependencies`.
 
 ## Links rápidos
 
-- **Começar rápido:** [README principal](../../README.pt-BR.md) -> instalação -> `/gsd-new-project`
+- **Começar rápido:** [README principal](../../README.pt-BR.md) -> instalação -> `/brief-new-project`
 - **Fluxo completo:** [Guia do usuário](USER-GUIDE.md)
 - **Comandos:** [Referência de comandos](COMMANDS.md)
 - **Configuração:** [Referência de configuração](CONFIGURATION.md)

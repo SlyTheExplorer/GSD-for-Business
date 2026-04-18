@@ -1,7 +1,7 @@
 /**
  * Summary query handlers — extract sections and history from SUMMARY.md files.
  *
- * Ported from get-shit-done/bin/lib/commands.cjs (cmdSummaryExtract, cmdHistoryDigest).
+ * Ported from brief/bin/lib/commands.cjs (cmdSummaryExtract, cmdHistoryDigest).
  * Provides summary section parsing and condensed phase history generation.
  *
  * @example

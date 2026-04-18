@@ -1,5 +1,5 @@
 <purpose>
-Execute small, ad-hoc tasks with GSD guarantees (atomic commits, STATE.md tracking). Quick mode spawns gsd-planner (quick mode) + gsd-executor(s), tracks tasks in `.planning/quick/`, and updates STATE.md's "Quick Tasks Completed" table.
+Execute small, ad-hoc tasks with BRIEF guarantees (atomic commits, STATE.md tracking). Quick mode spawns brief-planner (quick mode) + brief-executor(s), tracks tasks in `.planning/quick/`, and updates STATE.md's "Quick Tasks Completed" table.
 
 With `--full` flag: enables the complete quality pipeline — discussion + research + plan-checking + verification. One flag for everything.
 
@@ -17,13 +17,12 @@ Read all files referenced by the invoking prompt's execution_context before star
 </required_reading>
 
 <available_agent_types>
-Valid GSD subagent types (use exact names — do not fall back to 'general-purpose'):
-- gsd-phase-researcher — Researches technical approaches for a phase
-- gsd-planner — Creates detailed plans from phase scope
-- gsd-plan-checker — Reviews plan quality before execution
-- gsd-executor — Executes plan tasks, commits, creates SUMMARY.md
-- gsd-verifier — Verifies phase completion, checks quality gates
-- gsd-code-reviewer — Reviews source files for bugs, security issues, and code quality
+Valid BRIEF subagent types (use exact names — do not fall back to 'general-purpose'):
+- brief-phase-researcher — Researches technical approaches for a phase
+- brief-planner — Creates detailed plans from phase scope
+- brief-plan-checker — Reviews plan quality before execution
+- brief-executor — Executes plan tasks, commits, creates SUMMARY.md
+- brief-verifier — Verifies phase completion, checks quality gates
 </available_agent_types>
 
 <process>
@@ -60,7 +59,7 @@ Display banner based on active flags:
 If `$FULL_MODE` (all phases enabled — `--full` or all granular flags):
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► QUICK TASK (FULL)
+ BRIEF ► QUICK TASK (FULL)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Discussion + research + plan checking + verification enabled
@@ -69,7 +68,7 @@ If `$FULL_MODE` (all phases enabled — `--full` or all granular flags):
 If `$DISCUSS_MODE` and `$VALIDATE_MODE` (no research):
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► QUICK TASK (DISCUSS + VALIDATE)
+ BRIEF ► QUICK TASK (DISCUSS + VALIDATE)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Discussion + plan checking + verification enabled
@@ -78,7 +77,7 @@ If `$DISCUSS_MODE` and `$VALIDATE_MODE` (no research):
 If `$DISCUSS_MODE` and `$RESEARCH_MODE` (no validate):
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► QUICK TASK (DISCUSS + RESEARCH)
+ BRIEF ► QUICK TASK (DISCUSS + RESEARCH)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Discussion + research enabled
@@ -87,7 +86,7 @@ If `$DISCUSS_MODE` and `$RESEARCH_MODE` (no validate):
 If `$RESEARCH_MODE` and `$VALIDATE_MODE` (no discuss):
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► QUICK TASK (RESEARCH + VALIDATE)
+ BRIEF ► QUICK TASK (RESEARCH + VALIDATE)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Research + plan checking + verification enabled
@@ -96,7 +95,7 @@ If `$RESEARCH_MODE` and `$VALIDATE_MODE` (no discuss):
 If `$DISCUSS_MODE` only:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► QUICK TASK (DISCUSS)
+ BRIEF ► QUICK TASK (DISCUSS)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Discussion phase enabled — surfacing gray areas before planning
@@ -105,7 +104,7 @@ If `$DISCUSS_MODE` only:
 If `$RESEARCH_MODE` only:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► QUICK TASK (RESEARCH)
+ BRIEF ► QUICK TASK (RESEARCH)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Research phase enabled — investigating approaches before planning
@@ -114,7 +113,7 @@ If `$RESEARCH_MODE` only:
 If `$VALIDATE_MODE` only:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► QUICK TASK (VALIDATE)
+ BRIEF ► QUICK TASK (VALIDATE)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Plan checking + verification enabled
@@ -126,13 +125,13 @@ If `$VALIDATE_MODE` only:
 
 ```bash
 if ! command -v gsd-sdk &>/dev/null; then
-  echo "⚠ gsd-sdk not found in PATH — /gsd-quick requires it."
+  echo "⚠ gsd-sdk not found in PATH — /brief-quick requires it."
   echo ""
-  echo "Install the GSD SDK:"
+  echo "Install the BRIEF SDK:"
   echo "  npm install -g @gsd-build/sdk"
   echo ""
-  echo "Or update GSD to get the latest packages:"
-  echo "  /gsd-update"
+  echo "Or update BRIEF to get the latest packages:"
+  echo "  /brief-update"
   exit 1
 fi
 ```
@@ -140,10 +139,10 @@ fi
 ```bash
 INIT=$(gsd-sdk query init.quick "$DESCRIPTION")
 if [[ "$INIT" == @file:* ]]; then INIT=$(cat "${INIT#@file:}"); fi
-AGENT_SKILLS_PLANNER=$(gsd-sdk query agent-skills gsd-planner 2>/dev/null)
-AGENT_SKILLS_EXECUTOR=$(gsd-sdk query agent-skills gsd-executor 2>/dev/null)
+AGENT_SKILLS_PLANNER=$(gsd-sdk query agent-skills brief-planner 2>/dev/null)
+AGENT_SKILLS_EXECUTOR=$(gsd-sdk query agent-skills brief-executor 2>/dev/null)
 AGENT_SKILLS_CHECKER=$(gsd-sdk query agent-skills gsd-checker 2>/dev/null)
-AGENT_SKILLS_VERIFIER=$(gsd-sdk query agent-skills gsd-verifier 2>/dev/null)
+AGENT_SKILLS_VERIFIER=$(gsd-sdk query agent-skills brief-verifier 2>/dev/null)
 ```
 
 Parse JSON for: `planner_model`, `executor_model`, `checker_model`, `verifier_model`, `commit_docs`, `branch_name`, `quick_id`, `slug`, `date`, `timestamp`, `quick_dir`, `task_dir`, `roadmap_exists`, `planning_exists`.
@@ -161,7 +160,7 @@ if [ -f .gitmodules ]; then
 fi
 ```
 
-**If `roadmap_exists` is false:** Error — Quick mode requires an active project with ROADMAP.md. Run `/gsd-new-project` first.
+**If `roadmap_exists` is false:** Error — Quick mode requires an active project with ROADMAP.md. Run `/brief-new-project` first.
 
 Quick tasks can run mid-phase - validation only checks ROADMAP.md exists, not phase status.
 
@@ -215,7 +214,7 @@ Skip this step entirely if NOT `$DISCUSS_MODE`.
 Display banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► DISCUSSING QUICK TASK
+ BRIEF ► DISCUSSING QUICK TASK
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Surfacing gray areas for: ${DESCRIPTION}
@@ -342,7 +341,7 @@ Skip this step entirely if NOT `$RESEARCH_MODE`.
 Display banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► RESEARCHING QUICK TASK
+ BRIEF ► RESEARCHING QUICK TASK
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Investigating approaches for: ${DESCRIPTION}
@@ -386,7 +385,7 @@ Use standard research format but keep it lean — skip sections that don't apply
 Return: ## RESEARCH COMPLETE with file path
 </output>
 ",
-  subagent_type="gsd-phase-researcher",
+  subagent_type="brief-phase-researcher",
   model="{planner_model}",
   description="Research: ${DESCRIPTION}"
 )
@@ -442,7 +441,7 @@ Write plan to: ${QUICK_DIR}/${quick_id}-PLAN.md
 Return: ## PLANNING COMPLETE with plan path
 </output>
 ",
-  subagent_type="gsd-planner",
+  subagent_type="brief-planner",
   model="{planner_model}",
   description="Quick plan: ${DESCRIPTION}"
 )
@@ -464,7 +463,7 @@ Skip this step entirely if NOT `$VALIDATE_MODE`.
 Display banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► CHECKING PLAN
+ BRIEF ► CHECKING PLAN
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Spawning plan checker...
@@ -506,7 +505,7 @@ ${DISCUSS_MODE ? '- Context compliance: Does the plan honor locked decisions fro
 ```
 Task(
   prompt=checker_prompt,
-  subagent_type="gsd-plan-checker",
+  subagent_type="brief-plan-checker",
   model="{checker_model}",
   description="Check quick plan: ${DESCRIPTION}"
 )
@@ -551,7 +550,7 @@ Return what changed.
 ```
 Task(
   prompt=revision_prompt,
-  subagent_type="gsd-planner",
+  subagent_type="brief-planner",
   model="{planner_model}",
   description="Revise quick plan: ${DESCRIPTION}"
 )
@@ -574,7 +573,7 @@ Capture current HEAD before spawning (used for worktree branch check):
 EXPECTED_BASE=$(git rev-parse HEAD)
 ```
 
-Spawn gsd-executor with plan reference:
+Spawn brief-executor with plan reference:
 
 ```
 Task(
@@ -609,7 +608,7 @@ ${AGENT_SKILLS_EXECUTOR}
 - Do NOT update ROADMAP.md (quick tasks are separate from planned phases)
 </constraints>
 ",
-  subagent_type="gsd-executor",
+  subagent_type="brief-executor",
   model="{executor_model}",
   ${USE_WORKTREES !== "false" ? 'isolation="worktree",' : ''}
   description="Execute: ${DESCRIPTION}"
@@ -700,55 +699,6 @@ Note: For quick tasks producing multiple plans (rare), spawn executors in parall
 
 ---
 
-**Step 6.25: Code review (auto)**
-
-Skip this step entirely if `$FULL_MODE` is false.
-
-**Config gate:**
-```bash
-CODE_REVIEW_ENABLED=$(gsd-sdk query config-get workflow.code_review 2>/dev/null || echo "true")
-```
-If `"false"`, skip with message "Code review skipped (workflow.code_review=false)".
-
-**Scope files from executor's commits:**
-```bash
-# Find the diff base: last commit before quick task started
-# Use git log to find commits referencing the quick task id, then take the parent of the oldest
-QUICK_COMMITS=$(git log --oneline --format="%H" --grep="${quick_id}" 2>/dev/null)
-if [ -n "$QUICK_COMMITS" ]; then
-  DIFF_BASE=$(echo "$QUICK_COMMITS" | tail -1)^
-  # Verify parent exists (guard against first commit in repo)
-  git rev-parse "${DIFF_BASE}" >/dev/null 2>&1 || DIFF_BASE=$(echo "$QUICK_COMMITS" | tail -1)
-else
-  # No commits found for this quick task — skip review
-  DIFF_BASE=""
-fi
-
-if [ -n "$DIFF_BASE" ]; then
-  CHANGED_FILES=$(git diff --name-only "${DIFF_BASE}..HEAD" -- . ':!.planning' 2>/dev/null | tr '\n' ' ')
-else
-  CHANGED_FILES=""
-fi
-```
-
-If `CHANGED_FILES` is empty, skip with "No source files changed — skipping code review."
-
-**Invoke review:**
-```
-Task(
-  prompt="Review these files for bugs, security issues, and code quality.
-  Files: ${CHANGED_FILES}
-  Output: ${QUICK_DIR}/${quick_id}-REVIEW.md
-  Depth: quick",
-  subagent_type="gsd-code-reviewer",
-  model="{executor_model}"
-)
-```
-
-If review produces findings, display advisory message. **Error handling:** Failures are non-blocking — catch and proceed.
-
----
-
 **Step 6.5: Verification (only when `$VALIDATE_MODE`)**
 
 Skip this step entirely if NOT `$VALIDATE_MODE`.
@@ -756,7 +706,7 @@ Skip this step entirely if NOT `$VALIDATE_MODE`.
 Display banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► VERIFYING RESULTS
+ BRIEF ► VERIFYING RESULTS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Spawning verifier...
@@ -775,7 +725,7 @@ Task goal: ${DESCRIPTION}
 ${AGENT_SKILLS_VERIFIER}
 
 Check must_haves against actual codebase. Create VERIFICATION.md at ${QUICK_DIR}/${quick_id}-VERIFICATION.md.",
-  subagent_type="gsd-verifier",
+  subagent_type="brief-verifier",
   model="{verifier_model}",
   description="Verify: ${DESCRIPTION}"
 )
@@ -853,7 +803,7 @@ Use Edit tool to make these changes atomically
 
 **Step 8: Final commit and completion**
 
-Stage and commit quick task artifacts. This step MUST always run — even if the executor already committed some files (e.g. when running without worktree isolation). The `gsd-sdk query commit` command (or legacy `gsd-tools.cjs` commit) handles already-committed files gracefully.
+Stage and commit quick task artifacts. This step MUST always run — even if the executor already committed some files (e.g. when running without worktree isolation). The `gsd-sdk query commit` command (or legacy `brief-tools.cjs` commit) handles already-committed files gracefully.
 
 Build file list:
 - `${QUICK_DIR}/${quick_id}-PLAN.md`
@@ -888,7 +838,7 @@ Display completion output:
 ```
 ---
 
-GSD > QUICK TASK COMPLETE (VALIDATED)
+BRIEF > QUICK TASK COMPLETE (VALIDATED)
 
 Quick Task ${quick_id}: ${DESCRIPTION}
 
@@ -899,14 +849,14 @@ Commit: ${commit_hash}
 
 ---
 
-Ready for next task: /gsd-quick ${GSD_WS}
+Ready for next task: /brief-quick ${GSD_WS}
 ```
 
 **If NOT `$VALIDATE_MODE`:**
 ```
 ---
 
-GSD > QUICK TASK COMPLETE
+BRIEF > QUICK TASK COMPLETE
 
 Quick Task ${quick_id}: ${DESCRIPTION}
 
@@ -916,7 +866,7 @@ Commit: ${commit_hash}
 
 ---
 
-Ready for next task: /gsd-quick ${GSD_WS}
+Ready for next task: /brief-quick ${GSD_WS}
 ```
 
 </process>

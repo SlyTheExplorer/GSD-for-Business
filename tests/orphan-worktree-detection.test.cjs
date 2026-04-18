@@ -63,13 +63,13 @@ function setupHealthyProject(tmpDir) {
 
 describe('W017: structural presence', () => {
   test('verify.cjs contains W017 warning code', () => {
-    const verifyPath = path.join(__dirname, '..', 'get-shit-done', 'bin', 'lib', 'verify.cjs');
+    const verifyPath = path.join(__dirname, '..', 'brief', 'bin', 'lib', 'verify.cjs');
     const source = fs.readFileSync(verifyPath, 'utf-8');
     assert.ok(source.includes("'W017'"), 'verify.cjs should contain W017 warning code');
   });
 
   test('verify.cjs contains worktree list --porcelain invocation', () => {
-    const verifyPath = path.join(__dirname, '..', 'get-shit-done', 'bin', 'lib', 'verify.cjs');
+    const verifyPath = path.join(__dirname, '..', 'brief', 'bin', 'lib', 'verify.cjs');
     const source = fs.readFileSync(verifyPath, 'utf-8');
     assert.ok(
       source.includes('worktree') && source.includes('--porcelain'),

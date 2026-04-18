@@ -1,7 +1,7 @@
 /**
  * Regression test for bug #2334
  *
- * /gsd-quick crashed with `command not found: gsd-sdk` (exit code 127) when
+ * /brief-quick crashed with `command not found: gsd-sdk` (exit code 127) when
  * the gsd-sdk binary was not installed or not in PATH. The workflow's Step 2
  * called `gsd-sdk query init.quick` directly with no pre-flight check and no
  * fallback, so missing gsd-sdk caused an immediate abort with no helpful message.
@@ -17,7 +17,7 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-const WORKFLOW_PATH = path.join(__dirname, '..', 'get-shit-done', 'workflows', 'quick.md');
+const WORKFLOW_PATH = path.join(__dirname, '..', 'brief', 'workflows', 'quick.md');
 
 describe('bug #2334: quick workflow gsd-sdk pre-flight check', () => {
   let content;
@@ -53,10 +53,10 @@ describe('bug #2334: quick workflow gsd-sdk pre-flight check', () => {
     const firstSdkCall = content.indexOf('gsd-sdk query init.quick', step2Start);
     const step2Section = content.slice(step2Start, firstSdkCall);
 
-    const hasInstallHint = step2Section.includes('@gsd-build/sdk') || step2Section.includes('gsd-update') || step2Section.includes('/gsd-update');
+    const hasInstallHint = step2Section.includes('@gsd-build/sdk') || step2Section.includes('gsd-update') || step2Section.includes('/brief-update');
     assert.ok(
       hasInstallHint,
-      'Pre-flight error must include a hint on how to install gsd-sdk (npm install -g @gsd-build/sdk or /gsd-update)'
+      'Pre-flight error must include a hint on how to install gsd-sdk (npm install -g @gsd-build/sdk or /brief-update)'
     );
   });
 });

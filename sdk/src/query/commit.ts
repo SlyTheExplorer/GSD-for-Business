@@ -1,7 +1,7 @@
 /**
  * Git commit and check-commit query handlers.
  *
- * Ported from get-shit-done/bin/lib/commands.cjs (cmdCommit, cmdCheckCommit)
+ * Ported from brief/bin/lib/commands.cjs (cmdCommit, cmdCheckCommit)
  * and core.cjs (execGit). Provides commit creation with message sanitization
  * and pre-commit validation.
  *

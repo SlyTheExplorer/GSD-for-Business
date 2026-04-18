@@ -1,5 +1,5 @@
 <purpose>
-Lightweight codebase assessment. Spawns a single gsd-codebase-mapper agent for one focus area,
+Lightweight codebase assessment. Spawns a single brief-codebase-mapper agent for one focus area,
 producing targeted documents in `.planning/codebase/`.
 </purpose>
 
@@ -8,8 +8,8 @@ Read all files referenced by the invoking prompt's execution_context before star
 </required_reading>
 
 <available_agent_types>
-Valid GSD subagent types (use exact names — do not fall back to 'general-purpose'):
-- gsd-codebase-mapper — Maps project structure and dependencies
+Valid BRIEF subagent types (use exact names — do not fall back to 'general-purpose'):
+- brief-codebase-mapper — Maps project structure and dependencies
 </available_agent_types>
 
 <process>
@@ -69,12 +69,12 @@ mkdir -p .planning/codebase
 
 ## Step 4: Spawn mapper agent
 
-Spawn a single `gsd-codebase-mapper` agent with the selected focus area:
+Spawn a single `brief-codebase-mapper` agent with the selected focus area:
 
 ```
 Task(
   prompt="Scan this codebase with focus: {focus}. Write results to .planning/codebase/. Produce only: {document_list}",
-  subagent_type="gsd-codebase-mapper",
+  subagent_type="brief-codebase-mapper",
   model="{resolved_model}"
 )
 ```
@@ -88,7 +88,7 @@ Task(
 **Documents produced:**
 {list of documents written with line counts}
 
-Use `/gsd-map-codebase` for a comprehensive 4-area parallel scan.
+Use `/brief-map-codebase` for a comprehensive 4-area parallel scan.
 ```
 
 </process>

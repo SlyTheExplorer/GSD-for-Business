@@ -18,7 +18,7 @@ const path = require('node:path');
 const os = require('node:os');
 const { execFileSync } = require('node:child_process');
 
-const gsdTools = path.resolve(__dirname, '..', 'get-shit-done', 'bin', 'gsd-tools.cjs');
+const gsdTools = path.resolve(__dirname, '..', 'brief', 'bin', 'brief-tools.cjs');
 
 describe('bug #1998: phase complete updates overview checkbox', () => {
   let tmpDir;

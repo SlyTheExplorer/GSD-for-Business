@@ -28,7 +28,7 @@ import type {
   PlanResult,
 } from './types.js';
 import { GSDEventType, PhaseStepType } from './types.js';
-import type { GSDTools } from './gsd-tools.js';
+import type { GSDTools } from './brief-tools.js';
 import type { GSDEventStream } from './event-stream.js';
 import { loadConfig } from './config.js';
 import { runPhaseStepSession } from './session-runner.js';
@@ -36,7 +36,7 @@ import { sanitizePrompt } from './prompt-sanitizer.js';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const GSD_TEMPLATES_DIR = join(homedir(), '.claude', 'get-shit-done', 'templates');
+const GSD_TEMPLATES_DIR = join(homedir(), '.claude', 'brief', 'templates');
 const GSD_AGENTS_DIR = join(homedir(), '.claude', 'agents');
 
 const RESEARCH_TYPES = ['STACK', 'FEATURES', 'ARCHITECTURE', 'PITFALLS'] as const;
@@ -147,7 +147,7 @@ export class InitRunner {
         await writeFile(configPath, JSON.stringify(AUTO_MODE_CONFIG, null, 2) + '\n', 'utf-8');
         artifacts.push('.planning/config.json');
 
-        // Persist auto_advance via gsd-tools (validates & updates state)
+        // Persist auto_advance via brief-tools (validates & updates state)
         await this.tools.configSet('workflow.auto_advance', 'true');
 
         // Commit config
@@ -409,7 +409,7 @@ export class InitRunner {
     researchType: ResearchType,
     input: string,
   ): Promise<string> {
-    const agentDef = await this.readAgentFile('gsd-project-researcher.md');
+    const agentDef = await this.readAgentFile('brief-project-researcher.md');
     const template = await this.readGSDFile(`templates/research-project/${researchType}.md`);
 
     // Read PROJECT.md if it exists (it should by now)
@@ -454,7 +454,7 @@ export class InitRunner {
    * Reads synthesizer agent def and all 4 research outputs.
    */
   private async buildSynthesisPrompt(): Promise<string> {
-    const agentDef = await this.readAgentFile('gsd-research-synthesizer.md');
+    const agentDef = await this.readAgentFile('brief-research-synthesizer.md');
     const summaryTemplate = await this.readGSDFile('templates/research-project/SUMMARY.md');
     const researchDir = join(this.projectDir, '.planning', 'research');
 
@@ -547,7 +547,7 @@ export class InitRunner {
    * Reads PROJECT.md + REQUIREMENTS.md + research/SUMMARY.md + config.json.
    */
   private async buildRoadmapPrompt(): Promise<string> {
-    const agentDef = await this.readAgentFile('gsd-roadmapper.md');
+    const agentDef = await this.readAgentFile('brief-roadmapper.md');
     const roadmapTemplate = await this.readGSDFile('templates/roadmap.md');
     const stateTemplate = await this.readGSDFile('templates/state.md');
 
@@ -621,7 +621,7 @@ export class InitRunner {
   /**
    * Read a file from the GSD templates directory.
    * Tries sdk/prompts/{relativePath} first (headless versions), then
-   * falls back to GSD-1 originals (~/.claude/get-shit-done/).
+   * falls back to GSD-1 originals (~/.claude/brief/).
    */
   private async readGSDFile(relativePath: string): Promise<string> {
     // Try SDK prompts dir first (headless versions)

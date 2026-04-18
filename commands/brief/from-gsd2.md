@@ -1,6 +1,6 @@
 ---
 name: gsd:from-gsd2
-description: Import a GSD-2 (.gsd/) project back to GSD v1 (.planning/) format
+description: Import a BRIEF-2 (.gsd/) project back to BRIEF v1 (.planning/) format
 argument-hint: "[--path <dir>] [--force]"
 allowed-tools:
   - Read
@@ -10,18 +10,18 @@ type: prompt
 ---
 
 <objective>
-Reverse-migrate a GSD-2 project (`.gsd/` directory) back to GSD v1 (`.planning/`) format.
+Reverse-migrate a BRIEF-2 project (`.gsd/` directory) back to BRIEF v1 (`.planning/`) format.
 
-Maps the GSD-2 hierarchy (Milestone → Slice → Task) to the GSD v1 hierarchy (Milestone sections in ROADMAP.md → Phase → Plan), preserving completion state, research files, and summaries.
+Maps the BRIEF-2 hierarchy (Milestone → Slice → Task) to the BRIEF v1 hierarchy (Milestone sections in ROADMAP.md → Phase → Plan), preserving completion state, research files, and summaries.
 
-**CJS-only:** `from-gsd2` is not on the `gsd-sdk query` registry; call `gsd-tools.cjs` as shown below (see `docs/CLI-TOOLS.md`).
+**CJS-only:** `from-gsd2` is not on the `gsd-sdk query` registry; call `brief-tools.cjs` as shown below (see `docs/CLI-TOOLS.md`).
 </objective>
 
 <process>
 
 1. **Locate the .gsd/ directory** — check the current working directory (or `--path` argument):
    ```bash
-   node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" from-gsd2 --dry-run
+   node "$HOME/.claude/brief/bin/brief-tools.cjs" from-gsd2 --dry-run
    ```
    If no `.gsd/` is found, report the error and stop.
 
@@ -29,7 +29,7 @@ Maps the GSD-2 hierarchy (Milestone → Slice → Task) to the GSD v1 hierarchy 
 
 3. **Run the migration** after confirmation:
    ```bash
-   node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" from-gsd2
+   node "$HOME/.claude/brief/bin/brief-tools.cjs" from-gsd2
    ```
    Use `--force` if `.planning/` already exists and the user has confirmed overwrite.
 
@@ -43,5 +43,5 @@ Maps the GSD-2 hierarchy (Milestone → Slice → Task) to the GSD v1 hierarchy 
 - Slices are numbered sequentially across all milestones (M001/S01 → phase 01, M001/S02 → phase 02, M002/S01 → phase 03, etc.).
 - Tasks within each slice become plans (T01 → plan 01, T02 → plan 02, etc.).
 - Completed slices and tasks carry their done state into ROADMAP.md checkboxes and SUMMARY.md files.
-- GSD-2 cost/token ledger, database state, and VS Code extension state cannot be migrated.
+- BRIEF-2 cost/token ledger, database state, and VS Code extension state cannot be migrated.
 </notes>

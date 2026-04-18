@@ -36,7 +36,7 @@ export interface ParsedCliArgs {
   version: boolean;
   /**
    * When `command === 'query'`, tokens after `query` with only known SDK flags removed.
-   * Extra flags are kept so handlers that share gsd-tools-style argv (e.g. `--pick`) still receive them.
+   * Extra flags are kept so handlers that share brief-tools-style argv (e.g. `--pick`) still receive them.
    */
   queryArgv?: string[];
 }
@@ -293,7 +293,7 @@ export async function main(argv: string[] = process.argv.slice(2)): Promise<void
   if (args.command === 'query') {
     const { createRegistry } = await import('./query/index.js');
     const { extractField, resolveQueryArgv } = await import('./query/registry.js');
-    const { GSDToolsError } = await import('./gsd-tools.js');
+    const { GSDToolsError } = await import('./brief-tools.js');
     const { GSDError, exitCodeFor, ErrorClassification } = await import('./errors.js');
 
     const queryArgs = args.queryArgv ?? [];
@@ -323,7 +323,7 @@ export async function main(argv: string[] = process.argv.slice(2)): Promise<void
       const matched = resolveQueryArgv(tokens, registry);
       if (!matched) {
         throw new GSDError(
-          `Unknown command: "${tokens.join(' ')}". Use a registered \`gsd-sdk query\` subcommand (see sdk/src/query/QUERY-HANDLERS.md) or invoke \`node …/gsd-tools.cjs\` for CJS-only operations.`,
+          `Unknown command: "${tokens.join(' ')}". Use a registered \`gsd-sdk query\` subcommand (see sdk/src/query/QUERY-HANDLERS.md) or invoke \`node …/brief-tools.cjs\` for CJS-only operations.`,
           ErrorClassification.Validation,
         );
       }

@@ -32,7 +32,7 @@ function isGraphifyEnabled(planningDir) {
  * @returns {{ disabled: true, message: string }}
  */
 function disabledResponse() {
-  return { disabled: true, message: 'graphify is not enabled. Enable with: gsd-tools config-set graphify.enabled true' };
+  return { disabled: true, message: 'graphify is not enabled. Enable with: brief-tools config-set graphify.enabled true' };
 }
 
 // ─── Subprocess Helper ───────────────────────────────────────────────────────

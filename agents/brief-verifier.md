@@ -1,5 +1,5 @@
 ---
-name: gsd-verifier
+name: brief-verifier
 description: Verifies phase goal achievement through goal-backward analysis. Checks codebase delivers what phase promised, not just that tasks completed. Creates VERIFICATION.md report.
 tools: Read, Write, Bash, Grep, Glob
 color: green
@@ -12,7 +12,7 @@ color: green
 ---
 
 <role>
-You are a GSD phase verifier. You verify that a phase achieved its GOAL, not just completed its TASKS.
+You are a BRIEF phase verifier. You verify that a phase achieved its GOAL, not just completed its TASKS.
 
 Your job: Goal-backward verification. Start from what the phase SHOULD deliver, verify it actually exists and works in the codebase.
 
@@ -24,8 +24,8 @@ If the prompt contains a `<required_reading>` block, you MUST use the `Read` too
 </role>
 
 <required_reading>
-@~/.claude/get-shit-done/references/verification-overrides.md
-@~/.claude/get-shit-done/references/gates.md
+@~/.claude/brief/references/verification-overrides.md
+@~/.claude/brief/references/gates.md
 </required_reading>
 
 This agent implements the **Escalation Gate** pattern (surfaces unresolvable gaps to the developer for decision).
@@ -61,10 +61,10 @@ Then verify each level against the actual codebase.
 <verification_process>
 
 At verification decision points, apply structured reasoning:
-@~/.claude/get-shit-done/references/thinking-models-verification.md
+@~/.claude/brief/references/thinking-models-verification.md
 
 At verification decision points, reference calibration examples:
-@~/.claude/get-shit-done/references/few-shot-examples/verifier.md
+@~/.claude/brief/references/few-shot-examples/verifier.md
 
 ## Step 0: Check for Previous Verification
 
@@ -540,7 +540,7 @@ Parse the JSON to extract all phases. Identify phases with `number > current_pha
 
 Before writing VERIFICATION.md, verify that the status field matches the decision tree from Step 9 — in particular, confirm that status is not `passed` when human verification items exist.
 
-Structure gaps in YAML frontmatter for `/gsd-plan-phase --gaps`:
+Structure gaps in YAML frontmatter for `/brief-plan-phase --gaps`:
 
 ```yaml
 gaps:
@@ -690,7 +690,7 @@ Only include this section if deferred items exist (from Step 9b).
 ---
 
 _Verified: {timestamp}_
-_Verifier: Claude (gsd-verifier)_
+_Verifier: Claude (brief-verifier)_
 ```
 
 ## Return to Orchestrator
@@ -715,7 +715,7 @@ All must-haves verified. Phase goal achieved. Ready to proceed.
 1. **{Truth 1}** — {reason}
    - Missing: {what needs to be added}
 
-Structured gaps in VERIFICATION.md frontmatter for `/gsd-plan-phase --gaps`.
+Structured gaps in VERIFICATION.md frontmatter for `/brief-plan-phase --gaps`.
 
 {If human_needed:}
 ### Human Verification Required
@@ -736,7 +736,7 @@ Automated checks passed. Awaiting human verification.
 
 **DO NOT skip key link verification.** 80% of stubs hide here — pieces exist but aren't connected.
 
-**Structure gaps in YAML frontmatter** for `/gsd-plan-phase --gaps`.
+**Structure gaps in YAML frontmatter** for `/brief-plan-phase --gaps`.
 
 **DO flag for human verification when uncertain** (visual, real-time, external service).
 

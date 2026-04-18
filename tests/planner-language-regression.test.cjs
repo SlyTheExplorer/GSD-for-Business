@@ -18,9 +18,9 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const AGENTS_DIR = path.join(ROOT, 'agents');
-const WORKFLOWS_DIR = path.join(ROOT, 'get-shit-done', 'workflows');
-const REFERENCES_DIR = path.join(ROOT, 'get-shit-done', 'references');
-const TEMPLATES_DIR = path.join(ROOT, 'get-shit-done', 'templates');
+const WORKFLOWS_DIR = path.join(ROOT, 'brief', 'workflows');
+const REFERENCES_DIR = path.join(ROOT, 'brief', 'references');
+const TEMPLATES_DIR = path.join(ROOT, 'brief', 'templates');
 
 /**
  * Collect all .md files from a directory (non-recursive).
@@ -102,13 +102,11 @@ const COMPLEXITY_SCOPE_PATTERNS = [
  */
 const ALLOWLIST = {
   // Plan-checker scans FOR these patterns — it's a detection list, not usage
-  'gsd-plan-checker.md': ['complexity_scope', 'time_sizing'],
+  'brief-plan-checker.md': ['complexity_scope', 'time_sizing'],
   // Planner defines the prohibition and the authority limits — uses terms to explain what NOT to do
-  'gsd-planner.md': ['complexity_scope'],
-  // Debugger uses "30+ minutes" as anti-pattern detection, not task sizing
-  'gsd-debugger.md': ['time_sizing'],
+  'brief-planner.md': ['complexity_scope'],
   // Doc-writer uses "15 minutes" in API rate limit example, "2 minutes" for doc quality
-  'gsd-doc-writer.md': ['time_sizing'],
+  'brief-doc-writer.md': ['time_sizing'],
   // Discovery-phase uses time for level descriptions (operational, not scope)
   'discovery-phase.md': ['time_sizing'],
   // Explore uses "~30 seconds" as operational estimate
@@ -177,19 +175,19 @@ describe('Planner language regression — complexity-as-scope-justification (#20
   }
 });
 
-describe('gsd-planner.md — required structural sections (#2091, #2092)', () => {
+describe('brief-planner.md — required structural sections (#2091, #2092)', () => {
   let plannerContent;
 
   test('planner file exists and is readable', () => {
-    const plannerPath = path.join(AGENTS_DIR, 'gsd-planner.md');
-    assert.ok(fs.existsSync(plannerPath), 'agents/gsd-planner.md must exist');
+    const plannerPath = path.join(AGENTS_DIR, 'brief-planner.md');
+    assert.ok(fs.existsSync(plannerPath), 'agents/brief-planner.md must exist');
     plannerContent = fs.readFileSync(plannerPath, 'utf-8');
   });
 
   test('contains <planner_authority_limits> section', () => {
     assert.ok(
       plannerContent.includes('<planner_authority_limits>'),
-      'gsd-planner.md must contain a <planner_authority_limits> section defining what the planner cannot decide'
+      'brief-planner.md must contain a <planner_authority_limits> section defining what the planner cannot decide'
     );
   });
 
@@ -230,14 +228,14 @@ describe('gsd-planner.md — required structural sections (#2091, #2092)', () =>
     assert.ok(
       plannerContent.includes('Multi-Source Coverage Audit') ||
       plannerContent.includes('multi-source coverage audit'),
-      'gsd-planner.md must contain a multi-source coverage audit, not just D-XX decision matrix'
+      'brief-planner.md must contain a multi-source coverage audit, not just D-XX decision matrix'
     );
   });
 
   test('coverage audit includes all four source types: GOAL, REQ, RESEARCH, CONTEXT', () => {
     // The planner file or its referenced planner-source-audit.md must define all four types.
     // The inline compact version uses **GOAL**, **REQ**, **RESEARCH**, **CONTEXT**.
-    const refPath = path.join(ROOT, 'get-shit-done', 'references', 'planner-source-audit.md');
+    const refPath = path.join(ROOT, 'brief', 'references', 'planner-source-audit.md');
     const combined = plannerContent + (fs.existsSync(refPath) ? fs.readFileSync(refPath, 'utf-8') : '');
 
     const hasGoal = combined.includes('**GOAL**');
@@ -308,12 +306,12 @@ describe('plan-phase.md — source audit orchestration (#2091)', () => {
   });
 });
 
-describe('gsd-plan-checker.md — scope reduction detection includes time/complexity (#2092)', () => {
+describe('brief-plan-checker.md — scope reduction detection includes time/complexity (#2092)', () => {
   let checkerContent;
 
   test('plan-checker exists and is readable', () => {
-    const checkerPath = path.join(AGENTS_DIR, 'gsd-plan-checker.md');
-    assert.ok(fs.existsSync(checkerPath), 'agents/gsd-plan-checker.md must exist');
+    const checkerPath = path.join(AGENTS_DIR, 'brief-plan-checker.md');
+    assert.ok(fs.existsSync(checkerPath), 'agents/brief-plan-checker.md must exist');
     checkerContent = fs.readFileSync(checkerPath, 'utf-8');
   });
 

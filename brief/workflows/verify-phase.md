@@ -19,8 +19,8 @@ Then verify each level against the actual codebase.
 </core_principle>
 
 <required_reading>
-@~/.claude/get-shit-done/references/verification-patterns.md
-@~/.claude/get-shit-done/templates/verification-report.md
+@~/.claude/brief/references/verification-patterns.md
+@~/.claude/brief/templates/verification-report.md
 </required_reading>
 
 <process>
@@ -53,7 +53,7 @@ Extract **phase goal** from ROADMAP.md (the outcome to verify, not tasks), **req
 <step name="establish_must_haves">
 **Option A: Must-haves in PLAN frontmatter**
 
-Use `gsd-sdk query` verify handlers (or legacy gsd-tools) to extract must_haves from each PLAN:
+Use `gsd-sdk query` verify handlers (or legacy brief-tools) to extract must_haves from each PLAN:
 
 ```bash
 for plan in "$PHASE_DIR"/*-PLAN.md; do
@@ -103,7 +103,7 @@ For each truth: identify supporting artifacts → check artifact status → chec
 </step>
 
 <step name="verify_artifacts">
-Use `gsd-sdk query verify.artifacts` (or legacy gsd-tools) for artifact verification against must_haves in each PLAN:
+Use `gsd-sdk query verify.artifacts` (or legacy brief-tools) for artifact verification against must_haves in each PLAN:
 
 ```bash
 for plan in "$PHASE_DIR"/*-PLAN.md; do
@@ -146,7 +146,7 @@ wiring or leftover code from plan revisions.
 </step>
 
 <step name="verify_wiring">
-Use `gsd-sdk query verify.key-links` (or legacy gsd-tools) for key link verification against must_haves in each PLAN:
+Use `gsd-sdk query verify.key-links` (or legacy brief-tools) for key link verification against must_haves in each PLAN:
 
 ```bash
 for plan in "$PHASE_DIR"/*-PLAN.md; do
@@ -427,7 +427,7 @@ REPORT_PATH="$PHASE_DIR/${PHASE_NUM}-VERIFICATION.md"
 
 Fill template sections: frontmatter (phase/timestamp/status/score), goal achievement, artifact table, wiring table, requirements coverage, anti-patterns, human verification, gaps summary, fix plans (if gaps_found), metadata.
 
-See ~/.claude/get-shit-done/templates/verification-report.md for complete template.
+See ~/.claude/brief/templates/verification-report.md for complete template.
 </step>
 
 <step name="return_to_orchestrator">

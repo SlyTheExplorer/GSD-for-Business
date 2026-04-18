@@ -15,7 +15,7 @@ allowed-tools:
 **Before ANY tool calls**, display this banner:
 
 ```
-GSD > INTEL
+BRIEF > INTEL
 ```
 
 Then proceed to Step 1.
@@ -24,7 +24,7 @@ Then proceed to Step 1.
 
 Check if intel is enabled by reading `.planning/config.json` directly using the Read tool.
 
-**DO NOT use the gsd-tools config get-value command** -- it hard-exits on missing keys.
+**DO NOT use the brief-tools config get-value command** -- it hard-exits on missing keys.
 
 1. Read `.planning/config.json` using the Read tool
 2. If the file does not exist: display the disabled message below and **STOP**
@@ -35,13 +35,13 @@ Check if intel is enabled by reading `.planning/config.json` directly using the 
 **Disabled message:**
 
 ```
-GSD > INTEL
+BRIEF > INTEL
 
 Intel system is disabled. To activate:
 
   gsd-sdk query config-set intel.enabled true
 
-Then run /gsd-intel refresh to build the initial index.
+Then run /brief-intel refresh to build the initial index.
 ```
 
 ---
@@ -61,9 +61,9 @@ Parse `$ARGUMENTS` to determine the operation mode:
 **Usage message** (shown when no argument or unrecognized argument):
 
 ```
-GSD > INTEL
+BRIEF > INTEL
 
-Usage: /gsd-intel <mode>
+Usage: /brief-intel <mode>
 
 Modes:
   query <term>  Search intel files for a term
@@ -82,7 +82,7 @@ gsd-sdk query intel.query <term>
 
 Parse the JSON output and display results:
 - If the output contains `"disabled": true`, display the disabled message from Step 1 and **STOP**
-- If no matches found, display: `No intel matches for '<term>'. Try /gsd-intel refresh to build the index.`
+- If no matches found, display: `No intel matches for '<term>'. Try /brief-intel refresh to build the index.`
 - Otherwise, display matching entries grouped by intel file
 
 **STOP** after displaying results. Do not spawn an agent.
@@ -126,7 +126,7 @@ If no snapshot exists, suggest running `refresh` first.
 Display before spawning:
 
 ```
-GSD > Spawning intel-updater agent to analyze codebase...
+BRIEF > Spawning intel-updater agent to analyze codebase...
 ```
 
 Spawn a Task:
@@ -134,10 +134,10 @@ Spawn a Task:
 ```
 Task(
   description="Refresh codebase intelligence files",
-  prompt="You are the gsd-intel-updater agent. Your job is to analyze this codebase and write/update intelligence files in .planning/intel/.
+  prompt="You are the brief-intel-updater agent. Your job is to analyze this codebase and write/update intelligence files in .planning/intel/.
 
 Project root: ${CWD}
-Prefer: gsd-sdk query <subcommand> (installed gsd-sdk on PATH). Legacy: node $HOME/.claude/get-shit-done/bin/gsd-tools.cjs
+Prefer: gsd-sdk query <subcommand> (installed gsd-sdk on PATH). Legacy: node $HOME/.claude/brief/bin/brief-tools.cjs
 
 Instructions:
 1. Analyze the codebase structure, dependencies, APIs, and architecture
@@ -176,4 +176,4 @@ Display a summary showing:
 1. DO NOT spawn an agent for query/status/diff operations -- these are inline CLI calls
 2. DO NOT modify intel files directly -- the agent handles writes during refresh
 3. DO NOT skip the config gate check
-4. DO NOT use the gsd-tools config get-value CLI for the config gate -- it exits on missing keys
+4. DO NOT use the brief-tools config get-value CLI for the config gate -- it exits on missing keys

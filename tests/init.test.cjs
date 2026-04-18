@@ -39,7 +39,7 @@ describe('init commands', () => {
     fs.writeFileSync(path.join(phaseDir, '01-01-PLAN.md'), '# Plan');
     fs.writeFileSync(path.join(tmpDir, '.planning', 'config.json'), JSON.stringify({
       model_profile: 'balanced',
-      model_overrides: { 'gsd-executor': 'openai/o4-mini' },
+      model_overrides: { 'brief-executor': 'openai/o4-mini' },
     }));
 
     const result = runGsdTools('init execute-phase 1 --raw', tmpDir, { HOME: tmpDir });
@@ -47,7 +47,7 @@ describe('init commands', () => {
 
     const output = JSON.parse(result.output);
     assert.strictEqual(output.executor_model, 'openai/o4-mini',
-      'model_overrides["gsd-executor"] must take precedence over profile');
+      'model_overrides["brief-executor"] must take precedence over profile');
   });
 
   test('init execute-phase respects model_overrides when resolve_model_ids is omit', () => {
@@ -56,7 +56,7 @@ describe('init commands', () => {
     fs.writeFileSync(path.join(phaseDir, '01-01-PLAN.md'), '# Plan');
     fs.writeFileSync(path.join(tmpDir, '.planning', 'config.json'), JSON.stringify({
       resolve_model_ids: 'omit',
-      model_overrides: { 'gsd-executor': 'openai/o4-mini' },
+      model_overrides: { 'brief-executor': 'openai/o4-mini' },
     }));
 
     const result = runGsdTools('init execute-phase 1 --raw', tmpDir, { HOME: tmpDir });
@@ -1057,7 +1057,7 @@ describe('cmdInitMapCodebase', () => {
 
   test('map-codebase workflow does not list OpenCode under runtimes without Task tool (#1316)', () => {
     const workflow = fs.readFileSync(
-      path.join(__dirname, '..', 'get-shit-done', 'workflows', 'map-codebase.md'), 'utf8'
+      path.join(__dirname, '..', 'brief', 'workflows', 'map-codebase.md'), 'utf8'
     );
     // OpenCode must NOT appear in the "WITHOUT Task tool" / "NOT available" condition
     const withoutLine = workflow.split('\n').find(l =>
@@ -1295,7 +1295,7 @@ describe('cmdInitNewMilestone', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// findProjectRoot integration — gsd-tools resolves project root from sub-repo
+// findProjectRoot integration — brief-tools resolves project root from sub-repo
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe('findProjectRoot integration via --cwd', () => {

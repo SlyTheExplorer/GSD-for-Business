@@ -26,7 +26,7 @@ if [[ "$INIT" == @file:* ]]; then INIT=$(cat "${INIT#@file:}"); fi
 Parse JSON for: `milestone_version`, `milestone_name`, `phase_count`, `completed_count`, `in_progress_count`, `phases`, `recommended_actions`, `all_complete`, `waiting_signal`, `manager_flags`.
 
 `manager_flags` contains per-step passthrough flags from config:
-- `manager_flags.discuss` — appended to `/gsd-discuss-phase` args (e.g. `"--auto --analyze"`)
+- `manager_flags.discuss` — appended to `/brief-discuss-phase` args (e.g. `"--auto --analyze"`)
 - `manager_flags.plan` — appended to plan agent init command
 - `manager_flags.execute` — appended to execute agent init command
 
@@ -38,7 +38,7 @@ Display startup banner:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► MANAGER
+ BRIEF ► MANAGER
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
  {milestone_version} — {milestone_name}
@@ -89,7 +89,7 @@ Example output:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► DASHBOARD
+ BRIEF ► DASHBOARD
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  ████████████░░░░░░░░ 60%  (3/5 phases)
  ◆ Background: Planning Phase 4
@@ -113,8 +113,8 @@ If `all_complete` is true:
 ╚══════════════════════════════════════════════════════════════╝
 
 All {phase_count} phases done. Ready for final steps:
-  → /gsd-verify-work — run acceptance testing
-  → /gsd-complete-milestone — archive and wrap up
+  → /brief-verify-work — run acceptance testing
+  → /brief-complete-milestone — archive and wrap up
 ```
 
 
@@ -170,7 +170,7 @@ Continue:
   → Discuss Phase 35 (inline)
 ```
 
-**Auto-refresh:** If background agents are running (`is_active` is true for any phase), set a 60-second auto-refresh cycle. After presenting the action menu, if no user input is received within 60 seconds, automatically refresh the dashboard. This interval is configurable via `manager_refresh_interval` in GSD config (default: 60 seconds, set to 0 to disable).
+**Auto-refresh:** If background agents are running (`is_active` is true for any phase), set a 60-second auto-refresh cycle. After presenting the action menu, if no user input is received within 60 seconds, automatically refresh the dashboard. This interval is configurable via `manager_refresh_interval` in BRIEF config (default: 60 seconds, set to 0 to disable).
 
 Present via AskUserQuestion:
 - **question:** "What would you like to do?"
@@ -225,7 +225,7 @@ Planning runs autonomously. Spawn a background agent that delegates to the Skill
 Task(
   description="Plan phase {N}: {phase_name}",
   run_in_background=true,
-  prompt="You are running the GSD plan-phase workflow for phase {N} of the project.
+  prompt="You are running the BRIEF plan-phase workflow for phase {N} of the project.
 
 Working directory: {cwd}
 Phase: {N} — {phase_name}
@@ -257,7 +257,7 @@ Execution runs autonomously. Spawn a background agent that delegates to the Skil
 Task(
   description="Execute phase {N}: {phase_name}",
   run_in_background=true,
-  prompt="You are running the GSD execute-phase workflow for phase {N} of the project.
+  prompt="You are running the BRIEF execute-phase workflow for phase {N} of the project.
 
 Working directory: {cwd}
 Phase: {N} — {phase_name}
@@ -331,17 +331,17 @@ Display final status with progress bar:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- GSD ► SESSION END
+ BRIEF ► SESSION END
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
  {milestone_version} — {milestone_name}
  {PROGRESS_BAR} {progress_pct}%  ({completed_count}/{phase_count} phases)
 
- Resume anytime: /gsd-manager
+ Resume anytime: /brief-manager
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-**Note:** Any background agents still running will continue to completion. Their results will be visible on next `/gsd-manager` or `/gsd-progress` invocation.
+**Note:** Any background agents still running will continue to completion. Their results will be visible on next `/brief-manager` or `/brief-progress` invocation.
 
 </step>
 

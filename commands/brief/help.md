@@ -1,11 +1,11 @@
 ---
 name: gsd:help
-description: Show available GSD commands and usage guide
+description: Show available BRIEF commands and usage guide
 allowed-tools:
   - Read
 ---
 <objective>
-Display the complete GSD command reference.
+Display the complete BRIEF command reference.
 
 Output ONLY the reference content below. Do NOT add:
 - Project-specific analysis
@@ -15,10 +15,10 @@ Output ONLY the reference content below. Do NOT add:
 </objective>
 
 <execution_context>
-@~/.claude/get-shit-done/workflows/help.md
+@~/.claude/brief/workflows/help.md
 </execution_context>
 
 <process>
-Output the complete GSD command reference from @~/.claude/get-shit-done/workflows/help.md.
+Output the complete BRIEF command reference from @~/.claude/brief/workflows/help.md.
 Display the reference content directly — no additions or modifications.
 </process>

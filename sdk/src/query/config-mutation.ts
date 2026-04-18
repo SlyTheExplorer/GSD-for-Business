@@ -1,7 +1,7 @@
 /**
  * Config mutation handlers — write operations for .planning/config.json.
  *
- * Ported from get-shit-done/bin/lib/config.cjs.
+ * Ported from brief/bin/lib/config.cjs.
  * Provides config-set (with key validation and value coercion),
  * config-set-model-profile, config-new-project, and config-ensure-section.
  *

@@ -1,7 +1,7 @@
 /**
  * GSD Tools Tests - Claude Skills Migration (#1504)
  *
- * Tests for migrating Claude Code from commands/gsd/ to skills/gsd-xxx/SKILL.md
+ * Tests for migrating Claude Code from commands/gsd/ to skills/brief-xxx/SKILL.md
  * format for compatibility with Claude Code 2.1.88+.
  *
  * Uses node:test and node:assert (NOT Jest).
@@ -161,7 +161,7 @@ describe('copyCommandsAsClaudeSkills', () => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
-  test('creates correct directory structure skills/gsd-xxx/SKILL.md', () => {
+  test('creates correct directory structure skills/brief-xxx/SKILL.md', () => {
     // Create source commands
     const srcDir = path.join(tmpDir, 'src');
     fs.mkdirSync(srcDir, { recursive: true });
@@ -180,11 +180,11 @@ describe('copyCommandsAsClaudeSkills', () => {
     // Verify directory structure
     assert.ok(
       fs.existsSync(path.join(skillsDir, 'gsd-next', 'SKILL.md')),
-      'skills/gsd-next/SKILL.md exists'
+      'skills/brief-next/SKILL.md exists'
     );
     assert.ok(
       fs.existsSync(path.join(skillsDir, 'gsd-health', 'SKILL.md')),
-      'skills/gsd-health/SKILL.md exists'
+      'skills/brief-health/SKILL.md exists'
     );
   });
 
@@ -297,8 +297,8 @@ describe('copyCommandsAsClaudeSkills path replacement (#1653)', () => {
         '---',
         '',
         '<execution_context>',
-        '@~/.claude/get-shit-done/workflows/manager.md',
-        '@~/.claude/get-shit-done/references/ui-brand.md',
+        '@~/.claude/brief/workflows/manager.md',
+        '@~/.claude/brief/references/ui-brand.md',
         '</execution_context>',
       ].join('\n')
     );
@@ -309,8 +309,8 @@ describe('copyCommandsAsClaudeSkills path replacement (#1653)', () => {
 
     const content = fs.readFileSync(path.join(skillsDir, 'gsd-manager', 'SKILL.md'), 'utf8');
     assert.ok(!content.includes('~/.claude/'), 'no hardcoded ~/.claude/ paths remain');
-    assert.ok(content.includes(localPrefix + 'get-shit-done/workflows/manager.md'), 'path rewritten to local prefix');
-    assert.ok(content.includes(localPrefix + 'get-shit-done/references/ui-brand.md'), 'reference path rewritten');
+    assert.ok(content.includes(localPrefix + 'brief/workflows/manager.md'), 'path rewritten to local prefix');
+    assert.ok(content.includes(localPrefix + 'brief/references/ui-brand.md'), 'reference path rewritten');
   });
 
   test('replaces $HOME/.claude/ paths with pathPrefix', () => {
@@ -318,7 +318,7 @@ describe('copyCommandsAsClaudeSkills path replacement (#1653)', () => {
     fs.mkdirSync(srcDir, { recursive: true });
     fs.writeFileSync(
       path.join(srcDir, 'debug.md'),
-      '---\nname: gsd:debug\ndescription: Debug\n---\n\n@$HOME/.claude/get-shit-done/workflows/debug.md'
+      '---\nname: gsd:debug\ndescription: Debug\n---\n\n@$HOME/.claude/brief/workflows/debug.md'
     );
 
     const skillsDir = path.join(tmpDir, 'skills');
@@ -327,7 +327,7 @@ describe('copyCommandsAsClaudeSkills path replacement (#1653)', () => {
 
     const content = fs.readFileSync(path.join(skillsDir, 'gsd-debug', 'SKILL.md'), 'utf8');
     assert.ok(!content.includes('$HOME/.claude/'), 'no $HOME/.claude/ paths remain');
-    assert.ok(content.includes(localPrefix + 'get-shit-done/workflows/debug.md'), 'path rewritten');
+    assert.ok(content.includes(localPrefix + 'brief/workflows/debug.md'), 'path rewritten');
   });
 
   test('global install preserves $HOME/.claude/ when pathPrefix matches', () => {
@@ -335,14 +335,14 @@ describe('copyCommandsAsClaudeSkills path replacement (#1653)', () => {
     fs.mkdirSync(srcDir, { recursive: true });
     fs.writeFileSync(
       path.join(srcDir, 'next.md'),
-      '---\nname: gsd:next\ndescription: Next\n---\n\n@~/.claude/get-shit-done/workflows/next.md'
+      '---\nname: gsd:next\ndescription: Next\n---\n\n@~/.claude/brief/workflows/next.md'
     );
 
     const skillsDir = path.join(tmpDir, 'skills');
     copyCommandsAsClaudeSkills(srcDir, skillsDir, 'gsd', '$HOME/.claude/', 'claude', true);
 
     const content = fs.readFileSync(path.join(skillsDir, 'gsd-next', 'SKILL.md'), 'utf8');
-    assert.ok(content.includes('$HOME/.claude/get-shit-done/workflows/next.md'), 'global paths use $HOME form');
+    assert.ok(content.includes('$HOME/.claude/brief/workflows/next.md'), 'global paths use $HOME form');
     assert.ok(!content.includes('~/.claude/'), '~/ form replaced with $HOME/ form');
   });
 });
@@ -404,15 +404,15 @@ describe('writeManifest tracks skills/ for Claude', () => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
-  test('manifest includes skills/gsd-xxx/SKILL.md entries for Claude runtime', () => {
+  test('manifest includes skills/brief-xxx/SKILL.md entries for Claude runtime', () => {
     // Create skills directory structure (as install would)
     const skillsDir = path.join(tmpDir, 'skills');
     const skillDir = path.join(skillsDir, 'gsd-next');
     fs.mkdirSync(skillDir, { recursive: true });
     fs.writeFileSync(path.join(skillDir, 'SKILL.md'), 'skill content');
 
-    // Create get-shit-done directory (required by writeManifest)
-    const gsdDir = path.join(tmpDir, 'get-shit-done');
+    // Create brief directory (required by writeManifest)
+    const gsdDir = path.join(tmpDir, 'brief');
     fs.mkdirSync(gsdDir, { recursive: true });
     fs.writeFileSync(path.join(gsdDir, 'test.md'), 'test');
 
@@ -428,8 +428,8 @@ describe('writeManifest tracks skills/ for Claude', () => {
     );
     assert.ok(skillEntries.length > 0, 'manifest has skills/ entries');
     assert.ok(
-      skillEntries.some(k => k === 'skills/gsd-next/SKILL.md'),
-      'manifest has skills/gsd-next/SKILL.md'
+      skillEntries.some(k => k === 'skills/brief-next/SKILL.md'),
+      'manifest has skills/brief-next/SKILL.md'
     );
 
     // Should NOT have commands/gsd/ entries

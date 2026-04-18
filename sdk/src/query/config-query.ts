@@ -1,7 +1,7 @@
 /**
  * Config-get and resolve-model query handlers.
  *
- * Ported from get-shit-done/bin/lib/config.cjs and commands.cjs.
+ * Ported from brief/bin/lib/config.cjs and commands.cjs.
  * Provides raw config.json traversal and model profile resolution.
  *
  * @example
@@ -11,7 +11,7 @@
  * const result = await configGet(['workflow.auto_advance'], '/project');
  * // { data: true }
  *
- * const model = await resolveModel(['gsd-planner'], '/project');
+ * const model = await resolveModel(['brief-planner'], '/project');
  * // { data: { model: 'opus', profile: 'balanced' } }
  * ```
  */
@@ -27,30 +27,25 @@ import type { QueryHandler } from './utils.js';
 /**
  * Mapping of GSD agent type to model alias for each profile tier.
  *
- * Ported from get-shit-done/bin/lib/model-profiles.cjs.
+ * Ported from brief/bin/lib/model-profiles.cjs.
  */
 export const MODEL_PROFILES: Record<string, Record<string, string>> = {
-  'gsd-planner': { quality: 'opus', balanced: 'opus', budget: 'sonnet', adaptive: 'opus' },
-  'gsd-roadmapper': { quality: 'opus', balanced: 'sonnet', budget: 'sonnet', adaptive: 'sonnet' },
-  'gsd-executor': { quality: 'opus', balanced: 'sonnet', budget: 'sonnet', adaptive: 'sonnet' },
-  'gsd-phase-researcher': { quality: 'opus', balanced: 'sonnet', budget: 'haiku', adaptive: 'sonnet' },
-  'gsd-project-researcher': { quality: 'opus', balanced: 'sonnet', budget: 'haiku', adaptive: 'sonnet' },
-  'gsd-research-synthesizer': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
-  'gsd-debugger': { quality: 'opus', balanced: 'sonnet', budget: 'sonnet', adaptive: 'opus' },
-  'gsd-codebase-mapper': { quality: 'sonnet', balanced: 'haiku', budget: 'haiku', adaptive: 'haiku' },
-  'gsd-verifier': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'sonnet' },
-  'gsd-plan-checker': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
-  'gsd-integration-checker': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
-  'gsd-nyquist-auditor': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
-  'gsd-ui-researcher': { quality: 'opus', balanced: 'sonnet', budget: 'haiku', adaptive: 'sonnet' },
-  'gsd-ui-checker': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
-  'gsd-ui-auditor': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
-  'gsd-doc-writer': { quality: 'opus', balanced: 'sonnet', budget: 'haiku', adaptive: 'sonnet' },
-  'gsd-doc-verifier': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
+  'brief-planner': { quality: 'opus', balanced: 'opus', budget: 'sonnet', adaptive: 'opus' },
+  'brief-roadmapper': { quality: 'opus', balanced: 'sonnet', budget: 'sonnet', adaptive: 'sonnet' },
+  'brief-executor': { quality: 'opus', balanced: 'sonnet', budget: 'sonnet', adaptive: 'sonnet' },
+  'brief-phase-researcher': { quality: 'opus', balanced: 'sonnet', budget: 'haiku', adaptive: 'sonnet' },
+  'brief-project-researcher': { quality: 'opus', balanced: 'sonnet', budget: 'haiku', adaptive: 'sonnet' },
+  'brief-research-synthesizer': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
+  'brief-codebase-mapper': { quality: 'sonnet', balanced: 'haiku', budget: 'haiku', adaptive: 'haiku' },
+  'brief-verifier': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'sonnet' },
+  'brief-plan-checker': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
+  'brief-nyquist-auditor': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
+  'brief-doc-writer': { quality: 'opus', balanced: 'sonnet', budget: 'haiku', adaptive: 'sonnet' },
+  'brief-doc-verifier': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku', adaptive: 'haiku' },
 };
 
 /** Valid model profile names. */
-export const VALID_PROFILES: string[] = Object.keys(MODEL_PROFILES['gsd-planner']);
+export const VALID_PROFILES: string[] = Object.keys(MODEL_PROFILES['brief-planner']);
 
 // ─── configGet ──────────────────────────────────────────────────────────────
 
@@ -58,7 +53,7 @@ export const VALID_PROFILES: string[] = Object.keys(MODEL_PROFILES['gsd-planner'
  * Query handler for config-get command.
  *
  * Reads raw .planning/config.json and traverses dot-notation key paths.
- * Does NOT merge with defaults (matches gsd-tools.cjs behavior).
+ * Does NOT merge with defaults (matches brief-tools.cjs behavior).
  *
  * @param args - args[0] is the dot-notation key path (e.g., 'workflow.auto_advance')
  * @param projectDir - Project root directory
@@ -109,7 +104,7 @@ export const configGet: QueryHandler = async (args, projectDir) => {
  * Resolves the model alias for a given agent type based on the current profile.
  * Uses loadConfig (with defaults) and MODEL_PROFILES for lookup.
  *
- * @param args - args[0] is the agent type (e.g., 'gsd-planner')
+ * @param args - args[0] is the agent type (e.g., 'brief-planner')
  * @param projectDir - Project root directory
  * @returns QueryResult with { model, profile } or { model, profile, unknown_agent: true }
  * @throws GSDError with Validation classification if agent type not provided

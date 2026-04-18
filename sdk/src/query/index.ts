@@ -3,7 +3,7 @@
  *
  * The `createRegistry()` factory creates a fully-wired `QueryRegistry`
  * with all native handlers registered. New handlers are added here
- * as they are migrated from gsd-tools.cjs.
+ * as they are migrated from brief-tools.cjs.
  *
  * @example
  * ```typescript

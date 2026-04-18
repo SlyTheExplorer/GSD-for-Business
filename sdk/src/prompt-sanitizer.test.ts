@@ -38,28 +38,28 @@ describe('sanitizePrompt', () => {
         '@file:simple.md',
         '@file:./relative/path.md',
         '@file:/absolute/path/to/file.md',
-        '@file:~/.claude/get-shit-done/workflows/execute-plan.md',
+        '@file:~/.claude/brief/workflows/execute-plan.md',
       ].join('\n');
       expect(sanitizePrompt(input)).toBe('');
     });
   });
 
-  // ─── /gsd- skill commands ────────────────────────────────────────────────
+  // ─── /brief- skill commands ────────────────────────────────────────────────
 
-  describe('/gsd- skill commands', () => {
-    it('strips lines containing /gsd- commands', () => {
-      const input = 'Before\nRun /gsd-execute-plan to proceed\nAfter';
+  describe('/brief- skill commands', () => {
+    it('strips lines containing /brief- commands', () => {
+      const input = 'Before\nRun /brief-execute-plan to proceed\nAfter';
       const result = sanitizePrompt(input);
-      expect(result).not.toContain('/gsd-');
+      expect(result).not.toContain('/brief-');
       expect(result).toContain('Before');
       expect(result).toContain('After');
     });
 
-    it('strips various /gsd- skill formats', () => {
+    it('strips various /brief- skill formats', () => {
       const input = [
-        'Use /gsd-research-phase',
-        'Then /gsd-plan-phase --auto',
-        'Finally /gsd-verify-phase',
+        'Use /brief-research-phase',
+        'Then /brief-plan-phase --auto',
+        'Finally /brief-verify-phase',
       ].join('\n');
       expect(sanitizePrompt(input)).toBe('');
     });
@@ -207,7 +207,7 @@ describe('sanitizePrompt', () => {
         '',
         'Investigate the codebase using @file:context.md for context.',
         '',
-        'When done, run /gsd-plan-phase to proceed.',
+        'When done, run /brief-plan-phase to proceed.',
         '',
         'If unclear, AskUserQuestion("What should I focus on?")',
         '',
@@ -222,7 +222,7 @@ describe('sanitizePrompt', () => {
 
       const result = sanitizePrompt(input);
       expect(result).not.toContain('@file:');
-      expect(result).not.toContain('/gsd-');
+      expect(result).not.toContain('/brief-');
       expect(result).not.toContain('/gsd:');
       expect(result).not.toContain('AskUserQuestion');
       expect(result).not.toContain('SlashCommand');

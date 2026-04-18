@@ -2,8 +2,8 @@
  * Regression tests for bug #1924: gsd-update silently deletes user-generated files
  *
  * Running the installer (gsd-update / re-install) must not delete:
- *   - get-shit-done/USER-PROFILE.md  (created by /gsd-profile-user)
- *   - commands/gsd/dev-preferences.md  (created by /gsd-profile-user)
+ *   - brief/USER-PROFILE.md  (created by /brief-profile-user)
+ *   - commands/gsd/dev-preferences.md  (created by /brief-profile-user)
  *
  * Root cause:
  *   1. copyWithPathReplacement() calls fs.rmSync(destDir, {recursive:true}) before
@@ -12,7 +12,7 @@
  *      cleanup — no preserve. This wipes dev-preferences.md.
  *
  * Fix requirement:
- *   - install() must preserve USER-PROFILE.md across the get-shit-done/ wipe
+ *   - install() must preserve USER-PROFILE.md across the brief/ wipe
  *   - install() must preserve dev-preferences.md across the commands/gsd/ wipe
  *
  * Closes: #1924
@@ -80,13 +80,13 @@ describe('#1924: USER-PROFILE.md preserved across re-install (global Claude)', (
   test('USER-PROFILE.md exists after initial install + user creation', () => {
     runInstaller(tmpDir);
 
-    // Simulate /gsd-profile-user creating USER-PROFILE.md inside get-shit-done/
-    const profilePath = path.join(tmpDir, 'get-shit-done', 'USER-PROFILE.md');
+    // Simulate /brief-profile-user creating USER-PROFILE.md inside brief/
+    const profilePath = path.join(tmpDir, 'brief', 'USER-PROFILE.md');
     fs.writeFileSync(profilePath, '# My Profile\n\nCustom user content.\n');
 
     assert.ok(
       fs.existsSync(profilePath),
-      'USER-PROFILE.md should exist after being created by /gsd-profile-user'
+      'USER-PROFILE.md should exist after being created by /brief-profile-user'
     );
   });
 
@@ -94,8 +94,8 @@ describe('#1924: USER-PROFILE.md preserved across re-install (global Claude)', (
     // First install
     runInstaller(tmpDir);
 
-    // User runs /gsd-profile-user, creating USER-PROFILE.md
-    const profilePath = path.join(tmpDir, 'get-shit-done', 'USER-PROFILE.md');
+    // User runs /brief-profile-user, creating USER-PROFILE.md
+    const profilePath = path.join(tmpDir, 'brief', 'USER-PROFILE.md');
     const originalContent = '# My Profile\n\nThis is my custom user profile content.\n';
     fs.writeFileSync(profilePath, originalContent);
 
@@ -115,14 +115,14 @@ describe('#1924: USER-PROFILE.md preserved across re-install (global Claude)', (
     );
   });
 
-  test('USER-PROFILE.md is preserved even when get-shit-done/ is wiped and recreated', () => {
+  test('USER-PROFILE.md is preserved even when brief/ is wiped and recreated', () => {
     runInstaller(tmpDir);
 
-    const gsdDir = path.join(tmpDir, 'get-shit-done');
+    const gsdDir = path.join(tmpDir, 'brief');
     const profilePath = path.join(gsdDir, 'USER-PROFILE.md');
 
-    // Confirm get-shit-done/ was created by install
-    assert.ok(fs.existsSync(gsdDir), 'get-shit-done/ must exist after install');
+    // Confirm brief/ was created by install
+    assert.ok(fs.existsSync(gsdDir), 'brief/ must exist after install');
 
     // Write profile
     fs.writeFileSync(profilePath, '# Profile\n\nMy coding style preferences.\n');
@@ -130,11 +130,11 @@ describe('#1924: USER-PROFILE.md preserved across re-install (global Claude)', (
     // Re-install
     runInstaller(tmpDir);
 
-    // get-shit-done/ must still exist AND profile must be intact
-    assert.ok(fs.existsSync(gsdDir), 'get-shit-done/ must still exist after re-install');
+    // brief/ must still exist AND profile must be intact
+    assert.ok(fs.existsSync(gsdDir), 'brief/ must still exist after re-install');
     assert.ok(
       fs.existsSync(profilePath),
-      'USER-PROFILE.md must still exist after get-shit-done/ was wiped and recreated'
+      'USER-PROFILE.md must still exist after brief/ was wiped and recreated'
     );
   });
 });
@@ -156,7 +156,7 @@ describe('#1924: dev-preferences.md preserved across re-install (global Claude)'
     // First install (creates skills/ structure for global Claude)
     runInstaller(tmpDir);
 
-    // User runs /gsd-profile-user — it creates dev-preferences.md in commands/gsd/
+    // User runs /brief-profile-user — it creates dev-preferences.md in commands/gsd/
     const commandsGsdDir = path.join(tmpDir, 'commands', 'gsd');
     fs.mkdirSync(commandsGsdDir, { recursive: true });
     const devPrefsPath = path.join(commandsGsdDir, 'dev-preferences.md');
@@ -205,7 +205,7 @@ describe('#1924: dev-preferences.md preserved across re-install (global Claude)'
     );
 
     // The legacy GSD command (next.md) is NOT user-generated, should be removed
-    // (it would exist only as a skill now in skills/gsd-next/SKILL.md)
+    // (it would exist only as a skill now in skills/brief-next/SKILL.md)
     assert.ok(
       !fs.existsSync(legacyFile),
       'legacy GSD command next.md in commands/gsd/ must be removed during cleanup'
@@ -213,26 +213,26 @@ describe('#1924: dev-preferences.md preserved across re-install (global Claude)'
   });
 });
 
-// ─── Test 3: profile-user.md backup path is outside get-shit-done/ ───────────
+// ─── Test 3: profile-user.md backup path is outside brief/ ───────────
 
-describe('#1924: profile-user.md backup path must be outside get-shit-done/', () => {
-  test('profile-user.md backup uses ~/.claude/USER-PROFILE.backup.md not ~/.claude/get-shit-done/USER-PROFILE.backup.md', () => {
+describe('#1924: profile-user.md backup path must be outside brief/', () => {
+  test('profile-user.md backup uses ~/.claude/USER-PROFILE.backup.md not ~/.claude/brief/USER-PROFILE.backup.md', () => {
     const workflowPath = path.join(
-      __dirname, '..', 'get-shit-done', 'workflows', 'profile-user.md'
+      __dirname, '..', 'brief', 'workflows', 'profile-user.md'
     );
     const content = fs.readFileSync(workflowPath, 'utf8');
 
-    // The backup must NOT be inside get-shit-done/ because that directory is wiped on update
+    // The backup must NOT be inside brief/ because that directory is wiped on update
     assert.ok(
-      !content.includes('get-shit-done/USER-PROFILE.backup.md'),
-      'backup path must NOT be inside get-shit-done/ — that directory is wiped on gsd-update'
+      !content.includes('brief/USER-PROFILE.backup.md'),
+      'backup path must NOT be inside brief/ — that directory is wiped on gsd-update'
     );
 
-    // The backup should be at ~/.claude/USER-PROFILE.backup.md (outside get-shit-done/)
+    // The backup should be at ~/.claude/USER-PROFILE.backup.md (outside brief/)
     assert.ok(
       content.includes('USER-PROFILE.backup.md') &&
-      !content.includes('/get-shit-done/USER-PROFILE.backup.md'),
-      'backup path must be outside get-shit-done/ (e.g. ~/.claude/USER-PROFILE.backup.md)'
+      !content.includes('/brief/USER-PROFILE.backup.md'),
+      'backup path must be outside brief/ (e.g. ~/.claude/USER-PROFILE.backup.md)'
     );
   });
 });

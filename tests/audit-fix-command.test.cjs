@@ -19,7 +19,7 @@ const path = require('path');
 
 const REPO_ROOT = path.join(__dirname, '..');
 const COMMANDS_DIR = path.join(REPO_ROOT, 'commands', 'gsd');
-const WORKFLOWS_DIR = path.join(REPO_ROOT, 'get-shit-done', 'workflows');
+const WORKFLOWS_DIR = path.join(REPO_ROOT, 'brief', 'workflows');
 
 // ─── 1. Command file — audit-fix.md ──────────────────────────────────────────
 
@@ -64,12 +64,12 @@ describe('AUDIT-FIX: command file', () => {
     );
   });
 
-  test('has argument-hint in frontmatter for /gsd-help discoverability', () => {
+  test('has argument-hint in frontmatter for /brief-help discoverability', () => {
     const content = fs.readFileSync(cmdPath, 'utf-8');
     const frontmatter = content.split('---')[1] || '';
     assert.ok(
       frontmatter.includes('argument-hint:'),
-      'must have argument-hint in frontmatter for /gsd-help discoverability'
+      'must have argument-hint in frontmatter for /brief-help discoverability'
     );
   });
 
@@ -118,7 +118,7 @@ describe('AUDIT-FIX: workflow file', () => {
   test('workflow file exists', () => {
     assert.ok(
       fs.existsSync(wfPath),
-      'audit-fix.md must exist in get-shit-done/workflows/'
+      'audit-fix.md must exist in brief/workflows/'
     );
   });
 
@@ -140,15 +140,15 @@ describe('AUDIT-FIX: workflow file', () => {
     assert.ok(content.includes('</success_criteria>'), 'must close <success_criteria> section');
   });
 
-  test('has <available_agent_types> listing gsd-executor', () => {
+  test('has <available_agent_types> listing brief-executor', () => {
     const content = fs.readFileSync(wfPath, 'utf-8');
     assert.ok(
       content.includes('<available_agent_types>'),
       'must have <available_agent_types> section'
     );
     assert.ok(
-      content.includes('gsd-executor'),
-      'must list gsd-executor as available agent type'
+      content.includes('brief-executor'),
+      'must list brief-executor as available agent type'
     );
   });
 });

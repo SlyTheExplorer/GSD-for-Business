@@ -1,7 +1,7 @@
 /**
  * Phase lifecycle handlers — add, insert, scaffold operations.
  *
- * Ported from get-shit-done/bin/lib/phase.cjs and commands.cjs.
+ * Ported from brief/bin/lib/phase.cjs and commands.cjs.
  * Provides phaseAdd (append phase), phaseInsert (decimal phase insertion),
  * and phaseScaffold (template file/directory creation).
  *
@@ -209,7 +209,7 @@ export const phaseAdd: QueryHandler = async (args, projectDir) => {
     const dependsOn = config.phase_naming === 'custom'
       ? ''
       : `\n**Depends on:** Phase ${typeof newPhaseId === 'number' ? newPhaseId - 1 : 'TBD'}`;
-    const phaseEntry = `\n### Phase ${newPhaseId}: ${description}\n\n**Goal:** [To be planned]\n**Requirements**: TBD${dependsOn}\n**Plans:** 0 plans\n\nPlans:\n- [ ] TBD (run /gsd-plan-phase ${newPhaseId} to break down)\n`;
+    const phaseEntry = `\n### Phase ${newPhaseId}: ${description}\n\n**Goal:** [To be planned]\n**Requirements**: TBD${dependsOn}\n**Plans:** 0 plans\n\nPlans:\n- [ ] TBD (run /brief-plan-phase ${newPhaseId} to break down)\n`;
 
     // Find insertion point: before last "---" or at end
     const lastSeparator = rawContent.lastIndexOf('\n---');
@@ -321,7 +321,7 @@ export const phaseInsert: QueryHandler = async (args, projectDir) => {
     await writeFile(join(dirPath, '.gitkeep'), '', 'utf-8');
 
     // Build phase entry
-    const phaseEntry = `\n### Phase ${decimalPhase}: ${description} (INSERTED)\n\n**Goal:** [Urgent work - to be planned]\n**Requirements**: TBD\n**Depends on:** Phase ${afterPhase}\n**Plans:** 0 plans\n\nPlans:\n- [ ] TBD (run /gsd-plan-phase ${decimalPhase} to break down)\n`;
+    const phaseEntry = `\n### Phase ${decimalPhase}: ${description} (INSERTED)\n\n**Goal:** [Urgent work - to be planned]\n**Requirements**: TBD\n**Depends on:** Phase ${afterPhase}\n**Plans:** 0 plans\n\nPlans:\n- [ ] TBD (run /brief-plan-phase ${decimalPhase} to break down)\n`;
 
     // Insert after the target phase section
     const headerPattern = new RegExp(`(#{2,4}\\s*Phase\\s+0*${afterPhaseEscaped}:[^\\n]*\\n)`, 'i');
@@ -470,7 +470,7 @@ export const phaseScaffold: QueryHandler = async (args, projectDir) => {
   switch (type) {
     case 'context': {
       filePath = join(phaseDir, `${padded}-CONTEXT.md`);
-      content = `---\nphase: "${padded}"\nname: "${phaseName}"\ncreated: ${today}\n---\n\n# Phase ${phase}: ${phaseName} — Context\n\n## Decisions\n\n_Decisions will be captured during /gsd-discuss-phase ${phase}_\n\n## Discretion Areas\n\n_Areas where the executor can use judgment_\n\n## Deferred Ideas\n\n_Ideas to consider later_\n`;
+      content = `---\nphase: "${padded}"\nname: "${phaseName}"\ncreated: ${today}\n---\n\n# Phase ${phase}: ${phaseName} — Context\n\n## Decisions\n\n_Decisions will be captured during /brief-discuss-phase ${phase}_\n\n## Discretion Areas\n\n_Areas where the executor can use judgment_\n\n## Deferred Ideas\n\n_Ideas to consider later_\n`;
       break;
     }
     case 'uat': {

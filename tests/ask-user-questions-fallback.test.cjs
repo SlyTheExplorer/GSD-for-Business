@@ -20,7 +20,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const WORKFLOWS_DIR = path.join(ROOT, 'get-shit-done', 'workflows');
+const WORKFLOWS_DIR = path.join(ROOT, 'brief', 'workflows');
 
 /**
  * Return true if the file content contains a TEXT_MODE / text_mode fallback
@@ -76,7 +76,7 @@ describe('AskUserQuestion text-mode fallback (#2012)', () => {
         '  number.',
         '',
         'Workflows missing the fallback:',
-        ...violations.map(v => '  get-shit-done/workflows/' + v),
+        ...violations.map(v => '  brief/workflows/' + v),
       ].join('\n')
     );
   });

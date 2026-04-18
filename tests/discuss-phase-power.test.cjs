@@ -14,8 +14,8 @@ const path = require('path');
 
 describe('discuss-phase power user mode (#1513)', () => {
   const commandPath = path.join(__dirname, '..', 'commands', 'gsd', 'discuss-phase.md');
-  const workflowPath = path.join(__dirname, '..', 'get-shit-done', 'workflows', 'discuss-phase.md');
-  const powerWorkflowPath = path.join(__dirname, '..', 'get-shit-done', 'workflows', 'discuss-phase-power.md');
+  const workflowPath = path.join(__dirname, '..', 'brief', 'workflows', 'discuss-phase.md');
+  const powerWorkflowPath = path.join(__dirname, '..', 'brief', 'workflows', 'discuss-phase-power.md');
 
   describe('command file (discuss-phase.md)', () => {
     test('mentions --power flag in argument-hint or description', () => {
@@ -59,7 +59,7 @@ describe('discuss-phase power user mode (#1513)', () => {
     test('file exists', () => {
       assert.ok(
         fs.existsSync(powerWorkflowPath),
-        'get-shit-done/workflows/discuss-phase-power.md should exist'
+        'brief/workflows/discuss-phase-power.md should exist'
       );
     });
 

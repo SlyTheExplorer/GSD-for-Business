@@ -332,7 +332,7 @@ function loadConfig(cwd) {
     const unknownKeys = Object.keys(parsed).filter(k => !KNOWN_TOP_LEVEL.has(k));
     if (unknownKeys.length > 0) {
       process.stderr.write(
-        `gsd-tools: warning: unknown config key(s) in .planning/config.json: ${unknownKeys.join(', ')} — these will be ignored\n`
+        `brief-tools: warning: unknown config key(s) in .planning/config.json: ${unknownKeys.join(', ')} — these will be ignored\n`
       );
     }
 
@@ -715,7 +715,7 @@ function planningRoot(cwd) {
  * env var and active workstream. This matches loadConfig() above (line 256),
  * which has always read config.json via planningDir(cwd). Previously project
  * and config were resolved against the unrouted .planning/ root, which broke
- * `gsd-tools config-get` in multi-project layouts (the CRUD writers and the
+ * `brief-tools config-get` in multi-project layouts (the CRUD writers and the
  * reader pointed at different files).
  */
 function planningPaths(cwd, ws) {
@@ -1271,11 +1271,11 @@ function getRoadmapPhaseInternal(cwd, phaseNum) {
 
 /**
  * Resolve the agents directory from the GSD install location.
- * gsd-tools.cjs lives at <configDir>/get-shit-done/bin/gsd-tools.cjs,
+ * brief-tools.cjs lives at <configDir>/brief/bin/brief-tools.cjs,
  * so agents/ is at <configDir>/agents/.
  *
  * GSD_AGENTS_DIR env var overrides the default path. Used in tests and for
- * installs where the agents directory is not co-located with gsd-tools.cjs.
+ * installs where the agents directory is not co-located with brief-tools.cjs.
  *
  * @returns {string} Absolute path to the agents directory
  */
@@ -1283,7 +1283,7 @@ function getAgentsDir() {
   if (process.env.GSD_AGENTS_DIR) {
     return process.env.GSD_AGENTS_DIR;
   }
-  // __dirname is get-shit-done/bin/lib/ → go up 3 levels to configDir
+  // __dirname is brief/bin/lib/ → go up 3 levels to configDir
   return path.join(__dirname, '..', '..', '..', 'agents');
 }
 
@@ -1291,8 +1291,8 @@ function getAgentsDir() {
  * Check which GSD agents are installed on disk.
  * Returns an object with installation status and details.
  *
- * Recognises both standard format (gsd-planner.md) and Copilot format
- * (gsd-planner.agent.md). Copilot renames agent files during install (#1512).
+ * Recognises both standard format (brief-planner.md) and Copilot format
+ * (brief-planner.agent.md). Copilot renames agent files during install (#1512).
  *
  * @returns {{ agents_installed: boolean, missing_agents: string[], installed_agents: string[], agents_dir: string }}
  */

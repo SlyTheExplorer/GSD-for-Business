@@ -303,7 +303,7 @@ function learningsPrune(olderThan, opts) {
 // ─── CLI Command Handlers ────────────────────────────────────────────────────
 
 /**
- * Handle `gsd-tools learnings list`
+ * Handle `brief-tools learnings list`
  * @param {boolean} raw - Raw output flag
  */
 function cmdLearningsList(raw) {
@@ -312,7 +312,7 @@ function cmdLearningsList(raw) {
 }
 
 /**
- * Handle `gsd-tools learnings query --tag <tag>`
+ * Handle `brief-tools learnings query --tag <tag>`
  * @param {string} tag
  * @param {boolean} raw - Raw output flag
  */
@@ -322,7 +322,7 @@ function cmdLearningsQuery(tag, raw) {
 }
 
 /**
- * Handle `gsd-tools learnings copy`
+ * Handle `brief-tools learnings copy`
  * @param {string} cwd - Current working directory
  * @param {boolean} raw - Raw output flag
  */
@@ -333,7 +333,7 @@ function cmdLearningsCopy(cwd, raw) {
 }
 
 /**
- * Handle `gsd-tools learnings prune --older-than <duration>`
+ * Handle `brief-tools learnings prune --older-than <duration>`
  * @param {string} olderThan - Duration string like "90d"
  * @param {boolean} raw - Raw output flag
  */
@@ -347,7 +347,7 @@ function cmdLearningsPrune(olderThan, raw) {
 }
 
 /**
- * Handle `gsd-tools learnings delete <id>`
+ * Handle `brief-tools learnings delete <id>`
  * @param {string} id
  * @param {boolean} raw - Raw output flag
  */

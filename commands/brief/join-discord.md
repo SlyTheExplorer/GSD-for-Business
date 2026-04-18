@@ -1,17 +1,17 @@
 ---
 name: gsd:join-discord
-description: Join the GSD Discord community
+description: Join the BRIEF Discord community
 allowed-tools: []
 ---
 
 <objective>
-Display the Discord invite link for the GSD community server.
+Display the Discord invite link for the BRIEF community server.
 </objective>
 
 <output>
-# Join the GSD Discord
+# Join the BRIEF Discord
 
-Connect with other GSD users, get help, share what you're building, and stay updated.
+Connect with other BRIEF users, get help, share what you're building, and stay updated.
 
 **Invite link:** https://discord.gg/mYgfVNfA2r
 

@@ -1,7 +1,7 @@
 /**
  * State query handlers — STATE.md loading, field extraction, and snapshots.
  *
- * Ported from get-shit-done/bin/lib/state.cjs and core.cjs.
+ * Ported from brief/bin/lib/state.cjs and core.cjs.
  * Provides state.load (rebuild frontmatter from body + disk), state.get
  * (field/section extraction), and state-snapshot (structured snapshot).
  *

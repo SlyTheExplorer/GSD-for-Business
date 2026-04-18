@@ -1,10 +1,10 @@
 /**
  * Cursor CLI Reviewer Tests (#1960)
  *
- * Verifies that /gsd-review includes Cursor CLI as a peer reviewer:
+ * Verifies that /brief-review includes Cursor CLI as a peer reviewer:
  *   - review.md workflow contains cursor detection, flag parsing, self-detection, invocation
  *   - commands/gsd/review.md command file mentions --cursor flag
- *   - help.md lists --cursor in the /gsd-review signature
+ *   - help.md lists --cursor in the /brief-review signature
  *   - docs/COMMANDS.md has --cursor flag row
  *   - docs/FEATURES.md has Cursor in the review section
  *   - i18n docs mirror the same content
@@ -18,12 +18,12 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 
-describe('Cursor CLI reviewer in /gsd-review (#1960)', () => {
+describe('Cursor CLI reviewer in /brief-review (#1960)', () => {
 
   // --- review.md workflow ---
 
   describe('review.md workflow', () => {
-    const reviewPath = path.join(ROOT, 'get-shit-done', 'workflows', 'review.md');
+    const reviewPath = path.join(ROOT, 'brief', 'workflows', 'review.md');
     let content;
 
     test('review.md exists', () => {
@@ -105,13 +105,13 @@ describe('Cursor CLI reviewer in /gsd-review (#1960)', () => {
   // --- help.md ---
 
   describe('help.md', () => {
-    const helpPath = path.join(ROOT, 'get-shit-done', 'workflows', 'help.md');
+    const helpPath = path.join(ROOT, 'brief', 'workflows', 'help.md');
 
-    test('lists --cursor in /gsd-review signature', () => {
+    test('lists --cursor in /brief-review signature', () => {
       const c = fs.readFileSync(helpPath, 'utf-8');
       assert.ok(
         c.includes('--cursor'),
-        'help.md should list --cursor in the /gsd-review command signature'
+        'help.md should list --cursor in the /brief-review command signature'
       );
     });
   });

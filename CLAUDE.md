@@ -1,54 +1,54 @@
-<!-- GSD:project-start source:PROJECT.md -->
+<!-- BRIEF:project-start source:PROJECT.md -->
 ## Project
 
 **BRIEF — Business Research, Insight & Execution Framework**
 
-BRIEF is a meta-prompting framework for business and product strategy planning, hard-forked from GSD (Get Shit Done). It guides a business planner through four phases — DEFINE (extract true intent), DISCOVER (broad domain research), DESIGN (concrete business plan), DELIVER (high-level product/service policy + stakeholder communication artifacts) — all of which occur BEFORE engineering's PRD work begins. The output of BRIEF can hand off cleanly into a PRD that GSD itself can then execute.
+BRIEF is a meta-prompting framework for business and product strategy planning, hard-forked from BRIEF (BRIEF). It guides a business planner through four phases — DEFINE (extract true intent), DISCOVER (broad domain research), DESIGN (concrete business plan), DELIVER (high-level product/service policy + stakeholder communication artifacts) — all of which occur BEFORE engineering's PRD work begins. The output of BRIEF can hand off cleanly into a PRD that BRIEF itself can then execute.
 
 **Core Value:** A business planner can transform a fuzzy idea into well-researched, audience-correct, compliance-aware deliverables — without already knowing what they want when they start.
 
 ### Constraints
 
-- **Tech stack**: Inherited from GSD. Node.js 22+, CommonJS-only core (`.cjs`), zero external runtime dependencies for the bin layer. TypeScript SDK retained.
-- **Architecture**: Must preserve GSD's atomic-commit + STATE.md file lock + agent prompt context engine. No re-architecture of these primitives.
-- **Multi-runtime**: Must keep working across Claude Code, OpenAI Codex, Gemini CLI, OpenCode (same as GSD). `INSTRUCTION_FILE` detection and `text_mode` fallback for non-AskUserQuestion runtimes preserved.
+- **Tech stack**: Inherited from BRIEF. Node.js 22+, CommonJS-only core (`.cjs`), zero external runtime dependencies for the bin layer. TypeScript SDK retained.
+- **Architecture**: Must preserve BRIEF's atomic-commit + STATE.md file lock + agent prompt context engine. No re-architecture of these primitives.
+- **Multi-runtime**: Must keep working across Claude Code, OpenAI Codex, Gemini CLI, OpenCode (same as BRIEF). `INSTRUCTION_FILE` detection and `text_mode` fallback for non-AskUserQuestion runtimes preserved.
 - **Backward compatibility**: NONE. Hard fork. The `backup/original-gsd` branch is for reference only — no compatibility shims, aliases, or migration tooling.
 - **Naming**: `gsd-*` → `brief-*` is a one-shot global rename. No transitional period.
-- **Testing**: `node:test` (not Jest), c8 coverage, cross-platform (Mac/Windows/Linux) — same as GSD.
+- **Testing**: `node:test` (not Jest), c8 coverage, cross-platform (Mac/Windows/Linux) — same as BRIEF.
 - **Distribution**: npm package, similar `bin/install.js` pattern. Likely package name `brief-cc` or similar.
-<!-- GSD:project-end -->
+<!-- BRIEF:project-end -->
 
-<!-- GSD:stack-start source:research/STACK.md -->
+<!-- BRIEF:stack-start source:research/STACK.md -->
 ## Technology Stack
 
 ## Summary
 ## Architectural Responsibility Map
 | Capability | Primary Tier | Secondary Tier | Rationale |
 |------------|-------------|----------------|-----------|
-| Slash command dispatch | Inherited GSD core (`commands/*.md`) | — | GSD already routes `/gsd-*` prompts; rename to `/brief-*` is a string substitution, not architecture |
-| Multi-agent orchestration | Inherited GSD core (`agents/*.md`) | — | The orchestrator/researcher/planner/checker pattern is exactly what BRIEF needs; only agent identities change |
-| State lock + atomic commits | Inherited GSD core (`STATE.md`, `gsd-tools.cjs`) | — | Constraint: must not re-architect |
-| Runtime detection (Claude/Codex/Gemini/OpenCode) | Inherited GSD core (`INSTRUCTION_FILE`, `text_mode`) | — | Constraint: must keep working |
-| Audience guard (frontmatter on every artifact) | New BRIEF layer (parser via `gray-matter`) | Inherited GSD hooks | Frontmatter parsing is too lightweight to justify a new architecture; piggyback on existing hook system |
-| ALIGN gate (objectives match) | New BRIEF agent (`brief-align-checker`) | Inherited GSD agent-spawn pattern | Mirrors `gsd-plan-checker`: a verifier agent that reads artifacts and writes findings |
-| Compliance checker (region+industry-aware) | New BRIEF agent (`brief-compliance-checker`) | Inherited GSD agent-spawn pattern | Same shape as ALIGN — verifier agent with reference library |
+| Slash command dispatch | Inherited BRIEF core (`commands/*.md`) | — | BRIEF already routes `/brief-*` prompts; rename to `/brief-*` is a string substitution, not architecture |
+| Multi-agent orchestration | Inherited BRIEF core (`agents/*.md`) | — | The orchestrator/researcher/planner/checker pattern is exactly what BRIEF needs; only agent identities change |
+| State lock + atomic commits | Inherited BRIEF core (`STATE.md`, `brief-tools.cjs`) | — | Constraint: must not re-architect |
+| Runtime detection (Claude/Codex/Gemini/OpenCode) | Inherited BRIEF core (`INSTRUCTION_FILE`, `text_mode`) | — | Constraint: must keep working |
+| Audience guard (frontmatter on every artifact) | New BRIEF layer (parser via `gray-matter`) | Inherited BRIEF hooks | Frontmatter parsing is too lightweight to justify a new architecture; piggyback on existing hook system |
+| ALIGN gate (objectives match) | New BRIEF agent (`brief-align-checker`) | Inherited BRIEF agent-spawn pattern | Mirrors `brief-plan-checker`: a verifier agent that reads artifacts and writes findings |
+| Compliance checker (region+industry-aware) | New BRIEF agent (`brief-compliance-checker`) | Inherited BRIEF agent-spawn pattern | Same shape as ALIGN — verifier agent with reference library |
 | Type B deck generation (DELIVER) | New BRIEF skill + `marp-cli` (via `npx`) | Pandoc fallback | Markdown-in/PPTX-out is a single CLI invocation, not a runtime dependency |
-| Type A artifact generation (PRODUCT-BRIEF, etc.) | New BRIEF prompts (markdown templates) | Inherited GSD planner pattern | Pure prompt engineering; no new tooling needed |
+| Type A artifact generation (PRODUCT-BRIEF, etc.) | New BRIEF prompts (markdown templates) | Inherited BRIEF planner pattern | Pure prompt engineering; no new tooling needed |
 | Compliance reference library (Korea + global) | New BRIEF static data (markdown reference files) | — | Just markdown files in `references/compliance/` — no library, no schema engine |
 ## Recommended Stack
 ### Core Technologies (INHERITED — do not change)
 | Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|-----------------|
-| Node.js | >=22.0.0 | Runtime | GSD constraint. Node 22 LTS is current. `[VERIFIED: package.json engines field]` |
-| CommonJS (`.cjs`) | — | Module system for bin layer | GSD constraint. ESM is "default in new frameworks" in 2026 per industry trend, but CommonJS remains fully supported (Node 25.8.1 explicitly fixed CJS-in-type:module edge cases in 2026). For a fork, breaking the module convention would invite friction with no payoff. `[CITED: nodejs.org docs, Node 25.8.1 release notes]` |
-| `node:test` | built-in | Test runner | GSD constraint. Built-in, zero install, ships with Node. `[VERIFIED: GSD package.json scripts.test]` |
-| `c8` | ^11.0.0 (current 11.0.0) | V8-native coverage | GSD constraint. Native V8 coverage is faster and more accurate than Istanbul/nyc. Already used at 70% line threshold. `[VERIFIED: npm view c8 version → 11.0.0]` |
-| `esbuild` | ^0.24.0 (current 0.28.0) | Hook bundling | GSD constraint. Used only by `scripts/build-hooks.js`. Version drift from 0.24→0.28 is fine; not a breaking change in the hook bundling path. `[VERIFIED: npm view esbuild version → 0.28.0]` |
-| `vitest` | ^4.1.2 (current 4.1.4) | TypeScript SDK tests | GSD constraint, only for `sdk/`. Test runner split between `node:test` (bin layer) and vitest (TS SDK) is intentional and inherited. `[VERIFIED: npm view vitest version → 4.1.4]` |
+| Node.js | >=22.0.0 | Runtime | BRIEF constraint. Node 22 LTS is current. `[VERIFIED: package.json engines field]` |
+| CommonJS (`.cjs`) | — | Module system for bin layer | BRIEF constraint. ESM is "default in new frameworks" in 2026 per industry trend, but CommonJS remains fully supported (Node 25.8.1 explicitly fixed CJS-in-type:module edge cases in 2026). For a fork, breaking the module convention would invite friction with no payoff. `[CITED: nodejs.org docs, Node 25.8.1 release notes]` |
+| `node:test` | built-in | Test runner | BRIEF constraint. Built-in, zero install, ships with Node. `[VERIFIED: BRIEF package.json scripts.test]` |
+| `c8` | ^11.0.0 (current 11.0.0) | V8-native coverage | BRIEF constraint. Native V8 coverage is faster and more accurate than Istanbul/nyc. Already used at 70% line threshold. `[VERIFIED: npm view c8 version → 11.0.0]` |
+| `esbuild` | ^0.24.0 (current 0.28.0) | Hook bundling | BRIEF constraint. Used only by `scripts/build-hooks.js`. Version drift from 0.24→0.28 is fine; not a breaking change in the hook bundling path. `[VERIFIED: npm view esbuild version → 0.28.0]` |
+| `vitest` | ^4.1.2 (current 4.1.4) | TypeScript SDK tests | BRIEF constraint, only for `sdk/`. Test runner split between `node:test` (bin layer) and vitest (TS SDK) is intentional and inherited. `[VERIFIED: npm view vitest version → 4.1.4]` |
 ### Supporting Libraries (NEW — minimum viable additions)
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
-| `@marp-team/marp-cli` | ^4.3.1 (released 2026-03-16) | Markdown→PPTX/PDF/HTML for DELIVER Type B decks | Invoke via `npx --yes @marp-team/marp-cli@4.3.1` from a BRIEF skill — do NOT add to `dependencies`. Mirrors GSD's `npx --yes ctx7@latest` pattern for Context7 fallback. `[VERIFIED: npm view @marp-team/marp-cli version + time.modified]` |
+| `@marp-team/marp-cli` | ^4.3.1 (released 2026-03-16) | Markdown→PPTX/PDF/HTML for DELIVER Type B decks | Invoke via `npx --yes @marp-team/marp-cli@4.3.1` from a BRIEF skill — do NOT add to `dependencies`. Mirrors BRIEF's `npx --yes ctx7@latest` pattern for Context7 fallback. `[VERIFIED: npm view @marp-team/marp-cli version + time.modified]` |
 | `gray-matter` | ^4.0.3 | YAML frontmatter parsing for audience-guard | Audience guard reads `audience:`, `confidentiality:`, `voice:` from artifact frontmatter. `gray-matter` is the de-facto standard (used by Jekyll, Hugo, Astro, Next.js MDX, Gatsby). Zero-config, well-maintained. `[VERIFIED: npm view gray-matter version → 4.0.3]` |
 | `js-yaml` | ^4.1.1 | OBJECTIVES.md and reference-library YAML parsing | If `gray-matter` is already pulled in, it transitively provides js-yaml — avoid declaring twice. Use directly only if a non-frontmatter YAML file (e.g., `references/compliance/iso-27001.yaml`) needs parsing. `[VERIFIED: npm view js-yaml version → 4.1.1]` |
 | `ajv` | ^8.18.0 | JSON Schema validation for ALIGN/AUDIENCE/COMPLIANCE gate outputs | Gates produce structured findings (severity, location, rule_id). Validating against a schema keeps gate output consumable by downstream agents. `ajv` is the standard JSON Schema validator in Node. `[VERIFIED: npm view ajv version → 8.18.0]` |
@@ -80,8 +80,8 @@ BRIEF is a meta-prompting framework for business and product strategy planning, 
 | **Marp CLI** for decks | **Spectacle** (6.0.1, React) | Skip. React + JSX is wrong language paradigm for a markdown-driven framework. `[VERIFIED: npm view spectacle version → 6.0.1]` |
 | **Marp CLI** for decks | **Pandoc** (`pandoc input.md -o output.pptx`) | Fallback if Marp is unavailable. Pandoc is more universal but produces less polished slides. Document as fallback in DELIVER skill prompt. |
 | **Inline frontmatter parsing** (regex) | **gray-matter** library | If frontmatter complexity grows beyond simple key-value (nested objects, arrays, multi-line strings), switch to `gray-matter`. Start inline; promote only if needed. |
-| **CommonJS** | **ESM** | ESM is the 2026 default for new Node.js projects, but BRIEF is a fork constrained to GSD's CJS core. A future v2 could migrate, but v1 must preserve compatibility with the inherited bin layer. `[CITED: medium.com/@raveenpanditha mastering-modern-node-js-in-2026]` |
-| **`node:test`** | **vitest** for everything | vitest is excellent but adds an install. GSD already uses vitest only for the TS SDK; replicate that split in BRIEF. |
+| **CommonJS** | **ESM** | ESM is the 2026 default for new Node.js projects, but BRIEF is a fork constrained to BRIEF's CJS core. A future v2 could migrate, but v1 must preserve compatibility with the inherited bin layer. `[CITED: medium.com/@raveenpanditha mastering-modern-node-js-in-2026]` |
+| **`node:test`** | **vitest** for everything | vitest is excellent but adds an install. BRIEF already uses vitest only for the TS SDK; replicate that split in BRIEF. |
 | **OBJECTIVES.md as markdown** | **YAML-only OKR file** (e.g., openproject schema) | Markdown allows free-form goal narrative + a structured OKR table. A pure YAML file is more machine-parseable but less editable by business planners. The hybrid markdown+frontmatter+optional YAML-block approach (used by Astro, Eleventy) gives both. `[CITED: github.com/oslokommune/okr-tracker, openproject.org/okr-software]` |
 | **Custom audience-guard schema** | **JSON Schema + ajv** | If audience/confidentiality vocabulary stays under ~10 enum values per field, a closed-set CJS validator (50 lines) is simpler and dependency-free. Promote to ajv only if vocabulary grows. |
 ## Korea-Specific Tooling (LOW confidence — verified absent)
@@ -94,11 +94,11 @@ BRIEF is a meta-prompting framework for business and product strategy planning, 
 |-------|-----|-------------|
 | **superpowers as a runtime dependency** | Software-development-coupled. TDD enforcement, subagent code review, browser automation skills don't translate to business planning. Listed as "rejected" in PROJECT.md key decisions. | Absorb the 5-phase concept; build BRIEF's own DEFINE→DISCOVER→DESIGN→DELIVER agents. `[CITED: github.com/obra/superpowers, PROJECT.md Key Decisions]` |
 | **gstack as a runtime dependency** | Designed for the "founder-engineer wearing multiple hats" persona. Includes /qa, /ship, /deploy, /benchmark, /browse, /canary, /retro — all software-engineering activities. Pulling in gstack would re-introduce the dev-centric surfaces BRIEF explicitly removes (per PROJECT.md "Out of Scope"). | Absorb `office-hours` and `plan-ceo-review` patterns into BRIEF's own DEFINE and DESIGN agents. Document as "inspiration, not dependency" per PROJECT.md Context. `[CITED: github.com/garrytan/gstack, PROJECT.md Context]` |
-| **Adding any package to `dependencies`** without verifying GSD's "zero external runtime dependencies" rule first | If GSD's bin layer ships with empty `dependencies`, BRIEF must preserve that. Adding even one runtime dep changes the install profile and breaks the lightness promise that lets GSD ride into Codex/Gemini/OpenCode without friction. | `npx --yes` for CLIs, inline implementations for trivial parsing/validation. `[ASSUMED — verify by inspecting GSD package.json `dependencies` key]` |
+| **Adding any package to `dependencies`** without verifying BRIEF's "zero external runtime dependencies" rule first | If BRIEF's bin layer ships with empty `dependencies`, BRIEF must preserve that. Adding even one runtime dep changes the install profile and breaks the lightness promise that lets BRIEF ride into Codex/Gemini/OpenCode without friction. | `npx --yes` for CLIs, inline implementations for trivial parsing/validation. `[ASSUMED — verify by inspecting BRIEF package.json `dependencies` key]` |
 | **Backwards-compatibility shims for `gsd-*` → `brief-*` rename** | Aliases create dual-vocabulary confusion in agent prompts. PROJECT.md key decision: "Hard rename, no aliases". | One-shot global rename via grep+sed (or a guarded migration script). Backup branch is the rollback story. `[CITED: PROJECT.md Key Decisions]` |
-| **A formal codebase-mapping artifact** of the source GSD | PROJECT.md explicitly notes "already analyzed in design conversation; no value in formal mapping artifact". Out of scope. | Trust the design conversation; document only the renames and new files. `[CITED: PROJECT.md Out of Scope]` |
-| **Plugin distribution model** (alongside the fork) | Explored and rejected: coupling to GSD's release cadence would constrain BRIEF's domain-specific evolution. | Hard fork only. `backup/original-gsd` branch as reference. `[CITED: PROJECT.md Out of Scope]` |
-| **Heavy programmatic verification cycle** | GSD's verifier loop is dev-cycle-shaped (build/test/lint pass-fail). Business artifacts can't pass-fail the same way. | Replaced by ALIGN + AUDIENCE + COMPLIANCE gates that emit human-reviewable findings. `[CITED: PROJECT.md Out of Scope]` |
+| **A formal codebase-mapping artifact** of the source BRIEF | PROJECT.md explicitly notes "already analyzed in design conversation; no value in formal mapping artifact". Out of scope. | Trust the design conversation; document only the renames and new files. `[CITED: PROJECT.md Out of Scope]` |
+| **Plugin distribution model** (alongside the fork) | Explored and rejected: coupling to BRIEF's release cadence would constrain BRIEF's domain-specific evolution. | Hard fork only. `backup/original-gsd` branch as reference. `[CITED: PROJECT.md Out of Scope]` |
+| **Heavy programmatic verification cycle** | BRIEF's verifier loop is dev-cycle-shaped (build/test/lint pass-fail). Business artifacts can't pass-fail the same way. | Replaced by ALIGN + AUDIENCE + COMPLIANCE gates that emit human-reviewable findings. `[CITED: PROJECT.md Out of Scope]` |
 | **`/brief-new-milestone` (multi-cycle restart)** in v1 | Single-cycle is enough for v1. Multi-cycle adds complexity without demonstrated demand. | Defer to v2. `[CITED: PROJECT.md Out of Scope]` |
 | **Heavy schema validation engines** (e.g., `joi`, `yup` for frontmatter) | Adds dependency weight. Audience-guard frontmatter has ~5 fields with closed enums. | A 30-line CJS validator suffices. Promote to `ajv` only if schema grows. |
 | **JSX/React-based slide tools** (Spectacle, mdx-deck) | Wrong paradigm for a markdown-first framework. Adds React + Babel + JSX to the dep tree just for slides. | Marp (markdown-native) or Slidev (Vue, but lighter than React for slide-only use). |
@@ -121,24 +121,24 @@ BRIEF is a meta-prompting framework for business and product strategy planning, 
 ## Version Compatibility
 | Package A | Compatible With | Notes |
 |-----------|-----------------|-------|
-| `node@>=22` | All listed packages | Constraint from GSD `package.json engines.node` |
+| `node@>=22` | All listed packages | Constraint from BRIEF `package.json engines.node` |
 | `@marp-team/marp-cli@4.3.1` | Node 18+ (per Marp docs) | Compatible with Node 22. Editable PPTX requires LibreOffice Impress AND a compatible browser (Chrome/Edge). HTML/PDF/non-editable PPTX work without LibreOffice. `[CITED: github.com/marp-team/marp-cli README]` |
 | `gray-matter@4.0.3` | Node 22 | Pulls in `js-yaml` transitively — don't double-declare. |
-| `c8@11` + `node:test` | Node 22 | GSD already validates this combination at 70% threshold. |
+| `c8@11` + `node:test` | Node 22 | BRIEF already validates this combination at 70% threshold. |
 | `vitest@4` | Node 22, TypeScript SDK only | Don't use vitest for the bin layer — keep `node:test`. |
 | `esbuild@0.28` | Node 22 | Used only by `scripts/build-hooks.js`. Drift from declared `^0.24` to current `0.28` is non-breaking for hook bundling. |
 ## What's Already Done For Us (the inherited infrastructure)
 - **Slash command dispatcher** — `commands/*.md` already provides the prompt-routing surface. Rename `gsd-*.md` → `brief-*.md`.
-- **Multi-agent orchestration** — `agents/*.md` defines specialist agent personas. Replace dev-specific agents (gsd-code-reviewer, gsd-ui-checker, gsd-tdd-runner, gsd-security-auditor, gsd-debug-runner, gsd-ai-eval) with business agents (brief-define-intent, brief-domain-researcher, brief-align-checker, brief-audience-guard, brief-compliance-checker, brief-deck-generator).
+- **Multi-agent orchestration** — `agents/*.md` defines specialist agent personas. Dev-specific agents removed in Phase 1; replaced with business agents (brief-define-intent, brief-domain-researcher, brief-align-checker, brief-audience-guard, brief-compliance-checker, brief-deck-generator).
 - **State management** — `STATE.md` lock + atomic commit infrastructure works as-is. No business-domain reason to change it.
-- **Context engine** — `gsd-tools.cjs init` produces the structured context blocks consumed by agents. Same shape, same usage.
+- **Context engine** — `brief-tools.cjs init` produces the structured context blocks consumed by agents. Same shape, same usage.
 - **Runtime detection** — `INSTRUCTION_FILE` env + `text_mode` fallback for non-AskUserQuestion runtimes. Critical for Codex/Gemini/OpenCode support; preserved unchanged.
 - **Hooks system** — `hooks/` provides the hook injection points. Audience guard can register as a `PostToolUse` hook on Write tool calls.
 - **Test infrastructure** — `node:test` + `c8` + `npm test` scripts. Add `tests/brief-*.test.cjs` files; everything else is already wired.
 - **Distribution** — `bin/install.js` pattern. Rename to `bin/install.js` (already there) but change package name to `brief-cc` and update install destinations.
 ## Sources
 ### Primary (HIGH confidence)
-- **GSD codebase** (`/Users/agent/GSD-for-Business/package.json`, `.planning/PROJECT.md`, `.planning/config.json`) — verified current dependencies, constraints, naming, decisions.
+- **BRIEF codebase** (`/Users/agent/BRIEF-for-Business/package.json`, `.planning/PROJECT.md`, `.planning/config.json`) — verified current dependencies, constraints, naming, decisions.
 - **npm registry** (live `npm view` calls) — verified current versions of @marp-team/marp-cli (4.3.1, published 2026-03-16), @slidev/cli (52.14.2), reveal.js (10.2.3), spectacle (6.0.1), gray-matter (4.0.3), js-yaml (4.1.1), ajv (8.18.0), c8 (11.0.0), vitest (4.1.4), esbuild (0.28.0), zod (4.3.6), chalk (5.6.2), commander (14.0.3).
 - **github.com/garrytan/gstack** (office-hours/SKILL.md, plan-ceo-review/SKILL.md, README.md) — verified the actual techniques (Push Twice, Language Precision, Reframing, Dream State Mapping, Platonic Ideal, four operating modes, Prime Directives) and skill file structure.
 - **github.com/obra/superpowers** — verified the 5-phase discipline and Anthropic marketplace acceptance (Jan 15, 2026).
@@ -146,7 +146,7 @@ BRIEF is a meta-prompting framework for business and product strategy planning, 
 - **strategyzer.com/library/the-business-model-canvas** + Wikipedia BMC entry — verified canonical 9-block structure and Creative Commons license.
 - **leanstack.com Lean-Canvas.pdf** — verified Ash Maurya's lean variant 9-block structure.
 ### Secondary (MEDIUM confidence)
-- **medium.com/@tentenco "Superpowers, GSD, and gstack: What Each Claude Code Framework Actually Constrains"** (April 2026) — independent comparison framing each framework's constraint surface. Aligns with my read of the official READMEs.
+- **medium.com/@tentenco "Superpowers, BRIEF, and gstack: What Each Claude Code Framework Actually Constrains"** (April 2026) — independent comparison framing each framework's constraint surface. Aligns with my read of the official READMEs.
 - **practiceguides.chambers.com / iapp.org / captaincompliance.com / korea.acclime.com** — Korea PIPA Feb 2026 amendment, ISMS-P 2027 deadline, CEO personal liability, MyData 2026 expansion. Multiple legal sources agree.
 - **ycombinator.com Library + slideshare/sequoia-capital-pitchdecktemplate** — pitch deck structures. Well-established conventions; multiple sources agree on slide ordering.
 - **dasroot.net + pkgpulse.com Slidev/Marp/Reveal comparison (2026)** — corroborates Marp-for-corporate-PPTX, Slidev-for-developer-decks, Reveal-for-customization split.
@@ -156,68 +156,68 @@ BRIEF is a meta-prompting framework for business and product strategy planning, 
 ## Assumptions Log
 | # | Claim | Section | Risk if Wrong |
 |---|-------|---------|---------------|
-| A1 | GSD's bin layer ships with empty `dependencies` (only `devDependencies`) — i.e., the "zero external runtime dependencies" rule is a verifiable property of the current package.json, not just an aspiration | Supporting Libraries; What NOT to Use | If GSD already has runtime deps, the "preserve zero-deps" advice is moot and BRIEF can freely add `gray-matter`/`ajv` to dependencies. **Verify in DESIGN phase by inspecting `package.json` `dependencies` field.** |
+| A1 | BRIEF's bin layer ships with empty `dependencies` (only `devDependencies`) — i.e., the "zero external runtime dependencies" rule is a verifiable property of the current package.json, not just an aspiration | Supporting Libraries; What NOT to Use | If BRIEF already has runtime deps, the "preserve zero-deps" advice is moot and BRIEF can freely add `gray-matter`/`ajv` to dependencies. **Verify in DESIGN phase by inspecting `package.json` `dependencies` field.** |
 | A2 | The frontmatter audience-guard vocabulary will stay small enough (~5 fields, closed enums) that an inline 30-line CJS validator beats `ajv` on cost/benefit | Supporting Libraries | If audience/confidentiality/voice frontmatter grows nested or open-ended, ajv becomes worth the dep. Re-evaluate after writing 3-5 artifact templates. |
-| A3 | Existing GSD test infrastructure (`node scripts/run-tests.cjs` + `c8` 70% threshold) is appropriate for BRIEF's new business-layer code paths without modification | Development Tools | If business-layer code has fundamentally different testability characteristics (e.g., harder to unit-test prompt outputs), the threshold may need adjustment. Likely fine; prompts are tested via fixture-based snapshot tests. |
+| A3 | Existing BRIEF test infrastructure (`node scripts/run-tests.cjs` + `c8` 70% threshold) is appropriate for BRIEF's new business-layer code paths without modification | Development Tools | If business-layer code has fundamentally different testability characteristics (e.g., harder to unit-test prompt outputs), the threshold may need adjustment. Likely fine; prompts are tested via fixture-based snapshot tests. |
 | A4 | Marp's `npx --yes` invocation pattern works reliably across Claude Code / Codex / Gemini / OpenCode runtime sandboxes | Stack Patterns by Variant | If a runtime sandbox blocks `npx` network calls, decks can't be generated. Document as known limitation; offer an explicit `npm install -g @marp-team/marp-cli` fallback. |
 | A5 | Korean PIPA Feb 2026 amendments and ISMS-P July 2027 deadline are accurate as of research date (2026-04-17) | Korea-Specific Tooling; Stack Patterns by Variant | Regulatory dates shift. Compliance reference library must include "as of" dates and a refresh discipline. Don't hard-code; cite source on every claim. |
-| A6 | The audience-guard hook can register as a `PostToolUse` hook on Write tool calls within GSD's existing hook system | What's Already Done For Us | If the hook system doesn't support PostToolUse on Write, the audience guard needs a different injection point (e.g., a separate verifier agent run after every milestone). Verify hook surface during DESIGN phase. |
+| A6 | The audience-guard hook can register as a `PostToolUse` hook on Write tool calls within BRIEF's existing hook system | What's Already Done For Us | If the hook system doesn't support PostToolUse on Write, the audience guard needs a different injection point (e.g., a separate verifier agent run after every milestone). Verify hook surface during DESIGN phase. |
 ## Open Questions
 ## Environment Availability
 | Dependency | Required By | Available | Version | Fallback |
 |------------|-------------|-----------|---------|----------|
 | Node.js | Everything | ✓ | (verify locally — must be >=22) | None — hard requirement |
 | npm | Install + npx invocations | ✓ | (ships with Node) | None |
-| `git` | Atomic-commit infrastructure (inherited) | ✓ (assumed; GSD requires) | — | None |
+| `git` | Atomic-commit infrastructure (inherited) | ✓ (assumed; BRIEF requires) | — | None |
 | `npx` | Marp CLI invocation | ✓ (ships with npm) | — | Manual `npm install -g @marp-team/marp-cli` |
 | LibreOffice Impress | **Editable** PPTX export from Marp | ✗ (likely missing) | — | Non-editable PPTX (still readable, less editable for end-user) — Marp default mode |
 | Chrome/Edge browser | Marp PPTX export (any mode) | likely ✓ | — | None — required for Marp's PPTX renderer |
 | Pandoc | Optional fallback if Marp unavailable | likely ✗ | — | Skip; Marp covers the use case |
 ## Confidence Breakdown
-- **Inherited core (Node 22, CJS, node:test, c8, esbuild, vitest):** HIGH — directly verified from GSD `package.json` and config.
+- **Inherited core (Node 22, CJS, node:test, c8, esbuild, vitest):** HIGH — directly verified from BRIEF `package.json` and config.
 - **Marp CLI for decks:** HIGH — verified version, recent 2026-03-16 release, multiple comparison sources confirm Marp's PPTX-export advantage for corporate use.
 - **gstack and superpowers as patterns-not-deps:** HIGH — verified from PROJECT.md decisions and the actual SKILL.md files of both projects.
-- **gray-matter / ajv as supporting libs:** MEDIUM — verified versions, but the "should we add them at all vs. inline" decision depends on assumption A1 (GSD's zero-runtime-deps rule).
+- **gray-matter / ajv as supporting libs:** MEDIUM — verified versions, but the "should we add them at all vs. inline" decision depends on assumption A1 (BRIEF's zero-runtime-deps rule).
 - **Korean compliance regulatory dates (PIPA Feb 2026, ISMS-P July 2027, CEO liability):** MEDIUM — multiple legal sources agree, but regulatory dates can shift; cite-with-date-stamps in references.
 - **Korean tooling absence:** LOW — verified absent in general web search; a Korean-native BMC/OKR tool may exist that wasn't surfaced.
-<!-- GSD:stack-end -->
+<!-- BRIEF:stack-end -->
 
-<!-- GSD:conventions-start source:CONVENTIONS.md -->
+<!-- BRIEF:conventions-start source:CONVENTIONS.md -->
 ## Conventions
 
 Conventions not yet established. Will populate as patterns emerge during development.
-<!-- GSD:conventions-end -->
+<!-- BRIEF:conventions-end -->
 
-<!-- GSD:architecture-start source:ARCHITECTURE.md -->
+<!-- BRIEF:architecture-start source:ARCHITECTURE.md -->
 ## Architecture
 
 Architecture not yet mapped. Follow existing patterns found in the codebase.
-<!-- GSD:architecture-end -->
+<!-- BRIEF:architecture-end -->
 
-<!-- GSD:skills-start source:skills/ -->
+<!-- BRIEF:skills-start source:skills/ -->
 ## Project Skills
 
 No project skills found. Add skills to any of: `.claude/skills/`, `.agents/skills/`, `.cursor/skills/`, `.github/skills/`, or `.codex/skills/` with a `SKILL.md` index file.
-<!-- GSD:skills-end -->
+<!-- BRIEF:skills-end -->
 
-<!-- GSD:workflow-start source:GSD defaults -->
-## GSD Workflow Enforcement
+<!-- BRIEF:workflow-start source:BRIEF defaults -->
+## BRIEF Workflow Enforcement
 
-Before using Edit, Write, or other file-changing tools, start work through a GSD command so planning artifacts and execution context stay in sync.
+Before using Edit, Write, or other file-changing tools, start work through a BRIEF command so planning artifacts and execution context stay in sync.
 
 Use these entry points:
-- `/gsd-quick` for small fixes, doc updates, and ad-hoc tasks
-- `/gsd-debug` for investigation and bug fixing
-- `/gsd-execute-phase` for planned phase work
+- `/brief-quick` for small fixes, doc updates, and ad-hoc tasks
+- `/brief-debug` for investigation and bug fixing
+- `/brief-execute-phase` for planned phase work
 
-Do not make direct repo edits outside a GSD workflow unless the user explicitly asks to bypass it.
-<!-- GSD:workflow-end -->
+Do not make direct repo edits outside a BRIEF workflow unless the user explicitly asks to bypass it.
+<!-- BRIEF:workflow-end -->
 
 
 
-<!-- GSD:profile-start -->
+<!-- BRIEF:profile-start -->
 ## Developer Profile
 
-> Profile not yet configured. Run `/gsd-profile-user` to generate your developer profile.
+> Profile not yet configured. Run `/brief-profile-user` to generate your developer profile.
 > This section is managed by `generate-claude-profile` -- do not edit manually.
-<!-- GSD:profile-end -->
+<!-- BRIEF:profile-end -->

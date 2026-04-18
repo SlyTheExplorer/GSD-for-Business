@@ -1,7 +1,7 @@
 /**
- * GSD Tools Bridge — shells out to `gsd-tools.cjs` for state management.
+ * GSD Tools Bridge — shells out to `brief-tools.cjs` for state management.
  *
- * All `.planning/` state operations go through gsd-tools.cjs rather than
+ * All `.planning/` state operations go through brief-tools.cjs rather than
  * reimplementing 12K+ lines of logic.
  */
 
@@ -32,7 +32,7 @@ export class GSDToolsError extends Error {
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 const BUNDLED_GSD_TOOLS_PATH = fileURLToPath(
-  new URL('../../get-shit-done/bin/gsd-tools.cjs', import.meta.url),
+  new URL('../../brief/bin/brief-tools.cjs', import.meta.url),
 );
 
 export class GSDTools {
@@ -57,7 +57,7 @@ export class GSDTools {
   // ─── Core exec ───────────────────────────────────────────────────────────
 
   /**
-   * Execute a gsd-tools command and return parsed JSON output.
+   * Execute a brief-tools command and return parsed JSON output.
    * Handles the `@file:` prefix pattern for large results.
    */
   async exec(command: string, args: string[] = []): Promise<unknown> {
@@ -82,7 +82,7 @@ export class GSDTools {
             if (error.killed || (error as NodeJS.ErrnoException).code === 'ETIMEDOUT') {
               reject(
                 new GSDToolsError(
-                  `gsd-tools timed out after ${this.timeoutMs}ms: ${command} ${args.join(' ')}`,
+                  `brief-tools timed out after ${this.timeoutMs}ms: ${command} ${args.join(' ')}`,
                   command,
                   args,
                   null,
@@ -94,7 +94,7 @@ export class GSDTools {
 
             reject(
               new GSDToolsError(
-                `gsd-tools exited with code ${error.code ?? 'unknown'}: ${command} ${args.join(' ')}${stderrStr ? `\n${stderrStr}` : ''}`,
+                `brief-tools exited with code ${error.code ?? 'unknown'}: ${command} ${args.join(' ')}${stderrStr ? `\n${stderrStr}` : ''}`,
                 command,
                 args,
                 typeof error.code === 'number' ? error.code : (error as { status?: number }).status ?? 1,
@@ -112,7 +112,7 @@ export class GSDTools {
           } catch (parseErr) {
             reject(
               new GSDToolsError(
-                `Failed to parse gsd-tools output for "${command}": ${parseErr instanceof Error ? parseErr.message : String(parseErr)}\nRaw output: ${raw.slice(0, 500)}`,
+                `Failed to parse brief-tools output for "${command}": ${parseErr instanceof Error ? parseErr.message : String(parseErr)}\nRaw output: ${raw.slice(0, 500)}`,
                 command,
                 args,
                 0,
@@ -127,7 +127,7 @@ export class GSDTools {
       child.on('error', (err) => {
         reject(
           new GSDToolsError(
-            `Failed to execute gsd-tools: ${err.message}`,
+            `Failed to execute brief-tools: ${err.message}`,
             command,
             args,
             null,
@@ -139,7 +139,7 @@ export class GSDTools {
   }
 
   /**
-   * Parse gsd-tools output, handling `@file:` prefix.
+   * Parse brief-tools output, handling `@file:` prefix.
    */
   private async parseOutput(raw: string): Promise<unknown> {
     const trimmed = raw.trim();
@@ -155,7 +155,7 @@ export class GSDTools {
         jsonStr = await readFile(filePath, 'utf-8');
       } catch (err) {
         const reason = err instanceof Error ? err.message : String(err);
-        throw new Error(`Failed to read gsd-tools @file: indirection at "${filePath}": ${reason}`);
+        throw new Error(`Failed to read brief-tools @file: indirection at "${filePath}": ${reason}`);
       }
     }
 
@@ -165,7 +165,7 @@ export class GSDTools {
   // ─── Raw exec (no JSON parsing) ───────────────────────────────────────
 
   /**
-   * Execute a gsd-tools command and return raw stdout without JSON parsing.
+   * Execute a brief-tools command and return raw stdout without JSON parsing.
    * Use for commands like `config-set` that return plain text, not JSON.
    */
   async execRaw(command: string, args: string[] = []): Promise<string> {
@@ -187,7 +187,7 @@ export class GSDTools {
           if (error) {
             reject(
               new GSDToolsError(
-                `gsd-tools exited with code ${error.code ?? 'unknown'}: ${command} ${args.join(' ')}${stderrStr ? `\n${stderrStr}` : ''}`,
+                `brief-tools exited with code ${error.code ?? 'unknown'}: ${command} ${args.join(' ')}${stderrStr ? `\n${stderrStr}` : ''}`,
                 command,
                 args,
                 typeof error.code === 'number' ? error.code : (error as { status?: number }).status ?? 1,
@@ -203,7 +203,7 @@ export class GSDTools {
       child.on('error', (err) => {
         reject(
           new GSDToolsError(
-            `Failed to execute gsd-tools: ${err.message}`,
+            `Failed to execute brief-tools: ${err.message}`,
             command,
             args,
             null,
@@ -245,7 +245,7 @@ export class GSDTools {
   }
 
   /**
-   * Query phase state from gsd-tools.cjs `init phase-op`.
+   * Query phase state from brief-tools.cjs `init phase-op`.
    * Returns a typed PhaseOpInfo describing what exists on disk for this phase.
    */
   async initPhaseOp(phaseNumber: string): Promise<PhaseOpInfo> {
@@ -254,7 +254,7 @@ export class GSDTools {
   }
 
   /**
-   * Get a config value from gsd-tools.cjs.
+   * Get a config value from brief-tools.cjs.
    */
   async configGet(key: string): Promise<string | null> {
     const result = await this.exec('config', ['get', key]);
@@ -262,7 +262,7 @@ export class GSDTools {
   }
 
   /**
-   * Begin phase state tracking in gsd-tools.cjs.
+   * Begin phase state tracking in brief-tools.cjs.
    */
   async stateBeginPhase(phaseNumber: string): Promise<string> {
     return this.execRaw('state', ['begin-phase', '--phase', phaseNumber]);
@@ -278,7 +278,7 @@ export class GSDTools {
   }
 
   /**
-   * Query new-project init state from gsd-tools.cjs `init new-project`.
+   * Query new-project init state from brief-tools.cjs `init new-project`.
    * Returns project metadata, model configs, brownfield detection, etc.
    */
   async initNewProject(): Promise<InitNewProjectInfo> {
@@ -287,8 +287,8 @@ export class GSDTools {
   }
 
   /**
-   * Set a config value via gsd-tools.cjs `config-set`.
-   * Handles type coercion (booleans, numbers, JSON) on the gsd-tools side.
+   * Set a config value via brief-tools.cjs `config-set`.
+   * Handles type coercion (booleans, numbers, JSON) on the brief-tools side.
    * Note: config-set returns `key=value` text, not JSON, so we use execRaw.
    */
   async configSet(key: string, value: string): Promise<string> {
@@ -299,15 +299,15 @@ export class GSDTools {
 // ─── Path resolution ────────────────────────────────────────────────────────
 
 /**
- * Resolve gsd-tools.cjs path.
- * Probe order: SDK-bundled repo copy → `project/.claude/get-shit-done/` →
- * `~/.claude/get-shit-done/`.
+ * Resolve brief-tools.cjs path.
+ * Probe order: SDK-bundled repo copy → `project/.claude/brief/` →
+ * `~/.claude/brief/`.
  */
 export function resolveGsdToolsPath(projectDir: string): string {
   const candidates = [
     BUNDLED_GSD_TOOLS_PATH,
-    join(projectDir, '.claude', 'get-shit-done', 'bin', 'gsd-tools.cjs'),
-    join(homedir(), '.claude', 'get-shit-done', 'bin', 'gsd-tools.cjs'),
+    join(projectDir, '.claude', 'brief', 'bin', 'brief-tools.cjs'),
+    join(homedir(), '.claude', 'brief', 'bin', 'brief-tools.cjs'),
   ];
 
   return candidates.find(candidate => existsSync(candidate)) ?? candidates[candidates.length - 1]!;

@@ -79,7 +79,7 @@ describe('resolveModel', () => {
       join(tmpDir, '.planning', 'config.json'),
       JSON.stringify({ model_profile: 'balanced' }),
     );
-    const result = await resolveModel(['gsd-planner'], tmpDir);
+    const result = await resolveModel(['brief-planner'], tmpDir);
     const data = result.data as Record<string, unknown>;
     expect(data).toHaveProperty('model');
     expect(data).toHaveProperty('profile', 'balanced');
@@ -109,10 +109,10 @@ describe('resolveModel', () => {
       join(tmpDir, '.planning', 'config.json'),
       JSON.stringify({
         model_profile: 'balanced',
-        model_overrides: { 'gsd-planner': 'openai/gpt-5.4' },
+        model_overrides: { 'brief-planner': 'openai/gpt-5.4' },
       }),
     );
-    const result = await resolveModel(['gsd-planner'], tmpDir);
+    const result = await resolveModel(['brief-planner'], tmpDir);
     const data = result.data as Record<string, unknown>;
     expect(data).toHaveProperty('model', 'openai/gpt-5.4');
   });
@@ -126,7 +126,7 @@ describe('resolveModel', () => {
         resolve_model_ids: 'omit',
       }),
     );
-    const result = await resolveModel(['gsd-planner'], tmpDir);
+    const result = await resolveModel(['brief-planner'], tmpDir);
     const data = result.data as Record<string, unknown>;
     expect(data).toHaveProperty('model', '');
   });

@@ -23,12 +23,12 @@ const {
 
 // Sample Claude agent frontmatter (matches actual GSD agent format)
 const SAMPLE_AGENT = `---
-name: gsd-executor
+name: brief-executor
 description: Executes GSD plans with atomic commits
 tools: Read, Write, Edit, Bash, Grep, Glob
 color: yellow
 skills:
-  - gsd-executor-workflow
+  - brief-executor-workflow
 # hooks:
 #   PostToolUse:
 #     - matcher: "Write|Edit"
@@ -71,7 +71,7 @@ for (const { label, convert, configDir } of flatRuntimeSuites) {
     test('keeps name: field for agents', () => {
       const result = convert(SAMPLE_AGENT, { isAgent: true });
       const frontmatter = result.split('---')[1];
-      assert.ok(frontmatter.includes('name: gsd-executor'), 'name: should be preserved for agents');
+      assert.ok(frontmatter.includes('name: brief-executor'), 'name: should be preserved for agents');
     });
 
     test('does not add model: inherit', () => {
@@ -109,7 +109,7 @@ for (const { label, convert, configDir } of flatRuntimeSuites) {
       const result = convert(SAMPLE_AGENT, { isAgent: true });
       const frontmatter = result.split('---')[1];
       assert.ok(!frontmatter.includes('skills:'), 'skills: should be stripped');
-      assert.ok(!frontmatter.includes('gsd-executor-workflow'), 'skill entries should be stripped');
+      assert.ok(!frontmatter.includes('brief-executor-workflow'), 'skill entries should be stripped');
     });
 
     test('strips color: field', () => {
@@ -147,7 +147,7 @@ tools: Read
 Read ~/.claude/agent-memory/ for context.
 Use $HOME/.claude/skills/ for reference.
 Check .claude/skills/ and .claude/agents/ locally.
-Use ./.claude/hooks/gsd-statusline.js during local testing.
+Use ./.claude/hooks/brief-statusline.js during local testing.
 Fallback skills live in .agents/skills/.`;
 
       const result = convert(agentWithClaudePaths, { isAgent: true });
@@ -235,7 +235,7 @@ Fallback skills live in .agents/skills/.`;
 describe('convertClaudeToGeminiAgent', () => {
   test('drops unsupported skills frontmatter while keeping converted tools', () => {
     const input = `---
-name: gsd-codebase-mapper
+name: brief-codebase-mapper
 description: Explores codebase and writes structured analysis documents.
 tools: Read, Bash, Grep, Glob, Write
 color: cyan
@@ -250,7 +250,7 @@ Use \${PHASE} in shell examples.
     const result = convertClaudeToGeminiAgent(input);
     const frontmatter = result.split('---')[1] || '';
 
-    assert.ok(frontmatter.includes('name: gsd-codebase-mapper'), 'keeps name');
+    assert.ok(frontmatter.includes('name: brief-codebase-mapper'), 'keeps name');
     assert.ok(frontmatter.includes('description: Explores codebase and writes structured analysis documents.'), 'keeps description');
     assert.ok(frontmatter.includes('tools:'), 'adds Gemini tools array');
     assert.ok(frontmatter.includes('  - read_file'), 'maps Read -> read_file');

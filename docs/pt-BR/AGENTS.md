@@ -1,13 +1,13 @@
-# Referência de Agentes do GSD
+# Referência de Agentes do BRIEF
 
-Este documento descreve os papéis dos agentes especializados no ecossistema GSD.  
+Este documento descreve os papéis dos agentes especializados no ecossistema BRIEF.  
 Para a listagem completa com regras detalhadas, consulte [AGENTS.md em inglês](../AGENTS.md).
 
 ---
 
 ## Visão geral
 
-O GSD usa um **orquestrador leve** para coordenar subagentes especializados por etapa:
+O BRIEF usa um **orquestrador leve** para coordenar subagentes especializados por etapa:
 
 - pesquisa
 - planejamento

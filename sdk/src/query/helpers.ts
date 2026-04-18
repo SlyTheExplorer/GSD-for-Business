@@ -1,7 +1,7 @@
 /**
  * Shared query helpers — cross-cutting utility functions used across query modules.
  *
- * Ported from get-shit-done/bin/lib/core.cjs and state.cjs.
+ * Ported from brief/bin/lib/core.cjs and state.cjs.
  * Provides phase name normalization, path handling, regex escaping,
  * and STATE.md field extraction.
  *

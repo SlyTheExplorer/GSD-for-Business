@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { GSDTools, GSDToolsError, resolveGsdToolsPath } from './gsd-tools.js';
+import { GSDTools, GSDToolsError, resolveGsdToolsPath } from './brief-tools.js';
 import { mkdir, writeFile, rm } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -7,7 +7,7 @@ import { tmpdir, homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const BUNDLED_GSD_TOOLS_PATH = fileURLToPath(
-  new URL('../../get-shit-done/bin/gsd-tools.cjs', import.meta.url),
+  new URL('../../brief/bin/brief-tools.cjs', import.meta.url),
 );
 
 describe('GSDTools', () => {
@@ -15,7 +15,7 @@ describe('GSDTools', () => {
   let fixtureDir: string;
 
   beforeEach(async () => {
-    tmpDir = join(tmpdir(), `gsd-tools-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    tmpDir = join(tmpdir(), `brief-tools-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     fixtureDir = join(tmpDir, 'fixtures');
     await mkdir(fixtureDir, { recursive: true });
     await mkdir(join(tmpDir, '.planning'), { recursive: true });
@@ -100,10 +100,10 @@ describe('GSDTools', () => {
       }
     });
 
-    it('throws GSDToolsError with context when gsd-tools.cjs not found', async () => {
+    it('throws GSDToolsError with context when brief-tools.cjs not found', async () => {
       const tools = new GSDTools({
         projectDir: tmpDir,
-        gsdToolsPath: '/nonexistent/path/gsd-tools.cjs',
+        gsdToolsPath: '/nonexistent/path/brief-tools.cjs',
       });
 
       await expect(tools.exec('state', ['load'])).rejects.toThrow(GSDToolsError);
@@ -312,7 +312,7 @@ describe('GSDTools', () => {
       expect(result.project_path).toBe('.planning/PROJECT.md');
     });
 
-    it('propagates errors from gsd-tools', async () => {
+    it('propagates errors from brief-tools', async () => {
       const scriptPath = await createScript(
         'init-fail.cjs',
         `process.stderr.write('init failed\\n'); process.exit(1);`,
@@ -327,16 +327,16 @@ describe('GSDTools', () => {
   // ─── resolveGsdToolsPath() tests ────────────────────────────────────────
 
   describe('resolveGsdToolsPath()', () => {
-    it('prefers bundled gsd-tools over project .claude when the bundled file exists', async () => {
-      const localBinDir = join(tmpDir, '.claude', 'get-shit-done', 'bin');
+    it('prefers bundled brief-tools over project .claude when the bundled file exists', async () => {
+      const localBinDir = join(tmpDir, '.claude', 'brief', 'bin');
       await mkdir(localBinDir, { recursive: true });
-      await writeFile(join(localBinDir, 'gsd-tools.cjs'), '// stub');
+      await writeFile(join(localBinDir, 'brief-tools.cjs'), '// stub');
 
       const result = resolveGsdToolsPath(tmpDir);
       if (existsSync(BUNDLED_GSD_TOOLS_PATH)) {
         expect(result).toBe(BUNDLED_GSD_TOOLS_PATH);
       } else {
-        expect(result).toBe(join(localBinDir, 'gsd-tools.cjs'));
+        expect(result).toBe(join(localBinDir, 'brief-tools.cjs'));
       }
     });
 
@@ -344,15 +344,15 @@ describe('GSDTools', () => {
       const result = resolveGsdToolsPath(tmpDir);
       const expected = existsSync(BUNDLED_GSD_TOOLS_PATH)
         ? BUNDLED_GSD_TOOLS_PATH
-        : join(homedir(), '.claude', 'get-shit-done', 'bin', 'gsd-tools.cjs');
+        : join(homedir(), '.claude', 'brief', 'bin', 'brief-tools.cjs');
 
       expect(result).toBe(expected);
     });
 
     it('uses explicit gsdToolsPath when provided (overrides bundled / .claude resolution)', async () => {
-      const localBinDir = join(tmpDir, '.claude', 'get-shit-done', 'bin');
+      const localBinDir = join(tmpDir, '.claude', 'brief', 'bin');
       await mkdir(localBinDir, { recursive: true });
-      const scriptPath = join(localBinDir, 'gsd-tools.cjs');
+      const scriptPath = join(localBinDir, 'brief-tools.cjs');
       await writeFile(
         scriptPath,
         `process.stdout.write(JSON.stringify({ source: "local" }));`,

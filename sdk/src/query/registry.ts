@@ -4,10 +4,10 @@
  * The registry is a flat `Map<string, QueryHandler>` that maps command names
  * to handler functions. Unknown keys passed to `dispatch()` throw `GSDError`.
  * The `gsd-sdk query` CLI resolves argv with `resolveQueryArgv()` before dispatch;
- * there is no automatic delegation to `gsd-tools.cjs`.
+ * there is no automatic delegation to `brief-tools.cjs`.
  *
  * Also exports `extractField` — a TypeScript port of the `--pick` field
- * extraction logic from gsd-tools.cjs (lines 365-382).
+ * extraction logic from brief-tools.cjs (lines 365-382).
  *
  * @example
  * ```typescript
@@ -28,7 +28,7 @@ import { GSDError, ErrorClassification } from '../errors.js';
 /**
  * Extract a nested field from an object using dot-notation and bracket syntax.
  *
- * Direct port of `extractField()` from gsd-tools.cjs (lines 365-382).
+ * Direct port of `extractField()` from brief-tools.cjs (lines 365-382).
  * Supports `a.b.c` dot paths, `items[0]` array indexing, and `items[-1]`
  * negative indexing.
  *
@@ -62,7 +62,7 @@ export function extractField(obj: unknown, fieldPath: string): unknown {
  *
  * `dispatch()` throws `GSDError` for unknown command keys. The `gsd-sdk query`
  * CLI uses `resolveQueryArgv()` to map argv to a registered handler; there is
- * no passthrough to `gsd-tools.cjs` — CJS-only commands stay on the legacy CLI.
+ * no passthrough to `brief-tools.cjs` — CJS-only commands stay on the legacy CLI.
  */
 export class QueryRegistry {
   private handlers = new Map<string, QueryHandler>();

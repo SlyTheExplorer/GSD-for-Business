@@ -57,7 +57,7 @@ function readConfig(tmpDir) {
 describe('#1909 acquireStateLock: no CPU-burning busy-wait', () => {
   test('acquireStateLock source code uses Atomics.wait, not a spin-loop', () => {
     const stateSrc = fs.readFileSync(
-      path.join(__dirname, '..', 'get-shit-done', 'bin', 'lib', 'state.cjs'),
+      path.join(__dirname, '..', 'brief', 'bin', 'lib', 'state.cjs'),
       'utf-8'
     );
 
@@ -125,7 +125,7 @@ describe('#1916 lock cleanup on process.exit()', () => {
   test('STATE.md.lock module-level cleanup set is present in source', () => {
     // Verify the fix: module-level Set tracks held locks and process.on('exit') cleans them up.
     const stateSrc = fs.readFileSync(
-      path.join(__dirname, '..', 'get-shit-done', 'bin', 'lib', 'state.cjs'),
+      path.join(__dirname, '..', 'brief', 'bin', 'lib', 'state.cjs'),
       'utf-8'
     );
 
@@ -138,7 +138,7 @@ describe('#1916 lock cleanup on process.exit()', () => {
   test('core.cjs .planning/.lock is removed after a command exits with an error', () => {
     // The withPlanningLock in core.cjs also needs exit cleanup.
     const coreSrc = fs.readFileSync(
-      path.join(__dirname, '..', 'get-shit-done', 'bin', 'lib', 'core.cjs'),
+      path.join(__dirname, '..', 'brief', 'bin', 'lib', 'core.cjs'),
       'utf-8'
     );
 
@@ -255,7 +255,7 @@ describe('#1925 TOCTOU: state commands use readModifyWriteStateMd', () => {
 
   test('state commands use readModifyWriteStateMd (source audit)', () => {
     const stateSrc = fs.readFileSync(
-      path.join(__dirname, '..', 'get-shit-done', 'bin', 'lib', 'state.cjs'),
+      path.join(__dirname, '..', 'brief', 'bin', 'lib', 'state.cjs'),
       'utf-8'
     );
 
@@ -364,7 +364,7 @@ describe('#1927 config.json: setConfigValue must hold planning lock', () => {
 
   test('config.cjs setConfigValue uses withPlanningLock (source audit)', () => {
     const configSrc = fs.readFileSync(
-      path.join(__dirname, '..', 'get-shit-done', 'bin', 'lib', 'config.cjs'),
+      path.join(__dirname, '..', 'brief', 'bin', 'lib', 'config.cjs'),
       'utf-8'
     );
 

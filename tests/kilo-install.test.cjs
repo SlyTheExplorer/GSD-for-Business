@@ -169,7 +169,7 @@ describe('configureKiloPermissions', () => {
 
     const configPath = path.join(configDir, 'kilo.json');
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    const gsdPath = `${configDir.replace(/\\/g, '/')}/get-shit-done/*`;
+    const gsdPath = `${configDir.replace(/\\/g, '/')}/brief/*`;
 
     assert.strictEqual(config.permission.read[gsdPath], 'allow');
     assert.strictEqual(config.permission.external_directory[gsdPath], 'allow');
@@ -183,7 +183,7 @@ describe('configureKiloPermissions', () => {
     configureKiloPermissions(true);
 
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    const gsdPath = `${configDir.replace(/\\/g, '/')}/get-shit-done/*`;
+    const gsdPath = `${configDir.replace(/\\/g, '/')}/brief/*`;
 
     assert.strictEqual(config.permission.bash, 'ask');
     assert.strictEqual(config.permission.read[gsdPath], 'allow');
@@ -197,7 +197,7 @@ describe('configureKiloPermissions', () => {
 
     const configPath = path.join(explicitDir, 'kilo.json');
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    const gsdPath = `${explicitDir.replace(/\\/g, '/')}/get-shit-done/*`;
+    const gsdPath = `${explicitDir.replace(/\\/g, '/')}/brief/*`;
 
     assert.strictEqual(config.permission.read[gsdPath], 'allow');
     assert.strictEqual(config.permission.external_directory[gsdPath], 'allow');
@@ -206,7 +206,7 @@ describe('configureKiloPermissions', () => {
 
 describe('Source code integration (Kilo)', () => {
   const src = fs.readFileSync(path.join(__dirname, '..', 'bin', 'install.js'), 'utf8');
-  const updateWorkflowSrc = fs.readFileSync(path.join(__dirname, '..', 'get-shit-done', 'workflows', 'update.md'), 'utf8');
+  const updateWorkflowSrc = fs.readFileSync(path.join(__dirname, '..', 'brief', 'workflows', 'update.md'), 'utf8');
   const reapplyPatchesSrc = fs.readFileSync(path.join(__dirname, '..', 'commands', 'gsd', 'reapply-patches.md'), 'utf8');
 
   test('--kilo flag parsing exists', () => {

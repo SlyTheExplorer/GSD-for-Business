@@ -1,5 +1,5 @@
 /**
- * Regression tests for #2075: gsd-executor worktree merge systematically
+ * Regression tests for #2075: brief-executor worktree merge systematically
  * deletes prior-wave committed files.
  *
  * Three failure modes documented in issue #2075:
@@ -20,7 +20,7 @@
  *   the --hard reset in the worktree_branch_check.
  *
  * Defense-in-depth (from #1977):
- *   Post-commit deletion check: already in gsd-executor.md (--diff-filter=D).
+ *   Post-commit deletion check: already in brief-executor.md (--diff-filter=D).
  *   Pre-merge deletion check: already in execute-phase.md (--diff-filter=D).
  */
 
@@ -31,15 +31,15 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-const EXECUTOR_AGENT_PATH = path.join(__dirname, '..', 'agents', 'gsd-executor.md');
-const EXECUTE_PHASE_PATH = path.join(__dirname, '..', 'get-shit-done', 'workflows', 'execute-phase.md');
-const QUICK_PATH = path.join(__dirname, '..', 'get-shit-done', 'workflows', 'quick.md');
-const DIAGNOSE_PATH = path.join(__dirname, '..', 'get-shit-done', 'workflows', 'diagnose-issues.md');
+const EXECUTOR_AGENT_PATH = path.join(__dirname, '..', 'agents', 'brief-executor.md');
+const EXECUTE_PHASE_PATH = path.join(__dirname, '..', 'brief', 'workflows', 'execute-phase.md');
+const QUICK_PATH = path.join(__dirname, '..', 'brief', 'workflows', 'quick.md');
+const DIAGNOSE_PATH = path.join(__dirname, '..', 'brief', 'workflows', 'diagnose-issues.md');
 
 describe('bug-2075: worktree deletion safeguards', () => {
 
   describe('Failure Mode B: git clean prohibition in executor agent', () => {
-    test('gsd-executor.md explicitly prohibits git clean in worktree context', () => {
+    test('brief-executor.md explicitly prohibits git clean in worktree context', () => {
       const content = fs.readFileSync(EXECUTOR_AGENT_PATH, 'utf-8');
 
       // Must have an explicit prohibition section mentioning git clean
@@ -60,17 +60,17 @@ describe('bug-2075: worktree deletion safeguards', () => {
 
       assert.ok(
         prohibitsGitClean,
-        'gsd-executor.md must explicitly prohibit git clean — running it inside a worktree deletes files committed on the feature branch (#2075 Failure Mode B)'
+        'brief-executor.md must explicitly prohibit git clean — running it inside a worktree deletes files committed on the feature branch (#2075 Failure Mode B)'
       );
     });
 
-    test('gsd-executor.md git clean prohibition explains the worktree data-loss risk', () => {
+    test('brief-executor.md git clean prohibition explains the worktree data-loss risk', () => {
       const content = fs.readFileSync(EXECUTOR_AGENT_PATH, 'utf-8');
 
       // The prohibition must be accompanied by a reason — not just a bare rule
       // Look for the word "worktree" near the git clean prohibition
       const gitCleanIdx = content.indexOf('git clean');
-      assert.ok(gitCleanIdx > -1, 'gsd-executor.md must mention git clean (to prohibit it)');
+      assert.ok(gitCleanIdx > -1, 'brief-executor.md must mention git clean (to prohibit it)');
 
       // Extract context around the git clean mention (500 chars either side)
       const contextStart = Math.max(0, gitCleanIdx - 500);
@@ -85,7 +85,7 @@ describe('bug-2075: worktree deletion safeguards', () => {
 
       assert.ok(
         hasWorktreeRationale,
-        'The git clean prohibition in gsd-executor.md must explain why: git clean in a worktree deletes files that appear untracked but are committed on the feature branch'
+        'The git clean prohibition in brief-executor.md must explain why: git clean in a worktree deletes files that appear untracked but are committed on the feature branch'
       );
     });
   });
@@ -147,18 +147,18 @@ describe('bug-2075: worktree deletion safeguards', () => {
   });
 
   describe('Defense-in-depth: post-commit deletion check (from #1977)', () => {
-    test('gsd-executor.md task_commit_protocol has post-commit deletion verification', () => {
+    test('brief-executor.md task_commit_protocol has post-commit deletion verification', () => {
       const content = fs.readFileSync(EXECUTOR_AGENT_PATH, 'utf-8');
 
       assert.ok(
         content.includes('--diff-filter=D'),
-        'gsd-executor.md must include --diff-filter=D to detect accidental file deletions after each commit'
+        'brief-executor.md must include --diff-filter=D to detect accidental file deletions after each commit'
       );
 
       // Must have a warning about unexpected deletions
       assert.ok(
         content.includes('DELETIONS') || content.includes('WARNING'),
-        'gsd-executor.md must emit a warning when a commit includes unexpected file deletions'
+        'brief-executor.md must emit a warning when a commit includes unexpected file deletions'
       );
     });
   });
