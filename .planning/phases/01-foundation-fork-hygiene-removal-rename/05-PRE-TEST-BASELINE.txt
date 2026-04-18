@@ -288,3 +288,119 @@ STABLE=yes (POST unchanged across 3 loops — no flapping/nondeterminism)
 ## Recommendation: Plan 10 (or extended Plan 09) should rewrite the additional 40 files
 ## covering tuple-form `'commands', 'gsd'` + `name: gsd:` frontmatter patterns. Expected
 ## additional recovery: ~200 tests. See 09-GAP-CLOSURE-PARTIAL-AUDIT.md §7 for 3 options.
+
+## PLAN 10 POST-FIX MEASUREMENTS
+## ============================================================
+## Plan 10 is an orchestrator-decision single-executor closure (no separate PLAN.md +
+## plan-checker cycle). It uses the test-runner's own failure output as the authoritative
+## enumeration source (Option B per orchestrator brief, adapted from 09-GAP-CLOSURE-
+## PARTIAL-AUDIT.md §7 Option 1).
+##
+## Scope: 50 failing tests/*.test.cjs files pre-extracted by orchestrator into
+## /tmp/p10-files.txt from /tmp/plan09-post-test.txt. Zero source-code changes
+## (bin/install.js, scripts/build-hooks.js, brief/, hooks/, agents/, commands/,
+## docs/, CLAUDE.md, README.md, package.json all untouched).
+
+EMPIRICAL_BASELINE=6
+DELTA_CAP=10
+DELTA_CAP_EFFECTIVE=16              (EMPIRICAL_BASELINE 6 + DELTA_CAP 10)
+PLAN_10_POST_COUNT=63
+DELTA=57
+GATE_RESULT=HALT
+METHOD=test-runner-driven enumeration (Option B); grep -cE '^✖' on full npm test output
+MEASURED_AT=2026-04-18T09:30:00Z
+CYCLES=6
+CYCLE_PROGRESSION=216 → 117 → 117 → 105 → 101 → 76 → 63
+TESTS_RECOVERED=153 (216 − 63)
+RECOVERY_PERCENT=70.8%
+STABLE=yes (monotonically decreasing after cycle 2; cycle 6 final stable at 63)
+
+## Cluster-by-cluster progression:
+##
+## Cluster A (31 files, commit ee719c6) — T-A tuple-form path.join rewrites:
+##   216 → 117 (99 tests recovered). Pattern: `'commands', 'gsd'` → `'commands', 'brief'`
+##   across 31 test files. This closed Plan 09's scope-deviation gap (the enumeration
+##   defect from substring-grep missing tuple-form).
+##
+## Cluster B (3 files, commit 6190fc4) — T-A .startsWith('gsd-') filter rewrites:
+##   117 → 117 (net 0 — exposed source-side failures previously hidden by module-load
+##   errors in Cluster A's fixed files). agent-required-reading-consistency line 18,
+##   core.test.cjs stale-hook filter fixture, managed-hooks.test.cjs hooks dir filter.
+##
+## Cluster C (4 files, commit ab83010) — T-A install-output skill-directory filters:
+##   117 → 105 (12 tests recovered). post-install output filters `startsWith('gsd-')`
+##   rewritten to `startsWith('brief-')` — install.js now passes 'brief' as the prefix
+##   to copyCommandsAs* functions. Files: copilot-install, codebuddy-install, qwen-install,
+##   trae-install.
+##
+## Cluster D (2 files, commit 0d1ebf4) — T-A cleanup:
+##   105 → 101 (4 tests recovered). gsdAgents→briefAgents variable rename miss in
+##   copilot-install; qwen install-output path gsd-help → brief-help.
+##
+## Cluster E (5 files, commit ec055c9) — T-A conversion-fixture spec alignment:
+##   101 → 76 (25 tests recovered). Test fixtures rewritten `gsd:` → `brief:` to match
+##   post-Plan-08 source CONV-07 contract (which converts `brief:` → `brief-`, not
+##   `gsd:` → `gsd-`). Files: codex-config, augment-conversion, windsurf-conversion,
+##   cursor-conversion, copilot-install.
+##
+## Cluster F (3 files, commit 1498af8) — T-A conversion fixture + skill-manifest prefix:
+##   76 → 63 (13 tests recovered). Remaining conversion fixtures + writeManifest tmp-dir
+##   skill dirs renamed gsd-help → brief-help (listCodexSkillNames defaults to prefix
+##   'brief-' so fixtures must match).
+##
+## Remaining 63 failures are all OUT-OF-SCOPE source-side drift, fully documented in
+## 10-PARTIAL-AUDIT.md §4:
+##
+## Source-missing-file failures (19):
+##   • bug-2004-pr-branch-milestone: 12 (brief/workflows/pr-branch.md deleted by Plan 02)
+##   • bug-2075-worktree-deletion-safeguards: 2 (brief/workflows/diagnose-issues.md missing)
+##   • execute-phase-wave: 2 (brief/workflows/diagnose-issues.md missing)
+##   • next-up-clear-order: 3 (brief/references/ui-brand.md missing)
+##
+## Source-doc-drift failures (14):
+##   • architecture-counts: 6 (docs/ARCHITECTURE.md says 75/72/31 commands/workflows/agents,
+##     actual is 61/58/18 post-Plan-02 deletions)
+##   • command-count-sync: 8 (same docs/ARCHITECTURE.md drift, different assertion angles)
+##
+## Source-code-behavior drift (30):
+##   • managed-hooks (6) + orphaned-hooks (4): hooks/brief-check-update-worker.js
+##     MANAGED_HOOKS array stale (missing brief-phase-boundary.sh, brief-check-update-worker.js;
+##     includes obsolete gsd-check-update-worker.js)
+##   • install-hooks-copy (2): bin/install.js cache-path behavior mismatch
+##   • workflow-guard-registration (2): bin/install.js briefHooks table mismatch
+##   • update-custom-backup (8): bin/install.js custom-file detection broken
+##   • read-guard (8): hooks/brief-read-guard.js output/JSON handling broken
+##   • verify-work-auto-transition (2): brief/workflows/verify-work.md missing
+##     /brief-secure-phase suggestion
+##
+## Source content/count drift (13):
+##   • agent-required-reading-consistency (2): only 15/20 agents carry required_reading
+##     blocks (source agent content drift)
+##   • brief-tools-path-refs (2): brief/workflows/workstreams.md lacks gsd-sdk + brief-tools
+##     documentation
+##   • codex-config (4): config.toml agent count 9 ≠ 11 + executor description missing
+##     (agents/*.md frontmatter drift)
+##   • copilot-install CONV tests (4): read real brief/workflows/health.md + brief/bin/lib/
+##     verify.cjs + commands/brief/autonomous.md which have `gsd:` frontmatter (Plan 08 did
+##     NOT rewrite name-frontmatter in command/workflow files)
+##   • qwen-install (4): install-output contains .claude/ references (source install.js
+##     cleanup issue)
+##   • claude-skills-migration integration manifest (0 — fully fixed in Cluster F)
+##
+## Decomposition summary: 19 missing-file + 14 doc-drift + 30 source-behavior + 13
+## source-content = 76 expected source-drift. Observed 63 (some overlaps between
+## categories; writeManifest fixture fixes in Cluster F reduced apparent count).
+##
+## Plan 10 IN-SCOPE work COMPLETE. All remaining failures require one of:
+##   (a) a new Plan 11 to touch source (bin/install.js CONV functions, worker MANAGED_HOOKS,
+##       agent-content updates, workflow-file creation, ARCHITECTURE.md doc-sync)
+##   (b) HALT-ACCEPTED: formally defer 63 failures as Phase 2+ / Phase 9 work and close
+##       Phase 1 at current state
+##   (c) Adjust DELTA_CAP (NOT RECOMMENDED per orchestrator brief constraint #6 — baseline
+##       preservation rule)
+##
+## Recommendation: (a) spawn Plan 11 to close source-side drift. The failures are in
+## distinct independent categories (missing workflow files ≠ worker drift ≠ CONV behavior)
+## so Plan 11 could subdivide into multiple clusters or even multiple plans. Alternatively
+## (b) is reasonable if Phase 1 goal of "file-level rename + source-side basics" is
+## considered met and full test-pass is Phase 9's hardening concern.

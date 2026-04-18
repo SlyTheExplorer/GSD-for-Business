@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Plan 09 HALT (PARTIAL — in-scope 31-file work complete, out-of-scope residual documented). POST=216 vs cap=16. 135 tests recovered. Plan 10 recommended for tuple-form + name-prefix residual coverage.
-stopped_at: "Plan 09 HALT at Task 7 delta-cap gate (POST=216 vs cap=16). Scope-deviation: planner enumerated 31 files via substring grep; ~40 additional files with tuple-form `path.join('commands', 'gsd')` + `name: gsd:<cmd>` patterns are out-of-scope. Plan 09 delivered in-scope 27 T-A + 3 T-B + 1 T-D (135 tests recovered); recommends Plan 10 or HALT-ACCEPTED per 09-GAP-CLOSURE-PARTIAL-AUDIT.md §7."
-last_updated: "2026-04-18T08:50:57.993Z"
-last_activity: "2026-04-18 — Plan 08: scripts/build-hooks.js 11-entry brief-*, bin/install.js 100+ P-A/P-B/P-C/P-D rewrites, hooks/dist/ 11 files populated, worktree 7/7 + workspace 25/25 tests recovered; 08-GAP-CLOSURE-PARTIAL-AUDIT.md §7 Option A chosen"
+status: Plan 10 HALT (PARTIAL — test-side gap-closure complete, 63 source-side drift residual documented). POST=63 vs cap=16. 153 tests recovered over Plan 09. Plan 11 (source-side) recommended OR HALT-ACCEPTED per 10-PARTIAL-AUDIT.md §7.
+stopped_at: "Plan 10 HALT at cycle 6 delta-cap gate (POST=63 vs cap=16). Test-runner-driven enumeration (Option B) successfully closed Plan 09's scope-deviation gap across 48 test files in 6 atomic cluster commits (ee719c6, 6190fc4, ab83010, 0d1ebf4, ec055c9, 1498af8). 153 tests recovered (70.8%). Remaining 63 failures are all source-side drift: missing workflow files (pr-branch.md, diagnose-issues.md, ui-brand.md), docs/ARCHITECTURE.md count drift, hooks/brief-check-update-worker.js MANAGED_HOOKS stale, bin/install.js CONV-07/custom-detection behavior, and commands/brief/*.md frontmatter drift. Plan 10 scope explicitly forbade source edits. Recommends Plan 11 source-side closure OR HALT-ACCEPTED per 10-PARTIAL-AUDIT.md §7."
+last_updated: "2026-04-18T09:40:00.000Z"
+last_activity: "2026-04-18 — Plan 10 test-runner-driven closure: 48 test files touched in 6 atomic clusters (tuple-form T-A, .startsWith filter T-A, install-output filter T-A, gsdAgents rename+qwen paths T-A, conversion-fixture spec alignment T-A, skill-manifest prefix T-A). Recovery: 216→63 = 153 tests (70.8%). Scope guard PASS (zero source-side hunks). PARTIAL audit artifact produced."
 progress:
   total_phases: 9
   completed_phases: 0
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 10
+  completed_plans: 10
   percent: 95
-  note: "Phase 1 Plan 09 PARTIAL HALT — 31-file in-scope work complete (135 tests recovered), 216 out-of-scope failures remain. Phase 1 does NOT advance to 'completed' until Plan 10 closes the residual or HALT-ACCEPTED is explicitly recorded. Progress percent reflects plan-count (9/9) but Phase 1 status gate (FND-03 full closure + /brief-verify-work 1 transition) is not yet satisfied."
+  note: "Phase 1 Plan 10 PARTIAL HALT — test-side gap-closure scope complete (48 files, 153 tests recovered), 63 source-side drift failures remain. Phase 1 does NOT advance to 'completed' until Plan 11 closes source-side drift or HALT-ACCEPTED is explicitly recorded. Progress percent reflects plan-count (10/10) but Phase 1 status gate (FND-03 full closure + /brief-verify-work 1 transition) is not yet satisfied."
 ---
 
 # Project State
@@ -27,11 +27,11 @@ See: .planning/PROJECT.md (updated 2026-04-18)
 ## Current Position
 
 Phase: 1 of 9 (Foundation — Fork Hygiene, Removal, Rename)
-Plan: 9 of 9 in current phase — Task 7 delta-cap gate HALTed; in-scope work complete. Plan 10 recommended per 09-GAP-CLOSURE-PARTIAL-AUDIT.md §7 Option 1.
-Status: Plan 09 HALT (PARTIAL — 31-file enumerated scope complete; 216 residual failures from out-of-scope tuple-form `path.join('commands', 'gsd')` + `name: gsd:<cmd>` patterns in ~40 additional tests/ files). 135 previously-failing tests recovered vs Plan 08 HALT state.
-Last activity: 2026-04-18 — Plan 09 test-side bulk rewrite: 27 T-A (5 atomic cluster commits 492751c/1456e0d/8c14f74/c3602ac/ab9a776), 3 T-B preserved, 1 T-D per-line split. Scope guard PASS (zero source-side hunks). PARTIAL audit artifact produced.
+Plan: 10 of 10 in current phase — cycle 6 delta-cap gate HALTed; test-side scope complete. Plan 11 source-side closure recommended per 10-PARTIAL-AUDIT.md §7 Option 1.
+Status: Plan 10 HALT (PARTIAL — 48-file test-runner-driven scope complete; 63 residual failures from out-of-scope source-side drift: missing workflow files + doc drift + source-behavior + source-content). 153 previously-failing tests recovered vs Plan 09 HALT state (70.8% drop).
+Last activity: 2026-04-18 — Plan 10 test-runner-driven closure: 6 atomic cluster commits (ee719c6, 6190fc4, ab83010, 0d1ebf4, ec055c9, 1498af8) covering tuple-form T-A, .startsWith filter T-A, install-output filter T-A, conversion-fixture spec alignment T-A, skill-manifest prefix T-A. Scope guard PASS (zero source-side hunks). PARTIAL audit artifact produced.
 
-Progress: [█████████░] 95% (9 of 9 Phase 1 plans executed; Plan 09 HALT PARTIAL — 31-file in-scope work complete, out-of-scope residual awaits Plan 10 or HALT-ACCEPTED decision)
+Progress: [█████████░] 95% (10 of 10 Phase 1 plans executed; Plan 10 HALT PARTIAL — test-side gap-closure complete, source-side drift awaits Plan 11 or HALT-ACCEPTED decision)
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Progress: [█████████░] 95% (9 of 9 Phase 1 plans executed; P
 
 *Updated after each plan completion*
 | Phase 01 P09 | 1.5h | 8 tasks | 31 files |
+| Phase 01 P10 | 1.3h | 7 tasks (6 clusters + approach) | 48 test files + 3 artifacts |
 
 ## Accumulated Context
 
@@ -85,7 +86,8 @@ None yet.
 - **HIGH-RISK assumption A4 (state.cjs round-trip)** must be verified in Phase 2; if wrong, the architecture needs a sidecar `state-brief.json` instead of namespaced `state.brief.*` extension and changes propagate to Phase 6 (bidirectional foundation)
 - Korean compliance reference library content (clause-level ISMS-P / PIPA / e-금융업 / mydata / 의료기기법) needs deeper Korean legal research during Phase 7; consider engaging legal counsel for review
 - Marp `npx --yes` invocation pattern (Assumption STACK-A4) needs verification across all four runtime sandboxes in Phase 9 cross-runtime smoke test
-- Plan 09 HALT scope-deviation: 216 npm-test failures from out-of-scope tuple-form + name-prefix patterns in ~40 additional tests/ files. Recommended: spawn Plan 10.
+- Plan 09 HALT scope-deviation: 216 npm-test failures from out-of-scope tuple-form + name-prefix patterns in ~40 additional tests/ files. Recommended: spawn Plan 10. (CLOSED — Plan 10 recovered 153 tests.)
+- Plan 10 HALT source-side drift: 63 npm-test failures from out-of-scope source issues (missing workflow files pr-branch.md/diagnose-issues.md/ui-brand.md, docs/ARCHITECTURE.md count drift, hooks/brief-check-update-worker.js MANAGED_HOOKS stale, bin/install.js CONV-07/custom-detection behavior, brief/workflows/*.md + commands/brief/*.md frontmatter). Recommended: spawn Plan 11 (source-side) OR HALT-ACCEPTED + Phase 9 deferral.
 
 ## Deferred Items
 
@@ -97,6 +99,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-04-18T08:50:45.407Z
-Stopped at: Plan 09 HALT at Task 7 delta-cap gate (POST=216 vs cap=16). Scope-deviation: planner enumerated 31 files via substring grep; ~40 additional files with tuple-form `path.join('commands', 'gsd')` + `name: gsd:<cmd>` patterns are out-of-scope. Plan 09 delivered in-scope 27 T-A + 3 T-B + 1 T-D (135 tests recovered); recommends Plan 10 or HALT-ACCEPTED per 09-GAP-CLOSURE-PARTIAL-AUDIT.md §7.
+Last session: 2026-04-18T09:40:00.000Z
+Stopped at: Plan 10 HALT at cycle 6 delta-cap gate (POST=63 vs cap=16). Test-runner-driven enumeration (Option B) successfully closed Plan 09's scope-deviation gap: 48 test files touched across 6 atomic cluster commits (tuple-form T-A, .startsWith filter T-A, install-output filter T-A, variable-rename cleanup T-A, conversion-fixture spec alignment T-A, skill-manifest prefix T-A). 153 tests recovered (70.8%). 63 remaining failures are all source-side drift documented in 10-PARTIAL-AUDIT.md §4: 19 missing-file, 14 doc-drift, 30 source-behavior, 13 source-content. Scope guard PASS (zero source-side hunks). Recommends Plan 11 source-side closure OR HALT-ACCEPTED per 10-PARTIAL-AUDIT.md §7.
 Resume file: None
