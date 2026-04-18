@@ -31,7 +31,7 @@ must_haves:
     - "User runs `ls hooks/dist/ | grep -c '^gsd-'` and gets 0 (no stale gsd-* files in hooks/dist/)"
     # ── Gap 3b: bin/install.js hook-filename hardcodes rewritten ──
     - "User runs `grep -c \"'gsd-statusline.js'\\|'gsd-check-update.js'\\|'gsd-check-update-worker.js'\\|'gsd-context-monitor.js'\\|'gsd-prompt-guard.js'\\|'gsd-read-guard.js'\\|'gsd-read-injection-scanner.js'\\|'gsd-workflow-guard.js'\\|'gsd-session-state.sh'\\|'gsd-validate-commit.sh'\\|'gsd-phase-boundary.sh'\" bin/install.js` and gets 0 (every hook-filename literal rewritten to brief-*)"
-    - "User runs `grep -c \"'brief-statusline.js'\\|'brief-check-update.js'\\|'brief-check-update-worker.js'\\|'brief-context-monitor.js'\\|'brief-prompt-guard.js'\\|'brief-read-guard.js'\\|'brief-read-injection-scanner.js'\\|'brief-workflow-guard.js'\\|'brief-session-state.sh'\\|'brief-validate-commit.sh'\\|'brief-phase-boundary.sh'\" bin/install.js` and gets ≥ 20 (brief-* filenames now present at every former gsd-* call site — the 40+ sites enumerated in the pre-grep)"
+    - "User runs `grep -c \"'brief-statusline.js'\\|'brief-check-update.js'\\|'brief-check-update-worker.js'\\|'brief-context-monitor.js'\\|'brief-prompt-guard.js'\\|'brief-read-guard.js'\\|'brief-read-injection-scanner.js'\\|'brief-workflow-guard.js'\\|'brief-session-state.sh'\\|'brief-validate-commit.sh'\\|'brief-phase-boundary.sh'\" bin/install.js` and gets ≥ 22 (brief-* filenames now present at every former gsd-* call site — pre-fix has 27 hook-filename literals; minus 4 Category P-D historical-cleanup entries kept at lines 4303/4305/4306/4307 = 23 expected post-fix; threshold ≥ 22 allows 1 site of measurement drift)"
     - "User runs `grep -c \"'brief-session-state.sh', 'brief-validate-commit.sh', 'brief-phase-boundary.sh'\" bin/install.js` and gets 1 (expectedShHooks array at line ~5844 has been rewritten)"
     - "User runs `node -c bin/install.js` and exit code is 0 (the rewritten file parses cleanly)"
     # ── Gap 5: bin/install.js gsd-* prefix residues ──
@@ -44,8 +44,27 @@ must_haves:
     - "User runs `grep -c \"'brief-local-patches'\" bin/install.js` and gets 1 (new PATCHES_DIR_NAME present)"
     - "User runs `grep -c \"'gsd-file-manifest.json'\" bin/install.js` and gets 0 (MANIFEST_NAME fresh-install filename rewritten)"
     - "User runs `grep -c \"'brief-file-manifest.json'\" bin/install.js` and gets 1 (new MANIFEST_NAME present)"
-    - "User runs `grep -c \"startsWith('gsd-')\" bin/install.js` and gets a value ≤ 2 (Category P-B legacy-detection sites kept with an inline `// Legacy gsd-* detection for upgrade-from-GSD cleanup — D-07 no-aliases preserves only detection` comment; all other 17+ uninstall/manifest/verify sites rewritten to dual-prefix `(startsWith('brief-') || startsWith('gsd-'))` form or to `startsWith('brief-')` for fresh-install count checks. The per-line P-A vs P-B decision table is in 08-GAP-CLOSURE-AUDIT.md §4.)"
-    - "User runs `grep -cE \"startsWith\\('brief-'\\)\\s*\\|\\|\\s*.*\\.startsWith\\('gsd-'\\)\" bin/install.js` and gets ≥ 10 (dual-prefix check pattern present at every uninstall and manifest site)"
+    - "User runs `grep -c \"startsWith('gsd-')\" bin/install.js` and gets a value ≤ 14 (the substring `startsWith('gsd-')` survives post-fix at 14 sites: 12 P-C dual-prefix OR-arms at lines 3006, 4496, 4510, 4528, 4563, 4596, 4612, 4663, 4748, 5276, 5292, 5311 in the form `startsWith('brief-') || …startsWith('gsd-')` [the substring is literally present in each], plus 2 P-B legacy-only sites at lines 5671 and 5703 kept as-is with explanatory `// Legacy-only cleanup: …` inline comments. Threshold ≤ 14 rejects ADDITIONAL new single-prefix sites but tolerates the dual-prefix OR-arms that are CORRECT per D-07. The per-line P-A vs P-B vs P-C decision table is in 08-GAP-CLOSURE-AUDIT.md §4.)"
+    - "User runs `grep -cE \"startsWith\\('brief-'\\)\\s*\\|\\|\\s*.*\\.startsWith\\('gsd-'\\)\" bin/install.js` and gets ≥ 12 (12 `startsWith` P-C dual-prefix sites from Task 4 at lines 3006, 4496, 4510, 4528, 4563, 4596, 4612, 4663, 4748, 5276, 5292, 5311 — the `.includes` form is a separate regex, measured by the next truth)"
+    - "User runs `grep -cE \"\\.includes\\('brief-[a-z-]+\\.(js|sh)'\\)\\s*\\|\\|\\s*.*\\.includes\\('gsd-[a-z-]+\\.(js|sh)'\\)\" bin/install.js` and gets ≥ 19 (19 `.includes` P-C dual-prefix hook-detection sites from Task 4b at lines 4805, 4814–4818, 5979, 5984, 6099, 6127, 6148, 6155, 6175, 6199, 6223, 6255, 6280, 6307, 6329 — matches the existing Task 4b verify assertion at plan line 676)"
+    # ── Gap 5b (Plan 08 revision-1): user-visible `gsd-*` output strings (BLOCKER 2 in checker iteration 1) ──
+    - "User runs `grep -c \"gsd-pristine\" bin/install.js` and gets 0 (Category P-A: pristine directory name no longer leaks gsd-* to fresh installs — line 5325 doc + line 5336 path.join rewritten to brief-pristine)"
+    - "User runs `grep -c \"brief-pristine\" bin/install.js` and gets ≥ 2 (rewrites at line 5325 doc + line 5336 path.join present)"
+    - "User runs `grep -c \"\\$gsd-new-project\" bin/install.js` and gets 0 (Category P-A: Codex command literal at line 6434 rewritten to \\$brief-new-project)"
+    - "User runs `grep -c \"\\$brief-new-project\" bin/install.js` and gets ≥ 1"
+    - "User runs `grep -c \"gsd-new-project (mention the skill name)\" bin/install.js` and gets 0 (Category P-A: Cursor instruction at line 6437 rewritten to brief-new-project)"
+    - "User runs `grep -c \"\\$gsd-reapply-patches\" bin/install.js` and gets 0 (Category P-A: Codex command literal at line 5398 rewritten to \\$brief-reapply-patches)"
+    - "User runs `grep -c \"gsd-reapply-patches (mention the skill name)\" bin/install.js` and gets 0 (Category P-A: Cursor instruction at line 5400 rewritten)"
+    - "User runs `grep -cE \"\\\\\\$gsd-\\\\\\\${commandName}\" bin/install.js` and gets 0 (Category P-A: Codex template literals at lines 1649 + 1655 rewritten from \\$gsd-\\${...} to \\$brief-\\${...})"
+    - "User runs `grep -cE \"\\\\\\$brief-\\\\\\\${commandName}\" bin/install.js` and gets ≥ 2"
+    - "User runs `grep -cE \"agents\\\\.gsd-\" bin/install.js` and gets ≤ 2 (post-fix: line 1829 regex rewritten to `/^\\[agents\\.(brief-|gsd-)[^\\]]+\\]/gm` — the literal substring `agents.gsd-` NO LONGER appears there because the alternation `(brief-|gsd-)` breaks the contiguous char sequence. Post-fix count = 2: line 2528 dual-prefix second OR-arm `startsWith('agents.gsd-')` + line 1861 comment `// Remove [agents.brief-*] and [agents.gsd-*] sections` [comment updated in Task 4b per INFO 6]. Threshold ≤ 2 is precise and rejects any NEW single-prefix `agents.gsd-` references.)"
+    - "User runs `grep -c \"c.replace(/gsd:/g\" bin/install.js` and gets 0 (Category P-A revision-1 decision: 12 `/gsd:/` input-normalizer sites at lines 880, 1005, 1119, 1237, 1357, 4239, 4247 + their adjacent comment lines at 879, 924, 1004, 1117, 1236 rewritten to `/brief:/g` (or `/brief:/gi` per per-site flag preservation) — Option α from BLOCKER 2 resolution: fresh BRIEF users type `/brief:`, not `/gsd:`)"
+    - "User runs `grep -c \"c\\.replace(/brief:/g\" bin/install.js` and gets ≥ 2 (the 2 Option-α sites using the `c` variable at lines 880, 1005 — `c.replace(/brief:/g, 'brief-')`; no `i` flag on these because they use `/g` only per Task 4b table)"
+    - "User runs `grep -c \"content\\.replace(/brief:/gi\" bin/install.js` and gets ≥ 3 (the 3 Option-α sites using the `content` variable at lines 1119, 1237, 1357 — `return content.replace(/brief:/gi, 'brief-')`)"
+    - "User runs `grep -c \"jsContent\\.replace(/brief:/gi\" bin/install.js` and gets ≥ 2 (the 2 Option-α sites using the `jsContent` variable at lines 4239, 4247 — `jsContent = jsContent.replace(/brief:/gi, 'brief-')`)"
+    - "User runs `grep -c \"prefix\\s*=\\s*'gsd'\" bin/install.js | xargs test 0 -eq` exits 0 (no remaining `prefix = 'gsd'` no-suffix variant — both quoted and no-suffix forms zero)"
+    - "User runs `grep -cE \".cache/brief/brief-update-check\\.json\" bin/install.js` and gets 1 (cache path rewritten — line 5858)"
+    - "User runs `grep -cE \".cache/gsd/gsd-update-check\\.json\" bin/install.js` and gets 0"
     # ── Gap 4: worktree test assertions ──
     - "User runs `grep -c \"agents/gsd-executor.md\\|agents/gsd-planner.md\\|agents/gsd-verifier.md\" tests/worktree-safety.test.cjs tests/worktree-stagger.test.cjs` and gets 0"
     - "User runs `grep -c \"get-shit-done/workflows\" tests/worktree-safety.test.cjs tests/worktree-stagger.test.cjs` and gets 0"
@@ -106,6 +125,8 @@ must_haves:
 
 <objective>
 Close the three remaining Phase-1 FND-03 gaps flagged by Plan 07's HALT audit (`07-GAP-CLOSURE-PARTIAL-AUDIT.md` §5 and §6) so that `grep -cE '^✖'` on a full `npm test` run drops from POST=345 to ≤16 (EMPIRICAL_BASELINE=6 + cap 10), and `npx brief-cc@latest` produces only `brief-*` filenames on fresh installs (D-07 no-aliases).
+
+**Revision-1 additions (planner-checker iteration 1):** Plan-checker found 3 residue categories that the original Plan 08 missed: (a) 19 `.includes('gsd-…')` hook-detection sites in bin/install.js that need Category P-C dual-prefix treatment (addressed by new **Task 3b**); (b) ~10 user-visible `gsd-*` output strings — `gsd-pristine`, `$gsd-new-project`, `$gsd-reapply-patches`, Codex `$gsd-\${cmd}` template literals, 12 `/gsd:/` input-normalizer sites — that produce direct D-07 "no aliases" violations on fresh BRIEF installs (addressed by new **Task 4b**, applying Option α: rewrite `/gsd:/` → `/brief:/`); (c) an off-by-one bug in the original Task 3 line-4762 array (10 entries instead of 11 — `brief-check-update-worker.js` missing). These are not cosmetic: without Task 3b the Task 6 npm-test gate likely HALTs (hook-detection duplicates during upgrade) and without Task 4b fresh BRIEF installs emit `gsd-*` strings to end users. Task count grows from 8 → 10 (Task 3b + Task 4b inserted; original 8-task structure preserved).
 
 **Gap 3 (hook-filename propagation — the dominant failure root cause).** Plans 03/04 renamed `hooks/gsd-*.{js,sh}` → `hooks/brief-*.{js,sh}` (11 files on disk verified via `ls hooks/ | grep -v dist` → 11 brief-* entries). The two files that consume those hook filenames were NOT updated by Plans 03/04/05/06/07:
   - **`scripts/build-hooks.js` lines 17–29** hard-code a 10-element array of `gsd-*.{js,sh}` names. The loop at line 59 tries to copy each from `hooks/` to `hooks/dist/`. Because none of those gsd-named files exist on disk, the loop copies zero files and logs `Warning: gsd-check-update-worker.js not found, skipping` for every entry. `hooks/dist/` is empty (verified via `ls hooks/dist/ | wc -l` → 0). Every test that exercises `install()` then fails with `Failed to install hooks: directory is empty` — this is the single dominant cause of the 56 hook-install failures counted in Plan 07's audit §5.1. Secondary issue: the existing array only has 10 entries but 11 brief-* hooks are on disk (the 2025-10 addition `brief-read-injection-scanner.js` was never added to the bundle list). Plan 08 writes the full 11-entry list.
@@ -316,6 +337,7 @@ const HOOKS_TO_COPY = [
     /tmp/plan08-pre-install-hooks.txt
     /tmp/plan08-pre-install-prefixes.txt
     /tmp/plan08-pre-install-output-names.txt
+    /tmp/plan08-pre-install-residues-rev1.txt
     /tmp/plan08-pre-tests.txt
     /tmp/plan08-hooks-on-disk.txt
   </files>
@@ -323,6 +345,7 @@ const HOOKS_TO_COPY = [
     # Load context first (no edits yet — this task only MEASURES)
     - .planning/phases/01-foundation-fork-hygiene-removal-rename/01-CONTEXT.md (§decisions — D-05 aggressive rename, D-07 no aliases)
     - .planning/phases/01-foundation-fork-hygiene-removal-rename/07-GAP-CLOSURE-PARTIAL-AUDIT.md (§5 forensic analysis + §6 scope boundary — Plan 08 must honor the boundary)
+    - .planning/phases/01-foundation-fork-hygiene-removal-rename/01-07-SUMMARY.md (Plan 07 final outcome summary — context for what was committed at SHA b1ec9f6 and what's deferred to Plan 08)
     - scripts/build-hooks.js (read fully — file is ~100 lines; the HOOKS_TO_COPY array at lines 17–29 is the target)
   </read_first>
   <action>
@@ -363,6 +386,24 @@ grep -cE "gsd-[a-z-]+\.(js|sh|md)" /Users/agent/GSD-for-Business/bin/install.js 
   grep -nE "\.cache.*gsd" /Users/agent/GSD-for-Business/bin/install.js
 } > /tmp/plan08-pre-install-output-names.txt
 
+# 4b. bin/install.js — REVISION-1 additions: .includes('gsd-*') + user-visible output strings + /gsd:/ normalizers
+{
+  echo "## .includes('gsd-') hook-detection sites (Task 3b P-C DUAL-PREFIX) ##"
+  grep -nE "\.includes\(['\"]gsd-" /Users/agent/GSD-for-Business/bin/install.js
+  echo ""
+  echo "## User-visible output: gsd-pristine, \$gsd-new-project, \$gsd-reapply-patches ##"
+  grep -nE "gsd-pristine|gsd-new-project|gsd-reapply-patches" /Users/agent/GSD-for-Business/bin/install.js
+  echo ""
+  echo "## Codex template literals (\$gsd-\${...}) ##"
+  grep -nE "\\\$gsd-\\\$\{" /Users/agent/GSD-for-Business/bin/install.js
+  echo ""
+  echo "## /gsd:/ input normalizers (12 sites — all rewrite to /brief:/ per Option α) ##"
+  grep -nE "replace\(/gsd:/" /Users/agent/GSD-for-Business/bin/install.js
+  echo ""
+  echo "## agents.gsd-* detection (P-C DUAL-PREFIX) ##"
+  grep -nE "agents\.gsd-|agents\\\\.gsd-" /Users/agent/GSD-for-Business/bin/install.js
+} > /tmp/plan08-pre-install-residues-rev1.txt
+
 # 5. tests/ — enumerate any remaining pre-rename path refs across ALL test files
 grep -rn "agents/gsd-\|get-shit-done/workflows\|hooks/gsd-" /Users/agent/GSD-for-Business/tests/ > /tmp/plan08-pre-tests.txt 2>/dev/null || echo "(no matches — clean)" > /tmp/plan08-pre-tests.txt
 
@@ -386,7 +427,7 @@ If any of these counts DIVERGE from the expected shape by more than ±3, STOP an
 NO FILE EDITS in this task. Only measurement.
   </action>
   <verify>
-    <automated>test -f /tmp/plan08-pre-build-hooks.txt && test -f /tmp/plan08-pre-install-hooks.txt && test -f /tmp/plan08-pre-install-prefixes.txt && test -f /tmp/plan08-pre-install-output-names.txt && test -f /tmp/plan08-pre-tests.txt && test -f /tmp/plan08-hooks-on-disk.txt && grep -c "brief-" /tmp/plan08-hooks-on-disk.txt | grep -qE "^(11|12)$" && echo "ground-truth captured"</automated>
+    <automated>test -f /tmp/plan08-pre-build-hooks.txt && test -f /tmp/plan08-pre-install-hooks.txt && test -f /tmp/plan08-pre-install-prefixes.txt && test -f /tmp/plan08-pre-install-output-names.txt && test -f /tmp/plan08-pre-install-residues-rev1.txt && test -f /tmp/plan08-pre-tests.txt && test -f /tmp/plan08-hooks-on-disk.txt && grep -c "brief-" /tmp/plan08-hooks-on-disk.txt | grep -qE "^(11|12)$" && echo "ground-truth captured"</automated>
   </verify>
   <acceptance_criteria>
     - All six /tmp files exist and are non-empty
@@ -467,7 +508,7 @@ ls /Users/agent/GSD-for-Business/hooks/dist/ | wc -l >> /tmp/plan08-hooks-dist.t
 If `node scripts/build-hooks.js` emits ANY `Warning: {hook} not found, skipping` line, the array contains a filename that isn't on disk — STOP and audit the diff (the array entry must match a file in /tmp/plan08-hooks-on-disk.txt verbatim).
   </action>
   <verify>
-    <automated>cd /Users/agent/GSD-for-Business && grep -c "'gsd-" scripts/build-hooks.js | grep -qE "^0$" && grep -c "'brief-" scripts/build-hooks.js | grep -qE "^11$" && node scripts/build-hooks.js 2>&1 | grep -qvE "not found, skipping" && test $(ls hooks/dist/ | wc -l) -ge 11 && test $(ls hooks/dist/ | grep -c '^brief-') -eq 11 && test $(ls hooks/dist/ | grep -c '^gsd-') -eq 0</automated>
+    <automated>cd /Users/agent/GSD-for-Business && grep -c "'gsd-" scripts/build-hooks.js | grep -qE "^0$" && grep -c "'brief-" scripts/build-hooks.js | grep -qE "^11$" && ! node scripts/build-hooks.js 2>&1 | grep -qE "not found, skipping" && test $(ls hooks/dist/ | wc -l) -ge 11 && test $(ls hooks/dist/ | grep -c '^brief-') -eq 11 && test $(ls hooks/dist/ | grep -c '^gsd-') -eq 0</automated>
   </verify>
   <acceptance_criteria>
     - `grep -c "'gsd-" scripts/build-hooks.js` returns 0
@@ -506,7 +547,7 @@ Edit `bin/install.js` using the `Edit` tool per the per-line rewrite table below
 | 4286 | Comment `'hooks/statusline.js',  // Renamed to gsd-statusline.js in v1.9.0` → `'hooks/statusline.js',  // Renamed to brief-statusline.js in Phase 1 (was gsd-statusline.js pre-fork)` | preserves history |
 | 4304 | Comment `'hooks/statusline.js',  // Renamed to gsd-statusline.js in v1.9.0` → identical rewrite as 4286 | second instance of the same comment |
 | 4347 | Template-literal `'hooks$1gsd-statusline.js'` → `'hooks$1brief-statusline.js'` | regex replacement target |
-| 4762 | Array `['gsd-statusline.js', 'gsd-check-update.js', 'gsd-context-monitor.js', 'gsd-prompt-guard.js', 'gsd-read-guard.js', 'gsd-read-injection-scanner.js', 'gsd-workflow-guard.js', 'gsd-session-state.sh', 'gsd-validate-commit.sh', 'gsd-phase-boundary.sh']` → `['brief-statusline.js', 'brief-check-update.js', 'brief-context-monitor.js', 'brief-prompt-guard.js', 'brief-read-guard.js', 'brief-read-injection-scanner.js', 'brief-workflow-guard.js', 'brief-session-state.sh', 'brief-validate-commit.sh', 'brief-phase-boundary.sh']` | also rename the variable `gsdHooks` → `briefHooks` in the same statement AND at every subsequent usage site in the same scope (search the function body for `gsdHooks` and rewrite each — Task 3's pre-grep at `/tmp/plan08-pre-install-prefixes.txt` line-number references guide the scope) |
+| 4762 | Array `['gsd-statusline.js', 'gsd-check-update.js', 'gsd-check-update-worker.js', 'gsd-context-monitor.js', 'gsd-prompt-guard.js', 'gsd-read-guard.js', 'gsd-read-injection-scanner.js', 'gsd-workflow-guard.js', 'gsd-session-state.sh', 'gsd-validate-commit.sh', 'gsd-phase-boundary.sh']` → `['brief-statusline.js', 'brief-check-update.js', 'brief-check-update-worker.js', 'brief-context-monitor.js', 'brief-prompt-guard.js', 'brief-read-guard.js', 'brief-read-injection-scanner.js', 'brief-workflow-guard.js', 'brief-session-state.sh', 'brief-validate-commit.sh', 'brief-phase-boundary.sh']` | **REVISION-1 FIX (BLOCKER 4):** the new array is now 11 entries (was 10 in original plan — `'brief-check-update-worker.js'` was missing). Verify against `ls hooks/ \| grep -v dist \| wc -l` = 11. Also rename the variable `gsdHooks` → `briefHooks` in the same statement AND at every subsequent usage site in the same scope (search the function body for `gsdHooks` and rewrite each — Task 3's pre-grep at `/tmp/plan08-pre-install-prefixes.txt` line-number references guide the scope). The pre-edit array on disk in bin/install.js may be 10 OR 11 entries depending on whether a previous executor already added `gsd-check-update-worker.js`; Task 3's pre-grep at `/tmp/plan08-pre-install-hooks.txt` is authoritative — if pre-edit array is 10 entries, both the line-4762 old_string and new_string above must be adjusted by REMOVING the `gsd-check-update-worker.js` entry from the old_string while KEEPING `brief-check-update-worker.js` in the new_string. |
 | 5828 | Comment `.sh hooks carry a gsd-hook-version header so gsd-check-update.js can` → `.sh hooks carry a brief-hook-version header (legacy name: gsd-hook-version, preserved for existing-install detection) so brief-check-update.js can` | clarifies that the header field NAME `gsd-hook-version` is a schema constant we preserve; add inline comment explaining |
 | 5844 | `const expectedShHooks = ['gsd-session-state.sh', 'gsd-validate-commit.sh', 'gsd-phase-boundary.sh']` → `const expectedShHooks = ['brief-session-state.sh', 'brief-validate-commit.sh', 'brief-phase-boundary.sh']` | verification array |
 | 5858 | `path.join(os.homedir(), '.cache', 'gsd', 'gsd-update-check.json')` → `path.join(os.homedir(), '.cache', 'brief', 'brief-update-check.json')` | fresh-install cache output — both segments rewrite |
@@ -569,6 +610,82 @@ After applying every rewrite, run `node -c bin/install.js` to assert parse-abili
   </acceptance_criteria>
   <done>
     bin/install.js contains zero gsd-* hook-filename literals outside the 4 Category P-D historical entries. The installer can locate every brief-* hook at runtime.
+  </done>
+</task>
+
+<task type="auto">
+  <name>Task 3b: Rewrite bin/install.js `.includes('gsd-*')` hook-detection sites (19 sites — Category P-C dual-prefix) [REVISION-1 ADDITION per BLOCKER 1]</name>
+  <files>bin/install.js</files>
+  <read_first>
+    - /tmp/plan08-pre-install-prefixes.txt (Task 1's enumeration — includes the `.includes('gsd-*')` sub-section once Task 1's grep is extended; if Task 1's output omits this sub-section, re-run: `grep -nE "\.includes\(['\"]gsd-" /Users/agent/GSD-for-Business/bin/install.js > /tmp/plan08-pre-install-includes.txt`)
+    - bin/install.js lines 4800–4820 (lines 4805, 4814, 4815, 4816, 4817, 4818 — 6 sites)
+    - bin/install.js lines 5975–5990 (lines 5979, 5984 — 2 sites)
+    - bin/install.js lines 6090–6340 (lines 6099, 6127, 6148, 6155, 6175, 6199, 6223, 6255, 6280, 6307, 6329 — 11 sites, one per Claude-Code hook-matcher branch)
+  </read_first>
+  <action>
+These 19 `.includes('gsd-…')` call sites detect EXISTING hook entries in settings.json / config.toml during (a) upgrade from pre-BRIEF GSD installs (legacy `gsd-*` hook commands), and (b) re-install over a prior BRIEF install (fresh `brief-*` hook commands). Because BOTH prefix families may co-exist on a user's machine during a migration, each site MUST be rewritten to the Category P-C dual-prefix form:
+
+  ```js
+  cmd.includes('brief-<name>') || cmd.includes('gsd-<name>')
+  ```
+
+**Per-line rewrite table — 19 sites:**
+
+| Line | Current (verbatim per 2026-04-18 grep) | Rewrite |
+|------|----------------------------------------|---------|
+| 4805 | `settings.statusLine.command.includes('gsd-statusline'))` | `(settings.statusLine.command.includes('brief-statusline') \|\| settings.statusLine.command.includes('gsd-statusline')))` |
+| 4814 | `cmd && (cmd.includes('gsd-check-update') \|\| cmd.includes('gsd-statusline') \|\|` | `cmd && (cmd.includes('brief-check-update') \|\| cmd.includes('gsd-check-update') \|\| cmd.includes('brief-statusline') \|\| cmd.includes('gsd-statusline') \|\|` |
+| 4815 | `cmd.includes('gsd-session-state') \|\| cmd.includes('gsd-context-monitor') \|\|` | `cmd.includes('brief-session-state') \|\| cmd.includes('gsd-session-state') \|\| cmd.includes('brief-context-monitor') \|\| cmd.includes('gsd-context-monitor') \|\|` |
+| 4816 | `cmd.includes('gsd-phase-boundary') \|\| cmd.includes('gsd-prompt-guard') \|\|` | `cmd.includes('brief-phase-boundary') \|\| cmd.includes('gsd-phase-boundary') \|\| cmd.includes('brief-prompt-guard') \|\| cmd.includes('gsd-prompt-guard') \|\|` |
+| 4817 | `cmd.includes('gsd-read-guard') \|\| cmd.includes('gsd-read-injection-scanner') \|\|` | `cmd.includes('brief-read-guard') \|\| cmd.includes('gsd-read-guard') \|\| cmd.includes('brief-read-injection-scanner') \|\| cmd.includes('gsd-read-injection-scanner') \|\|` |
+| 4818 | `cmd.includes('gsd-validate-commit') \|\| cmd.includes('gsd-workflow-guard'));` | `cmd.includes('brief-validate-commit') \|\| cmd.includes('gsd-validate-commit') \|\| cmd.includes('brief-workflow-guard') \|\| cmd.includes('gsd-workflow-guard'));` |
+| 5979 | `if (configContent.includes('gsd-update-check')) {` | `if (configContent.includes('brief-update-check') \|\| configContent.includes('gsd-update-check')) {` |
+| 5984 | `if (hasEnabledCodexHooksFeature(configContent) && !configContent.includes('gsd-check-update')) {` | `if (hasEnabledCodexHooksFeature(configContent) && !(configContent.includes('brief-check-update') \|\| configContent.includes('gsd-check-update'))) {` |
+| 6099 | `entry.hooks && entry.hooks.some(h => h.command && h.command.includes('gsd-check-update'))` | `entry.hooks && entry.hooks.some(h => h.command && (h.command.includes('brief-check-update') \|\| h.command.includes('gsd-check-update')))` |
+| 6127 | `.some(h => h.command && h.command.includes('gsd-context-monitor'))` | `.some(h => h.command && (h.command.includes('brief-context-monitor') \|\| h.command.includes('gsd-context-monitor')))` |
+| 6148 | `if (entry.hooks && entry.hooks.some(h => h.command && h.command.includes('gsd-context-monitor'))) {` | `if (entry.hooks && entry.hooks.some(h => h.command && (h.command.includes('brief-context-monitor') \|\| h.command.includes('gsd-context-monitor')))) {` |
+| 6155 | `if (h.command && h.command.includes('gsd-context-monitor') && !h.timeout) {` | `if (h.command && (h.command.includes('brief-context-monitor') \|\| h.command.includes('gsd-context-monitor')) && !h.timeout) {` |
+| 6175 | `.some(h => h.command && h.command.includes('gsd-prompt-guard'))` | `.some(h => h.command && (h.command.includes('brief-prompt-guard') \|\| h.command.includes('gsd-prompt-guard')))` |
+| 6199 | `.some(h => h.command && h.command.includes('gsd-read-guard'))` | `.some(h => h.command && (h.command.includes('brief-read-guard') \|\| h.command.includes('gsd-read-guard')))` |
+| 6223 | `.some(h => h.command && h.command.includes('gsd-read-injection-scanner'))` | `.some(h => h.command && (h.command.includes('brief-read-injection-scanner') \|\| h.command.includes('gsd-read-injection-scanner')))` |
+| 6255 | `.some(h => h.command && h.command.includes('gsd-workflow-guard'))` | `.some(h => h.command && (h.command.includes('brief-workflow-guard') \|\| h.command.includes('gsd-workflow-guard')))` |
+| 6280 | `.some(h => h.command && h.command.includes('gsd-validate-commit'))` | `.some(h => h.command && (h.command.includes('brief-validate-commit') \|\| h.command.includes('gsd-validate-commit')))` |
+| 6307 | `.some(h => h.command && h.command.includes('gsd-session-state'))` | `.some(h => h.command && (h.command.includes('brief-session-state') \|\| h.command.includes('gsd-session-state')))` |
+| 6329 | `.some(h => h.command && h.command.includes('gsd-phase-boundary'))` | `.some(h => h.command && (h.command.includes('brief-phase-boundary') \|\| h.command.includes('gsd-phase-boundary')))` |
+
+**Why dual-prefix instead of single rewrite:** if we rewrote these to `brief-*` only, a user upgrading from pre-BRIEF GSD would have settings.json entries with `gsd-*` command strings that the installer would fail to detect → duplicate hook install OR silent skip. If we left them as `gsd-*` only, fresh BRIEF installs (which write `brief-*` hook commands per Task 3) would not be detected on re-install → same failure mode. Both families MUST be detected.
+
+**Contrast with Task 3 (filename literals):** Task 3's hook-filename literals (`'brief-statusline.js'` etc.) are WRITTEN during install — so they must be the fresh-install name. These `.includes(...)` sites are READ during upgrade-detection — so they must accept both historical prefix families.
+
+After applying every rewrite, run:
+
+```bash
+node -c /Users/agent/GSD-for-Business/bin/install.js
+```
+
+**Self-check greps:**
+
+```bash
+# All 19 sites now have dual-prefix:
+grep -cE "\.includes\('brief-[a-z-]+'\) \|\| .*\.includes\('gsd-[a-z-]+'\)" /Users/agent/GSD-for-Business/bin/install.js  # expect ≥ 19
+# No remaining single-prefix gsd-* includes in the detection sites:
+grep -cE "\.includes\('gsd-[a-z-]+'\)" /Users/agent/GSD-for-Business/bin/install.js                                              # expect ≥ 19 (each dual-prefix contains one gsd-* — this is the KEEP half of the OR)
+grep -cE "\.includes\('brief-[a-z-]+'\)" /Users/agent/GSD-for-Business/bin/install.js                                            # expect ≥ 19 (each dual-prefix contains one brief-*)
+```
+
+If any of the 19 line numbers above drift by ±3 from the grep output, trust the grep output and re-read the surrounding context before editing.
+  </action>
+  <verify>
+    <automated>cd /Users/agent/GSD-for-Business && test $(grep -cE "\.includes\('brief-[a-z-]+'\) \|\| .*\.includes\('gsd-[a-z-]+'\)" bin/install.js) -ge 19 && test $(grep -cE "\.includes\('brief-[a-z-]+'\)" bin/install.js) -ge 19 && node -c bin/install.js</automated>
+  </verify>
+  <acceptance_criteria>
+    - `grep -cE "\.includes\('brief-[a-z-]+'\) \|\| .*\.includes\('gsd-[a-z-]+'\)" bin/install.js` returns ≥ 19 (every former single-prefix site is now dual-prefix)
+    - `grep -cE "\.includes\('brief-[a-z-]+'\)" bin/install.js` returns ≥ 19 (the brief- half of each OR is present)
+    - `grep -cE "\.includes\('gsd-[a-z-]+'\)" bin/install.js` returns ≥ 19 (the gsd- half of each OR preserved for upgrade-from-GSD detection)
+    - `node -c bin/install.js` exits 0
+  </acceptance_criteria>
+  <done>
+    All 19 `.includes('gsd-…')` hook-detection sites are dual-prefix (brief-* OR gsd-*). Upgrade from pre-BRIEF GSD installs still detects hook entries for clean re-install; fresh BRIEF installs also detect their own hooks on re-install. This closes BLOCKER 1 from Plan 08 revision-1 review.
   </done>
 </task>
 
@@ -656,7 +773,7 @@ to assert parse-ability.
 **Self-check after edits:**
 ```bash
 grep -c "startsWith('brief-') || " /Users/agent/GSD-for-Business/bin/install.js  # expect ≥ 12 (11 P-C sites + potentially the 3006 line)
-grep -c "startsWith('gsd-')" /Users/agent/GSD-for-Business/bin/install.js        # expect ≤ 2 (the 2 P-B sites at 5671 and 5703)
+grep -c "startsWith('gsd-')" /Users/agent/GSD-for-Business/bin/install.js        # expect ≤ 14 (12 P-C dual-prefix OR-arms containing `…startsWith('gsd-')` as second arm + 2 P-B legacy-only sites at 5671 and 5703)
 grep -c "'brief-local-patches'" /Users/agent/GSD-for-Business/bin/install.js     # expect 1
 grep -c "'brief-file-manifest.json'" /Users/agent/GSD-for-Business/bin/install.js # expect 1
 grep -cE "copyCommandsAs.*'brief'," /Users/agent/GSD-for-Business/bin/install.js  # expect ≥ 10 (all non-copyFlattenedCommands P-A sites)
@@ -666,10 +783,10 @@ grep -c "copyFlattenedCommands(gsdSrc, commandDir, 'brief'," /Users/agent/GSD-fo
 If any P-B site (5671, 5703) does NOT have an inline `// Legacy-only cleanup: ...` comment above it at the end of Task 4, add the comment.
   </action>
   <verify>
-    <automated>cd /Users/agent/GSD-for-Business && test $(grep -c "startsWith('gsd-')" bin/install.js) -le 2 && test $(grep -c "startsWith('brief-')" bin/install.js) -ge 12 && grep -c "'brief-local-patches'" bin/install.js | grep -qE "^1$" && grep -c "'brief-file-manifest.json'" bin/install.js | grep -qE "^1$" && grep -c "'gsd-local-patches'" bin/install.js | grep -qE "^0$" && grep -c "'gsd-file-manifest.json'" bin/install.js | grep -qE "^0$" && test $(grep -cE "copyCommandsAs[A-Z][a-zA-Z]+Skills\(gsdSrc, skillsDir, 'gsd'," bin/install.js) -eq 0 && test $(grep -c "prefix = 'gsd-'" bin/install.js) -eq 0 && test $(grep -c "prefix = 'brief-'" bin/install.js) -ge 1 && test $(grep -c "// Legacy-only cleanup" bin/install.js) -ge 2 && node -c bin/install.js</automated>
+    <automated>cd /Users/agent/GSD-for-Business && test $(grep -c "startsWith('gsd-')" bin/install.js) -le 14 && test $(grep -c "startsWith('brief-')" bin/install.js) -ge 12 && grep -c "'brief-local-patches'" bin/install.js | grep -qE "^1$" && grep -c "'brief-file-manifest.json'" bin/install.js | grep -qE "^1$" && grep -c "'gsd-local-patches'" bin/install.js | grep -qE "^0$" && grep -c "'gsd-file-manifest.json'" bin/install.js | grep -qE "^0$" && test $(grep -cE "copyCommandsAs[A-Z][a-zA-Z]+Skills\(gsdSrc, skillsDir, 'gsd'," bin/install.js) -eq 0 && test $(grep -c "prefix = 'gsd-'" bin/install.js) -eq 0 && test $(grep -cE "prefix\\s*=\\s*'gsd'" bin/install.js) -eq 0 && test $(grep -c "prefix = 'brief-'" bin/install.js) -ge 1 && test $(grep -c "// Legacy-only cleanup" bin/install.js) -ge 2 && node -c bin/install.js</automated>
   </verify>
   <acceptance_criteria>
-    - `grep -c "startsWith('gsd-')" bin/install.js` returns ≤ 2 (only the 2 P-B sites at lines 5671, 5703)
+    - `grep -c "startsWith('gsd-')" bin/install.js` returns ≤ 14 (12 P-C dual-prefix OR-arms + 2 P-B legacy-only sites at lines 5671, 5703 — the OR-arms `…|| foo.startsWith('gsd-')` literally contain the substring)
     - `grep -c "startsWith('brief-')" bin/install.js` returns ≥ 12 (11 P-C dual-prefix sites + 1 or more P-A single-prefix verify sites)
     - `grep -cE "startsWith\('brief-'\)\s*\|\|\s*\w+\.startsWith\('gsd-'\)" bin/install.js` returns ≥ 10 (dual-prefix P-C pattern present)
     - `grep -c "'brief-local-patches'" bin/install.js` returns 1 (PATCHES_DIR_NAME rewritten)
@@ -678,12 +795,137 @@ If any P-B site (5671, 5703) does NOT have an inline `// Legacy-only cleanup: ..
     - `grep -c "'gsd-file-manifest.json'" bin/install.js` returns 0
     - `grep -cE "copyCommandsAs[A-Z][a-zA-Z]+Skills\(gsdSrc, skillsDir, 'gsd'," bin/install.js` returns 0 (no fresh-install call site passes 'gsd' prefix)
     - `grep -c "prefix = 'gsd-'" bin/install.js` returns 0
+    - `grep -cE "prefix\\s*=\\s*'gsd'" bin/install.js` returns 0 (**REVISION-1 addition per WARNING 6:** guards against both `prefix = 'gsd'` no-hyphen AND any future `prefix = 'gsd'` no-suffix variant the codebase may introduce)
     - `grep -c "prefix = 'brief-'" bin/install.js` returns ≥ 1 (listCodexSkillNames default)
     - `grep -c "// Legacy-only cleanup" bin/install.js` returns ≥ 2 (P-B inline comments added)
     - `node -c bin/install.js` exits 0
   </acceptance_criteria>
   <done>
     All fresh-install code paths produce brief-* output (D-07 no aliases honored). Uninstall/manifest code paths handle both prefix families via dual-prefix checks. The 2 legitimate legacy-only P-B sites carry explanatory inline comments.
+  </done>
+</task>
+
+<task type="auto">
+  <name>Task 4b: Rewrite user-visible `gsd-*` output strings in bin/install.js (BLOCKER 2 — D-07 violations: $gsd-new-project, gsd-pristine, $gsd-reapply-patches, /gsd:/ normalizers, Codex template literals, agents.gsd-* regex) [REVISION-1 ADDITION]</name>
+  <files>bin/install.js</files>
+  <read_first>
+    - bin/install.js lines 877–882 (line 879 comment + line 880 `c.replace(/gsd:/g, 'gsd-')`)
+    - bin/install.js lines 920–928 (line 924 JSDoc-style comment)
+    - bin/install.js lines 1000–1010 (line 1004 comment + line 1005 replace call)
+    - bin/install.js lines 1115–1122 (line 1117 comment + line 1119 `c.replace(/gsd:/gi, 'gsd-')`)
+    - bin/install.js lines 1234–1240 (line 1236 comment + line 1237 replace call)
+    - bin/install.js lines 1355–1360 (line 1357 replace call)
+    - bin/install.js lines 1645–1660 (lines 1649, 1655 Codex template literals)
+    - bin/install.js lines 1825–1835 (line 1829 `agents.gsd-` regex)
+    - bin/install.js lines 2525–2532 (line 2528 `section.path.startsWith('agents.gsd-')`)
+    - bin/install.js lines 4235–4250 (lines 4239, 4247 replace calls)
+    - bin/install.js lines 5320–5340 (line 5325 doc comment + line 5336 `gsd-pristine` path.join)
+    - bin/install.js lines 5395–5405 (lines 5398, 5400 `$gsd-reapply-patches` + Cursor text)
+    - bin/install.js lines 6430–6440 (lines 6434, 6437 `$gsd-new-project` + Cursor text)
+  </read_first>
+  <action>
+These sites emit `gsd-*` strings to USER-VISIBLE outputs during a fresh BRIEF install, creating direct **D-07 no-aliases violations**: fresh users see prompts to invoke `$gsd-new-project`, BRIEF creates `.planning/gsd-pristine/` directories, etc. Rewrite each site per the per-line table below.
+
+**Category P-A sites (fresh-install output — MUST rewrite to `brief-*`):**
+
+| Line | Current (verbatim per 2026-04-18 grep) | Rewrite | Rationale |
+|------|----------------------------------------|---------|-----------|
+| 1649 | `return \`$gsd-\${String(commandName).toLowerCase()}\`;` | `return \`$brief-\${String(commandName).toLowerCase()}\`;` | Codex command template literal — fresh BRIEF installs must emit `$brief-<cmd>` not `$gsd-<cmd>` |
+| 1655 | `return \`$gsd-\${String(commandName).toLowerCase()}\`;` | `return \`$brief-\${String(commandName).toLowerCase()}\`;` | second instance of same pattern (different branch of `getCommandPrefix` or similar) |
+| 5325 | ` * Also saves pristine copies (from manifest) to gsd-pristine/ to enable` | ` * Also saves pristine copies (from manifest) to brief-pristine/ to enable` | JSDoc describing the directory the function creates — directory name changes per line 5336 |
+| 5336 | `const pristineDir = path.join(configDir, 'gsd-pristine');` | `const pristineDir = path.join(configDir, 'brief-pristine');` | fresh-install output directory — D-07 governs this directly |
+| 5398 | `? '$gsd-reapply-patches'` | `? '$brief-reapply-patches'` | Codex command instruction string |
+| 5400 | `? 'gsd-reapply-patches (mention the skill name)'` | `? 'brief-reapply-patches (mention the skill name)'` | Cursor skill instruction string |
+| 6434 | `if (runtime === 'codex') command = '$gsd-new-project';` | `if (runtime === 'codex') command = '$brief-new-project';` | Codex command instruction |
+| 6437 | `if (runtime === 'cursor') command = 'gsd-new-project (mention the skill name)';` | `if (runtime === 'cursor') command = 'brief-new-project (mention the skill name)';` | Cursor skill instruction |
+
+**Category P-C sites (dual-prefix — upgrade-detection that must accept both prefix families):**
+
+| Line | Current | Rewrite | Rationale |
+|------|---------|---------|-----------|
+| 1829 | `return content.replace(/^\[agents\.gsd-[^\]]+\]\n(?:(?!\[)[^\n]*\n?)*/gm, '');` | `return content.replace(/^\[agents\.(brief-\|gsd-)[^\]]+\]\n(?:(?!\[)[^\n]*\n?)*/gm, '');` | Strips `[agents.brief-*]` + `[agents.gsd-*]` sections from Codex config.toml during uninstall — must handle both prefix families |
+| 2528 | `section.path.startsWith('agents.gsd-') \|\|` | `section.path.startsWith('agents.brief-') \|\| section.path.startsWith('agents.gsd-') \|\|` | Filter inside config.toml iteration — dual-prefix per P-C pattern |
+| 1861 | `  // Remove [agents.gsd-*] sections (from header to next section or EOF)` | `  // Remove [agents.brief-*] and [agents.gsd-*] sections (from header to next section or EOF)` | Stale comment after line 1829 regex rewrite — the `stripCodexGsdAgentSections()` function now strips BOTH `[agents.brief-*]` AND `[agents.gsd-*]` TOML sections, so the comment must name both prefix families. INFO 6 from checker iteration 2. |
+
+**Category P-A (input-normalizer `c.replace(/gsd:/...`) — revision-1 decision: Option α (replace `/gsd:/` with `/brief:/`)):**
+
+Per BLOCKER 2's α/β/γ analysis, **Option α** is selected: fresh BRIEF users type `/brief:foo`, not `/gsd:foo`; the `/gsd:/` normalizer legacy-support would violate D-07 "no aliases" by keeping the GSD input-vocabulary active. All 7 `.replace()` sites + their 5 adjacent comments get rewritten:
+
+| Line | Current (verbatim) | Rewrite |
+|------|--------------------|---------|
+| 879  | `  // CONV-07: Command name conversion (all gsd: references → gsd-)` | `  // CONV-07: Command name conversion (all brief: references → brief-)` |
+| 880  | `  c = c.replace(/gsd:/g, 'gsd-');` | `  c = c.replace(/brief:/g, 'brief-');` |
+| 924  | ` * convert name from gsd:xxx to gsd-xxx format.` | ` * convert name from brief:xxx to brief-xxx format.` |
+| 1004 | `  // Command name conversion (all gsd: references → gsd-)` | `  // Command name conversion (all brief: references → brief-)` |
+| 1005 | `  c = c.replace(/gsd:/g, 'gsd-');` | `  c = c.replace(/brief:/g, 'brief-');` |
+| 1117 | `  // Keep leading "/" for slash commands; only normalize gsd: -> gsd-.` | `  // Keep leading "/" for slash commands; only normalize brief: -> brief-.` |
+| 1119 | `  return content.replace(/gsd:/gi, 'gsd-');` | `  return content.replace(/brief:/gi, 'brief-');` |
+| 1236 | `  // Keep leading "/" for slash commands; only normalize gsd: -> gsd-.` | `  // Keep leading "/" for slash commands; only normalize brief: -> brief-.` |
+| 1237 | `  return content.replace(/gsd:/gi, 'gsd-');` | `  return content.replace(/brief:/gi, 'brief-');` |
+| 1357 | `  return content.replace(/gsd:/gi, 'gsd-');` | `  return content.replace(/brief:/gi, 'brief-');` |
+| 4239 | `      jsContent = jsContent.replace(/gsd:/gi, 'gsd-');` | `      jsContent = jsContent.replace(/brief:/gi, 'brief-');` |
+| 4247 | `      jsContent = jsContent.replace(/gsd:/gi, 'gsd-');` | `      jsContent = jsContent.replace(/brief:/gi, 'brief-');` |
+
+**Verify after edits:**
+
+```bash
+# ── P-A user-visible output cleared ──
+grep -c "gsd-pristine" /Users/agent/GSD-for-Business/bin/install.js              # expect 0
+grep -c "brief-pristine" /Users/agent/GSD-for-Business/bin/install.js            # expect ≥ 2
+grep -c '\\\$gsd-new-project' /Users/agent/GSD-for-Business/bin/install.js        # expect 0
+grep -c '\\\$brief-new-project' /Users/agent/GSD-for-Business/bin/install.js      # expect ≥ 1
+grep -c '\\\$gsd-reapply-patches' /Users/agent/GSD-for-Business/bin/install.js    # expect 0
+grep -c '\\\$brief-reapply-patches' /Users/agent/GSD-for-Business/bin/install.js  # expect ≥ 1
+grep -c "gsd-new-project (mention the skill name)" /Users/agent/GSD-for-Business/bin/install.js    # expect 0
+grep -c "gsd-reapply-patches (mention the skill name)" /Users/agent/GSD-for-Business/bin/install.js # expect 0
+
+# ── P-A input normalizer rewritten to brief: ──
+grep -c "c.replace(/gsd:/g" /Users/agent/GSD-for-Business/bin/install.js         # expect 0
+grep -c "c.replace(/brief:/g" /Users/agent/GSD-for-Business/bin/install.js       # expect ≥ 2
+grep -c "return content.replace(/gsd:/gi" /Users/agent/GSD-for-Business/bin/install.js    # expect 0
+grep -c "return content.replace(/brief:/gi" /Users/agent/GSD-for-Business/bin/install.js  # expect ≥ 3
+grep -c "jsContent.replace(/gsd:/gi" /Users/agent/GSD-for-Business/bin/install.js    # expect 0
+grep -c "jsContent.replace(/brief:/gi" /Users/agent/GSD-for-Business/bin/install.js  # expect ≥ 2
+
+# ── P-A Codex \$gsd-\${...} template literals rewritten ──
+grep -cE '\\\$gsd-\\\$\\{commandName' /Users/agent/GSD-for-Business/bin/install.js    # expect 0
+grep -cE '\\\$brief-\\\$\\{commandName' /Users/agent/GSD-for-Business/bin/install.js  # expect ≥ 2
+
+# ── P-C agents.gsd-* now dual-prefix ──
+grep -cE "agents\\.brief-\|agents\\.gsd-" /Users/agent/GSD-for-Business/bin/install.js    # expect ≥ 2
+grep -c "section.path.startsWith('agents.brief-')" /Users/agent/GSD-for-Business/bin/install.js  # expect ≥ 1
+
+# ── Parse check ──
+node -c /Users/agent/GSD-for-Business/bin/install.js
+```
+
+**Important — BLOCKER 2 resolution traceability:** The decision to pick Option α (not β dual-support nor γ legacy-only) is recorded here because D-07 "no aliases" is a hard user decision. If a future iteration discovers a specific migration path where users legitimately need the `/gsd:` input vocabulary, we can restore it as a **documented legacy-only branch with a deprecation warning**, not as a silent normalizer.
+
+Also update the anchor comment at line 878 if present (example: "CONV-07: Command name conversion (all gsd: references → gsd-)") — the fresh-install behaviour no longer produces `gsd-` outputs, so this comment would be stale. Covered in the table above (lines 879, 1004).
+  </action>
+  <verify>
+    <automated>cd /Users/agent/GSD-for-Business && test $(grep -c "gsd-pristine" bin/install.js) -eq 0 && test $(grep -c "brief-pristine" bin/install.js) -ge 2 && test $(grep -cE '\\\$gsd-\\\$\\{commandName' bin/install.js) -eq 0 && test $(grep -cE '\\\$brief-\\\$\\{commandName' bin/install.js) -ge 2 && test $(grep -c "c.replace(/gsd:/g" bin/install.js) -eq 0 && test $(grep -c "c.replace(/brief:/g" bin/install.js) -ge 2 && test $(grep -c "gsd-new-project (mention the skill name)" bin/install.js) -eq 0 && test $(grep -c "gsd-reapply-patches (mention the skill name)" bin/install.js) -eq 0 && test $(grep -c "section.path.startsWith('agents.brief-')" bin/install.js) -ge 1 && node -c bin/install.js</automated>
+  </verify>
+  <acceptance_criteria>
+    - `grep -c "gsd-pristine" bin/install.js` returns 0 (directory name rewritten)
+    - `grep -c "brief-pristine" bin/install.js` returns ≥ 2 (line 5325 doc + line 5336 path.join)
+    - `grep -cE '\\\$gsd-\\\$\\{commandName' bin/install.js` returns 0 (Codex template literals rewritten)
+    - `grep -cE '\\\$brief-\\\$\\{commandName' bin/install.js` returns ≥ 2
+    - `grep -c '\\\$gsd-new-project' bin/install.js` returns 0
+    - `grep -c '\\\$brief-new-project' bin/install.js` returns ≥ 1
+    - `grep -c '\\\$gsd-reapply-patches' bin/install.js` returns 0
+    - `grep -c '\\\$brief-reapply-patches' bin/install.js` returns ≥ 1
+    - `grep -c "gsd-new-project (mention the skill name)" bin/install.js` returns 0
+    - `grep -c "gsd-reapply-patches (mention the skill name)" bin/install.js` returns 0
+    - `grep -c "c.replace(/gsd:/g" bin/install.js` returns 0 (Option α applied)
+    - `grep -c "c.replace(/brief:/g" bin/install.js` returns ≥ 2
+    - `grep -c "return content.replace(/brief:/gi" bin/install.js` returns ≥ 3
+    - `grep -c "section.path.startsWith('agents.brief-')" bin/install.js` returns ≥ 1 (P-C dual-prefix added)
+    - `grep -cE "agents\\.brief-\|agents\\.gsd-" bin/install.js` returns ≥ 2 (regex rewritten + startsWith rewritten)
+    - `node -c bin/install.js` exits 0
+  </acceptance_criteria>
+  <done>
+    All user-visible `gsd-*` output strings in bin/install.js rewritten to `brief-*`. Fresh BRIEF installs produce only `brief-*` user-facing strings (D-07 no-aliases honored at the user's-eye level). The `/gsd:/` input-vocabulary legacy-normalizer is replaced by `/brief:/` per Option α. Two Codex/Cursor `agents.gsd-` detection sites use dual-prefix for upgrade-from-GSD compatibility. BLOCKER 2 from revision-1 review is resolved.
   </done>
 </task>
 
@@ -925,6 +1167,7 @@ Decomposition of the DELTA (345 → N):
 - Full localized README prose rebranding — STILL deferred to Phase 9 Hardening
 - CHANGELOG.md historical entries — already banner-handled by Plan 05 (pre-fork banner)
 - Any gsd-hook-version schema field name — PRESERVED as schema constant (not a filename, not subject to rename)
+- **Six dormant `/gsd:` legacy-input acceptor sites (WARNING 5 from plan-checker iteration 2)** — lines 1509, 1564, 1648, 3193, 3350, 4254 in `bin/install.js` contain `.replace(/\/gsd:([a-z0-9-]+)/...)` and `.replace(/\/gsd:/g, '/brief-')` forms that accept the `/gsd:foo` legacy input vocabulary. These are INTENTIONALLY PRESERVED in Plan 08, NOT a D-07 violation, and NOT rewritten, for the following reason: fresh BRIEF source markdown contains zero `/gsd:` command strings, so these sites never activate during a fresh BRIEF install; they exist only to normalize pre-BRIEF GSD content that a user might paste in during an upgrade path. Rewriting them to `/brief:` acceptors would break the upgrade path without user benefit (fresh users type `/brief-foo` directly, never `/brief:foo`). Rewriting them to emit `brief-` output (lines 3193 and 3350 already do this) is already covered. The structurally similar distinction with Task 4b's rewritten sites (lines 880, 1005, 1119, 1237, 1357, 4239, 4247) is: Task 4b's sites are INPUT normalizers that BRIEF content flows through on every install, so they must match fresh BRIEF vocabulary per D-07; these six sites are LEGACY-ONLY input acceptors that only trigger on GSD-content paste, so they stay as-is. If a future migration path requires removing these six sites, address in a dedicated micro-plan with a deprecation warning; Plan 08 does not.
 
 **§7. Recommendation for next step:**
 
@@ -1039,6 +1282,21 @@ Gap 5 (gsd-* prefix residues):
 - 2 Category P-B legacy-only sites (lines 5671, 5703) kept as startsWith('gsd-')
   with inline explanatory comments — these specifically target pre-BRIEF
   leftover files and must not match brief-* siblings
+- (Revision-1 addition, Task 3b) 19 `.includes('gsd-…')` hook-detection
+  sites (lines 4805, 4814–4818, 5979, 5984, 6099, 6127, 6148, 6155, 6175,
+  6199, 6223, 6255, 6280, 6307, 6329) rewritten to dual-prefix
+  (`cmd.includes('brief-X') || cmd.includes('gsd-X')`) — fresh BRIEF
+  installs AND upgrade-from-GSD installs both detect existing hook entries
+- (Revision-1 addition, Task 4b) user-visible gsd-* output strings
+  rewritten per D-07: `gsd-pristine` → `brief-pristine` (5325 doc + 5336
+  path.join); `$gsd-new-project` / `gsd-new-project (mention the skill
+  name)` → `brief-*` (6434, 6437); `$gsd-reapply-patches` / `gsd-reapply-
+  patches (mention the skill name)` → `brief-*` (5398, 5400); Codex
+  `$gsd-\${commandName}` template literals → `$brief-\${commandName}`
+  (1649, 1655); 7 `c.replace(/gsd:/, 'gsd-')` + their 5 adjacent comments
+  rewritten to `/brief:/` per Option α (879, 880, 924, 1004, 1005, 1117,
+  1119, 1236, 1237, 1357, 4239, 4247); agents.gsd-* regex + startsWith
+  made dual-prefix (1829, 2528)
 
 Gap 4 (worktree test assertions):
 - tests/worktree-safety.test.cjs + tests/worktree-stagger.test.cjs confirmed
@@ -1100,7 +1358,7 @@ Return `## HALT` to the orchestrator with:
 grep -c "'gsd-" scripts/build-hooks.js                                              # expect 0
 grep -c "'brief-" scripts/build-hooks.js                                            # expect 11
 ls hooks/dist/ | wc -l                                                              # expect ≥ 11
-grep -c "startsWith('gsd-')" bin/install.js                                         # expect ≤ 2
+grep -c "startsWith('gsd-')" bin/install.js                                         # expect ≤ 14 (12 P-C OR-arms + 2 P-B legacy-only)
 grep -cE "copyCommandsAs[A-Z][a-zA-Z]+Skills\(gsdSrc, skillsDir, 'gsd'," bin/install.js  # expect 0
 grep -cE "^✖" /tmp/plan08-post-test.txt                                              # expect ≤ 16
 git log -1 --pretty=format:"%s" | grep -c "01-gap-closure-08"                       # expect 1
@@ -1133,7 +1391,11 @@ After all tasks complete (PASS path):
 
 2. **Gap 4 closure:** `node --test tests/worktree-safety.test.cjs tests/worktree-stagger.test.cjs 2>&1 | grep -cE "^✖"` returns 0.
 
-3. **Gap 5 closure:** `grep -cE "copyCommandsAs[A-Z][a-zA-Z]+Skills\(gsdSrc, skillsDir, 'gsd'," bin/install.js` returns 0; `grep -c "'brief-local-patches'" bin/install.js` returns 1; `grep -c "startsWith('gsd-')" bin/install.js` returns ≤ 2 (only the 2 documented P-B legacy-only sites).
+3. **Gap 5 closure:** `grep -cE "copyCommandsAs[A-Z][a-zA-Z]+Skills\(gsdSrc, skillsDir, 'gsd'," bin/install.js` returns 0; `grep -c "'brief-local-patches'" bin/install.js` returns 1; `grep -c "startsWith('gsd-')" bin/install.js` returns ≤ 14 (12 P-C dual-prefix OR-arms + 2 P-B legacy-only sites — substring survives in `startsWith('brief-') || foo.startsWith('gsd-')` OR-arm form).
+
+3a. **BLOCKER 1 closure (Task 3b):** `grep -cE "\.includes\('brief-[a-z-]+'\) \|\| .*\.includes\('gsd-[a-z-]+'\)" bin/install.js` returns ≥ 19 (all 19 `.includes('gsd-…')` hook-detection sites now dual-prefix).
+
+3b. **BLOCKER 2 closure (Task 4b):** `grep -c "gsd-pristine" bin/install.js` returns 0; `grep -cE '\\\$gsd-\\\$\\{commandName' bin/install.js` returns 0; `grep -c '\\\$gsd-new-project' bin/install.js` returns 0; `grep -c '\\\$gsd-reapply-patches' bin/install.js` returns 0; `grep -c "c.replace(/gsd:/g" bin/install.js` returns 0 (Option α applied).
 
 4. **Gap 6 closure:** `grep -cE '^✖' /tmp/plan08-post-test.txt` returns ≤ 16 (EMPIRICAL_BASELINE 6 + 10 cap); 05-PRE-TEST-BASELINE.txt Plan 08 section is filled in with GATE_RESULT=PASS.
 
@@ -1147,6 +1409,8 @@ After all tasks complete (PASS path):
 <success_criteria>
 - Phase 1 FND-03 fully closed (was partial at Plan 07 SHA b1ec9f6 — hook-rename propagation and bin/install.js gsd-* prefix residues now also closed).
 - `npx brief-cc@latest` on a fresh runtime install produces ONLY brief-* filenames (D-07 no aliases honored on fresh-install code paths).
+- `npx brief-cc@latest` on a fresh install emits ONLY brief-* user-facing strings — no `gsd-pristine`, no `$gsd-new-project`, no `$gsd-reapply-patches`, no Codex `$gsd-\${cmd}` template literals (D-07 enforced at user's-eye level per Task 4b BLOCKER 2 closure).
+- All 19 `.includes('gsd-…')` hook-detection sites use dual-prefix P-C pattern — upgrade from pre-BRIEF GSD still detects existing hook entries (Task 3b BLOCKER 1 closure).
 - `npx brief-cc@latest` on an upgrade-from-GSD runtime still detects and cleans pre-BRIEF gsd-* files (dual-prefix P-C pattern in uninstall/manifest + explicit P-B legacy-only cleanup blocks).
 - npm test POST_COUNT ≤ 16 against empirical baseline of 6 — a ~320-failure recovery from Plan 07's HALT state (POST=345).
 - Single atomic commit; repo is buildable at every commit boundary (no half-applied rename).
