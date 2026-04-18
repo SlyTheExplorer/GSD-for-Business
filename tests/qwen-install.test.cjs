@@ -126,7 +126,7 @@ describe('E2E: Qwen Code uninstall skills cleanup', () => {
     cleanup(tmpDir);
   });
 
-  test('removes all gsd-* skill directories on --qwen --uninstall', () => {
+  test('removes all brief-* skill directories on --qwen --uninstall', () => {
     const targetDir = path.join(tmpDir, '.qwen');
     install(false, 'qwen');
 
@@ -134,16 +134,16 @@ describe('E2E: Qwen Code uninstall skills cleanup', () => {
     assert.ok(fs.existsSync(skillsDir), 'skills dir exists after install');
 
     const installedSkills = fs.readdirSync(skillsDir, { withFileTypes: true })
-      .filter(e => e.isDirectory() && e.name.startsWith('gsd-'));
-    assert.ok(installedSkills.length > 0, `found ${installedSkills.length} gsd-* skill dirs before uninstall`);
+      .filter(e => e.isDirectory() && e.name.startsWith('brief-'));
+    assert.ok(installedSkills.length > 0, `found ${installedSkills.length} brief-* skill dirs before uninstall`);
 
     uninstall(false, 'qwen');
 
     if (fs.existsSync(skillsDir)) {
-      const remainingGsd = fs.readdirSync(skillsDir, { withFileTypes: true })
-        .filter(e => e.isDirectory() && e.name.startsWith('gsd-'));
-      assert.strictEqual(remainingGsd.length, 0,
-        `Expected 0 gsd-* skill dirs after uninstall, found: ${remainingGsd.map(e => e.name).join(', ')}`);
+      const remainingBrief = fs.readdirSync(skillsDir, { withFileTypes: true })
+        .filter(e => e.isDirectory() && e.name.startsWith('brief-'));
+      assert.strictEqual(remainingBrief.length, 0,
+        `Expected 0 brief-* skill dirs after uninstall, found: ${remainingBrief.map(e => e.name).join(', ')}`);
     }
   });
 

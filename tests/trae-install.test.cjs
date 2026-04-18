@@ -181,7 +181,7 @@ describe('Trae local install/uninstall', () => {
       configDir: fs.realpathSync(targetDir),
     });
 
-    assert.ok(fs.existsSync(path.join(targetDir, 'skills', 'gsd-help', 'SKILL.md')));
+    assert.ok(fs.existsSync(path.join(targetDir, 'skills', 'brief-help', 'SKILL.md')));
     assert.ok(fs.existsSync(path.join(targetDir, 'brief', 'VERSION')));
     assert.ok(fs.existsSync(path.join(targetDir, 'agents')));
 
@@ -190,7 +190,7 @@ describe('Trae local install/uninstall', () => {
 
     uninstall(false, 'trae');
 
-    assert.ok(!fs.existsSync(path.join(targetDir, 'skills', 'gsd-help')), 'Trae skill directory removed');
+    assert.ok(!fs.existsSync(path.join(targetDir, 'skills', 'brief-help')), 'Trae skill directory removed');
     assert.ok(!fs.existsSync(path.join(targetDir, 'brief')), 'brief removed');
   });
 });
@@ -210,7 +210,7 @@ describe('E2E: Trae uninstall skills cleanup', () => {
     cleanup(tmpDir);
   });
 
-  test('removes all gsd-* skill directories on --trae --uninstall', () => {
+  test('removes all brief-* skill directories on --trae --uninstall', () => {
     const targetDir = path.join(tmpDir, '.trae');
     install(false, 'trae');
 
@@ -218,16 +218,16 @@ describe('E2E: Trae uninstall skills cleanup', () => {
     assert.ok(fs.existsSync(skillsDir), 'skills dir exists after install');
 
     const installedSkills = fs.readdirSync(skillsDir, { withFileTypes: true })
-      .filter(e => e.isDirectory() && e.name.startsWith('gsd-'));
-    assert.ok(installedSkills.length > 0, `found ${installedSkills.length} gsd-* skill dirs before uninstall`);
+      .filter(e => e.isDirectory() && e.name.startsWith('brief-'));
+    assert.ok(installedSkills.length > 0, `found ${installedSkills.length} brief-* skill dirs before uninstall`);
 
     uninstall(false, 'trae');
 
     if (fs.existsSync(skillsDir)) {
-      const remainingGsd = fs.readdirSync(skillsDir, { withFileTypes: true })
-        .filter(e => e.isDirectory() && e.name.startsWith('gsd-'));
-      assert.strictEqual(remainingGsd.length, 0,
-        `Expected 0 gsd-* skill dirs after uninstall, found: ${remainingGsd.map(e => e.name).join(', ')}`);
+      const remainingBrief = fs.readdirSync(skillsDir, { withFileTypes: true })
+        .filter(e => e.isDirectory() && e.name.startsWith('brief-'));
+      assert.strictEqual(remainingBrief.length, 0,
+        `Expected 0 brief-* skill dirs after uninstall, found: ${remainingBrief.map(e => e.name).join(', ')}`);
     }
   });
 

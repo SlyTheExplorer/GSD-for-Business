@@ -737,9 +737,9 @@ describe('Copilot agent conversion - real files', () => {
 
   test('all 18 agents convert without error', () => {
     const agents = fs.readdirSync(agentsSrc)
-      .filter(f => f.startsWith('gsd-') && f.endsWith('.md'));
+      .filter(f => f.startsWith('brief-') && f.endsWith('.md'));
     const expectedAgentCount = fs.readdirSync(agentsSrc)
-      .filter(f => f.startsWith('gsd-') && f.endsWith('.md')).length;
+      .filter(f => f.startsWith('brief-') && f.endsWith('.md')).length;
     assert.strictEqual(agents.length, expectedAgentCount, `expected ${expectedAgentCount} agents, got ${agents.length}`);
 
     for (const agentFile of agents) {
@@ -1111,7 +1111,7 @@ const INSTALL_PATH = path.join(__dirname, '..', 'bin', 'install.js');
 const EXPECTED_SKILLS = fs.readdirSync(path.join(__dirname, '..', 'commands', 'brief'))
   .filter(f => f.endsWith('.md')).length;
 const EXPECTED_AGENTS = fs.readdirSync(path.join(__dirname, '..', 'agents'))
-  .filter(f => f.startsWith('gsd-') && f.endsWith('.md')).length;
+  .filter(f => f.startsWith('brief-') && f.endsWith('.md')).length;
 
 function runCopilotInstall(cwd) {
   const env = { ...process.env };
@@ -1150,16 +1150,16 @@ describe('E2E: Copilot full install verification', () => {
   test('installs expected number of skill directories', () => {
     const skillsDir = path.join(tmpDir, '.github', 'skills');
     const entries = fs.readdirSync(skillsDir, { withFileTypes: true });
-    const gsdSkills = entries.filter(e => e.isDirectory() && e.name.startsWith('gsd-'));
-    assert.strictEqual(gsdSkills.length, EXPECTED_SKILLS,
-      `Expected ${EXPECTED_SKILLS} skill directories, got ${gsdSkills.length}`);
+    const briefSkills = entries.filter(e => e.isDirectory() && e.name.startsWith('brief-'));
+    assert.strictEqual(briefSkills.length, EXPECTED_SKILLS,
+      `Expected ${EXPECTED_SKILLS} skill directories, got ${briefSkills.length}`);
   });
 
   test('each skill directory contains SKILL.md', () => {
     const skillsDir = path.join(tmpDir, '.github', 'skills');
     const entries = fs.readdirSync(skillsDir, { withFileTypes: true });
-    const gsdSkills = entries.filter(e => e.isDirectory() && e.name.startsWith('gsd-'));
-    for (const skill of gsdSkills) {
+    const briefSkills = entries.filter(e => e.isDirectory() && e.name.startsWith('brief-'));
+    for (const skill of briefSkills) {
       const skillMdPath = path.join(skillsDir, skill.name, 'SKILL.md');
       assert.ok(fs.existsSync(skillMdPath),
         `Missing SKILL.md in ${skill.name}`);
@@ -1169,15 +1169,15 @@ describe('E2E: Copilot full install verification', () => {
   test('installs expected number of agent files', () => {
     const agentsDir = path.join(tmpDir, '.github', 'agents');
     const files = fs.readdirSync(agentsDir);
-    const gsdAgents = files.filter(f => f.startsWith('gsd-') && f.endsWith('.agent.md'));
-    assert.strictEqual(gsdAgents.length, EXPECTED_AGENTS,
-      `Expected ${EXPECTED_AGENTS} agent files, got ${gsdAgents.length}`);
+    const briefAgents = files.filter(f => f.startsWith('brief-') && f.endsWith('.agent.md'));
+    assert.strictEqual(briefAgents.length, EXPECTED_AGENTS,
+      `Expected ${EXPECTED_AGENTS} agent files, got ${briefAgents.length}`);
   });
 
   test('installs all expected agent files', () => {
     const agentsDir = path.join(tmpDir, '.github', 'agents');
     const files = fs.readdirSync(agentsDir);
-    const gsdAgents = files.filter(f => f.startsWith('gsd-') && f.endsWith('.agent.md')).sort();
+    const briefAgents = files.filter(f => f.startsWith('brief-') && f.endsWith('.agent.md')).sort();
     const expected = [
       'brief-advisor-researcher.agent.md',
       'brief-assumptions-analyzer.agent.md',

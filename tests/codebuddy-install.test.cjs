@@ -176,7 +176,7 @@ describe('CodeBuddy local install/uninstall', () => {
     assert.strictEqual(result.runtime, 'codebuddy');
     assert.ok(result.settingsPath, 'should have settingsPath (CodeBuddy supports hooks)');
 
-    assert.ok(fs.existsSync(path.join(targetDir, 'skills', 'gsd-help', 'SKILL.md')));
+    assert.ok(fs.existsSync(path.join(targetDir, 'skills', 'brief-help', 'SKILL.md')));
     assert.ok(fs.existsSync(path.join(targetDir, 'brief', 'VERSION')));
     assert.ok(fs.existsSync(path.join(targetDir, 'agents')));
 
@@ -185,7 +185,7 @@ describe('CodeBuddy local install/uninstall', () => {
 
     uninstall(false, 'codebuddy');
 
-    assert.ok(!fs.existsSync(path.join(targetDir, 'skills', 'gsd-help')), 'CodeBuddy skill directory removed');
+    assert.ok(!fs.existsSync(path.join(targetDir, 'skills', 'brief-help')), 'CodeBuddy skill directory removed');
     assert.ok(!fs.existsSync(path.join(targetDir, 'brief')), 'brief removed');
   });
 });
@@ -205,7 +205,7 @@ describe('E2E: CodeBuddy uninstall skills cleanup', () => {
     cleanup(tmpDir);
   });
 
-  test('removes all gsd-* skill directories on --codebuddy --uninstall', () => {
+  test('removes all brief-* skill directories on --codebuddy --uninstall', () => {
     const targetDir = path.join(tmpDir, '.codebuddy');
     install(false, 'codebuddy');
 
@@ -213,16 +213,16 @@ describe('E2E: CodeBuddy uninstall skills cleanup', () => {
     assert.ok(fs.existsSync(skillsDir), 'skills dir exists after install');
 
     const installedSkills = fs.readdirSync(skillsDir, { withFileTypes: true })
-      .filter(e => e.isDirectory() && e.name.startsWith('gsd-'));
-    assert.ok(installedSkills.length > 0, `found ${installedSkills.length} gsd-* skill dirs before uninstall`);
+      .filter(e => e.isDirectory() && e.name.startsWith('brief-'));
+    assert.ok(installedSkills.length > 0, `found ${installedSkills.length} brief-* skill dirs before uninstall`);
 
     uninstall(false, 'codebuddy');
 
     if (fs.existsSync(skillsDir)) {
-      const remainingGsd = fs.readdirSync(skillsDir, { withFileTypes: true })
-        .filter(e => e.isDirectory() && e.name.startsWith('gsd-'));
-      assert.strictEqual(remainingGsd.length, 0,
-        `Expected 0 gsd-* skill dirs after uninstall, found: ${remainingGsd.map(e => e.name).join(', ')}`);
+      const remainingBrief = fs.readdirSync(skillsDir, { withFileTypes: true })
+        .filter(e => e.isDirectory() && e.name.startsWith('brief-'));
+      assert.strictEqual(remainingBrief.length, 0,
+        `Expected 0 brief-* skill dirs after uninstall, found: ${remainingBrief.map(e => e.name).join(', ')}`);
     }
   });
 
