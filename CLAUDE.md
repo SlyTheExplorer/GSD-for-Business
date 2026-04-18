@@ -3,18 +3,18 @@
 
 **BRIEF — Business Research, Insight & Execution Framework**
 
-BRIEF is a meta-prompting framework for business and product strategy planning, hard-forked from BRIEF (BRIEF). It guides a business planner through four phases — DEFINE (extract true intent), DISCOVER (broad domain research), DESIGN (concrete business plan), DELIVER (high-level product/service policy + stakeholder communication artifacts) — all of which occur BEFORE engineering's PRD work begins. The output of BRIEF can hand off cleanly into a PRD that BRIEF itself can then execute.
+BRIEF is a meta-prompting framework for business and product strategy planning, hard-forked from GSD (Get Shit Done). It guides a business planner through four phases — DEFINE (extract true intent), DISCOVER (broad domain research), DESIGN (concrete business plan), DELIVER (high-level product/service policy + stakeholder communication artifacts) — all of which occur BEFORE engineering's PRD work begins. The output of BRIEF can hand off cleanly into a PRD that GSD itself can then execute.
 
 **Core Value:** A business planner can transform a fuzzy idea into well-researched, audience-correct, compliance-aware deliverables — without already knowing what they want when they start.
 
 ### Constraints
 
-- **Tech stack**: Inherited from BRIEF. Node.js 22+, CommonJS-only core (`.cjs`), zero external runtime dependencies for the bin layer. TypeScript SDK retained.
-- **Architecture**: Must preserve BRIEF's atomic-commit + STATE.md file lock + agent prompt context engine. No re-architecture of these primitives.
-- **Multi-runtime**: Must keep working across Claude Code, OpenAI Codex, Gemini CLI, OpenCode (same as BRIEF). `INSTRUCTION_FILE` detection and `text_mode` fallback for non-AskUserQuestion runtimes preserved.
+- **Tech stack**: Inherited from GSD. Node.js 22+, CommonJS-only core (`.cjs`), zero external runtime dependencies for the bin layer. TypeScript SDK retained.
+- **Architecture**: Must preserve GSD's atomic-commit + STATE.md file lock + agent prompt context engine. No re-architecture of these primitives.
+- **Multi-runtime**: Must keep working across Claude Code, OpenAI Codex, Gemini CLI, OpenCode (same as GSD). `INSTRUCTION_FILE` detection and `text_mode` fallback for non-AskUserQuestion runtimes preserved.
 - **Backward compatibility**: NONE. Hard fork. The `backup/original-gsd` branch is for reference only — no compatibility shims, aliases, or migration tooling.
 - **Naming**: `gsd-*` → `brief-*` is a one-shot global rename. No transitional period.
-- **Testing**: `node:test` (not Jest), c8 coverage, cross-platform (Mac/Windows/Linux) — same as BRIEF.
+- **Testing**: `node:test` (not Jest), c8 coverage, cross-platform (Mac/Windows/Linux) — same as GSD.
 - **Distribution**: npm package, similar `bin/install.js` pattern. Likely package name `brief-cc` or similar.
 <!-- BRIEF:project-end -->
 
@@ -180,6 +180,13 @@ BRIEF is a meta-prompting framework for business and product strategy planning, 
 - **gray-matter / ajv as supporting libs:** MEDIUM — verified versions, but the "should we add them at all vs. inline" decision depends on assumption A1 (BRIEF's zero-runtime-deps rule).
 - **Korean compliance regulatory dates (PIPA Feb 2026, ISMS-P July 2027, CEO liability):** MEDIUM — multiple legal sources agree, but regulatory dates can shift; cite-with-date-stamps in references.
 - **Korean tooling absence:** LOW — verified absent in general web search; a Korean-native BMC/OKR tool may exist that wasn't surfaced.
+
+### BRIEF-Specific Stack Notes
+
+- **Runtime dependencies:** Zero (verified via `node -e "console.log(Object.keys(require('./package.json').dependencies||{}).length)"` → 0). New supporting libraries (gray-matter, ajv, @marp-team/marp-cli) are invoked via `npx --yes` rather than added to `dependencies` — preserves the GSD-inherited zero-runtime-deps property.
+- **Marp CLI:** Invoked via `npx --yes @marp-team/marp-cli@4.3.1` during Phase 8 (DELIVER Type B decks). Users need Chrome/Edge (for rendering) and optionally LibreOffice Impress (for editable PPTX). No npm install.
+- **Multi-runtime detection:** Preserved unchanged. The `INSTRUCTION_FILE` env var dispatch lives in `brief/workflows/new-project.md`; the `text_mode` non-AskUserQuestion fallback lives in `brief/bin/lib/core.cjs` / `config.cjs` / `init.cjs`.
+- **Business planner workflow:** All workstream artifacts carry `audience:`, `confidentiality:`, and `voice:` frontmatter; the audience guard blocks leakage. OBJECTIVES.md is the single anchor every downstream phase reads.
 <!-- BRIEF:stack-end -->
 
 <!-- BRIEF:conventions-start source:CONVENTIONS.md -->
@@ -203,14 +210,17 @@ No project skills found. Add skills to any of: `.claude/skills/`, `.agents/skill
 <!-- BRIEF:workflow-start source:BRIEF defaults -->
 ## BRIEF Workflow Enforcement
 
-Before using Edit, Write, or other file-changing tools, start work through a BRIEF command so planning artifacts and execution context stay in sync.
+Before using Edit, Write, or other file-changing tools on planning artifacts, start work through a BRIEF command so the DEFINE → DISCOVER → DESIGN → DELIVER flow stays anchored to OBJECTIVES.md.
 
-Use these entry points:
-- `/brief-quick` for small fixes, doc updates, and ad-hoc tasks
-- `/brief-debug` for investigation and bug fixing
-- `/brief-execute-phase` for planned phase work
+Use these entry points (post-Phase-1; the full command surface is populated in subsequent phases):
+- `/brief-discuss-phase` for phase-level context capture
+- `/brief-plan-phase` for phase planning
+- `/brief-execute-phase` for planned phase execution
+- `/brief-verify-work` for phase-level verification
 
 Do not make direct repo edits outside a BRIEF workflow unless the user explicitly asks to bypass it.
+
+> Note — Phase 1: The BRIEF domain-specific commands (`/brief-define`, `/brief-discover`, `/brief-design`, `/brief-deliver`) are not yet implemented. Phase 1 delivers clean fork hygiene; Phases 3–8 add the domain commands.
 <!-- BRIEF:workflow-end -->
 
 
