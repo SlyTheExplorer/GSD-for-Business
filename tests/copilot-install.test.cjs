@@ -1198,7 +1198,7 @@ describe('E2E: Copilot full install verification', () => {
       'brief-user-profiler.agent.md',
       'brief-verifier.agent.md',
     ].sort();
-    assert.deepStrictEqual(gsdAgents, expected);
+    assert.deepStrictEqual(briefAgents, expected);
   });
 
   test('generates copilot-instructions.md with GSD markers', () => {

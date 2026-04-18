@@ -97,7 +97,7 @@ describe('Qwen Code local install/uninstall', () => {
     assert.strictEqual(result.runtime, 'qwen');
     assert.strictEqual(result.configDir, fs.realpathSync(targetDir));
 
-    assert.ok(fs.existsSync(path.join(targetDir, 'skills', 'gsd-help', 'SKILL.md')));
+    assert.ok(fs.existsSync(path.join(targetDir, 'skills', 'brief-help', 'SKILL.md')));
     assert.ok(fs.existsSync(path.join(targetDir, 'brief', 'VERSION')));
     assert.ok(fs.existsSync(path.join(targetDir, 'agents')));
 
@@ -106,7 +106,7 @@ describe('Qwen Code local install/uninstall', () => {
 
     uninstall(false, 'qwen');
 
-    assert.ok(!fs.existsSync(path.join(targetDir, 'skills', 'gsd-help')), 'Qwen skill directory removed');
+    assert.ok(!fs.existsSync(path.join(targetDir, 'skills', 'brief-help')), 'Qwen skill directory removed');
     assert.ok(!fs.existsSync(path.join(targetDir, 'brief')), 'brief removed');
   });
 });
