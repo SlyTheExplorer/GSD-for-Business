@@ -22,11 +22,11 @@ const path = require('path');
 const INSTALL_SRC = path.join(__dirname, '..', 'bin', 'install.js');
 
 const JS_HOOKS = [
-  { name: 'gsd-check-update.js',      registrationAnchor: 'hasGsdUpdateHook' },
-  { name: 'gsd-context-monitor.js',   registrationAnchor: 'hasContextMonitorHook' },
-  { name: 'gsd-prompt-guard.js',      registrationAnchor: 'hasPromptGuardHook' },
-  { name: 'gsd-read-guard.js',        registrationAnchor: 'hasReadGuardHook' },
-  { name: 'gsd-workflow-guard.js',    registrationAnchor: 'hasWorkflowGuardHook' },
+  { name: 'brief-check-update.js',      registrationAnchor: 'hasGsdUpdateHook' },
+  { name: 'brief-context-monitor.js',   registrationAnchor: 'hasContextMonitorHook' },
+  { name: 'brief-prompt-guard.js',      registrationAnchor: 'hasPromptGuardHook' },
+  { name: 'brief-read-guard.js',        registrationAnchor: 'hasReadGuardHook' },
+  { name: 'brief-workflow-guard.js',    registrationAnchor: 'hasWorkflowGuardHook' },
 ];
 
 describe('bug #1754: .js hook registration guards', () => {

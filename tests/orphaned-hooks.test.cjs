@@ -1,6 +1,6 @@
 /**
  * Regression test for #1750: orphaned hook files from removed features
- * (e.g., gsd-intel-*.js) should NOT be flagged as stale by gsd-check-update.js.
+ * (e.g., gsd-intel-*.js) should NOT be flagged as stale by brief-check-update.js.
  *
  * The stale hooks scanner should only check hooks that are part of the current
  * distribution, not every gsd-*.js file in the hooks directory.
@@ -13,8 +13,8 @@ const path = require('path');
 
 // MANAGED_HOOKS lives in the worker file (extracted from inline -e code to eliminate
 // template-literal regex-escaping concerns). Tests read the worker directly.
-const CHECK_UPDATE_PATH = path.join(__dirname, '..', 'hooks', 'gsd-check-update.js');
-const WORKER_PATH = path.join(__dirname, '..', 'hooks', 'gsd-check-update-worker.js');
+const CHECK_UPDATE_PATH = path.join(__dirname, '..', 'hooks', 'brief-check-update.js');
+const WORKER_PATH = path.join(__dirname, '..', 'hooks', 'brief-check-update-worker.js');
 const BUILD_HOOKS_PATH = path.join(__dirname, '..', 'scripts', 'build-hooks.js');
 
 describe('orphaned hooks stale detection (#1750)', () => {
@@ -31,17 +31,17 @@ describe('orphaned hooks stale detection (#1750)', () => {
       'Use a MANAGED_HOOKS allowlist instead.');
   });
 
-  test('gsd-check-update.js spawns the worker by file path (not inline -e code)', () => {
+  test('brief-check-update.js spawns the worker by file path (not inline -e code)', () => {
     // After the worker extraction, the main hook must spawn the worker file
     // rather than embedding all logic in a template literal.
     const content = fs.readFileSync(CHECK_UPDATE_PATH, 'utf8');
     assert.ok(
-      content.includes('gsd-check-update-worker.js'),
-      'gsd-check-update.js must reference gsd-check-update-worker.js as the spawn target'
+      content.includes('brief-check-update-worker.js'),
+      'brief-check-update.js must reference brief-check-update-worker.js as the spawn target'
     );
     assert.ok(
       !content.includes("'-e'"),
-      'gsd-check-update.js must not use node -e inline code (logic moved to worker file)'
+      'brief-check-update.js must not use node -e inline code (logic moved to worker file)'
     );
   });
 

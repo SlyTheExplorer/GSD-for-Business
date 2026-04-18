@@ -24,19 +24,19 @@ const HOOKS_DIST = path.join(__dirname, '..', 'hooks', 'dist');
 
 // Expected .sh community hooks
 const EXPECTED_SH_HOOKS = [
-  'gsd-session-state.sh',
-  'gsd-validate-commit.sh',
-  'gsd-phase-boundary.sh',
+  'brief-session-state.sh',
+  'brief-validate-commit.sh',
+  'brief-phase-boundary.sh',
 ];
 
 // All hooks that should be in hooks/dist/ after build
 const EXPECTED_ALL_HOOKS = [
-  'gsd-check-update.js',
-  'gsd-context-monitor.js',
-  'gsd-prompt-guard.js',
-  'gsd-read-guard.js',
-  'gsd-statusline.js',
-  'gsd-workflow-guard.js',
+  'brief-check-update.js',
+  'brief-context-monitor.js',
+  'brief-prompt-guard.js',
+  'brief-read-guard.js',
+  'brief-statusline.js',
+  'brief-workflow-guard.js',
   ...EXPECTED_SH_HOOKS,
 ];
 
@@ -155,7 +155,7 @@ describe('install.js source correctness', () => {
     );
   });
 
-  test('Codex hook uses correct filename gsd-check-update.js (not gsd-update-check.js)', () => {
+  test('Codex hook uses correct filename brief-check-update.js (not gsd-update-check.js)', () => {
     // The cache file gsd-update-check.json is legitimate (different artifact);
     // check that no hook registration uses the inverted .js filename.
     // Match the exact pattern: quote + gsd-update-check.js + quote
@@ -168,15 +168,15 @@ describe('install.js source correctness', () => {
   test('Codex hook path does not use brief/hooks/ subdirectory', () => {
     // The Codex hook should resolve to targetDir/hooks/, not targetDir/brief/hooks/
     assert.ok(
-      !src.includes("'brief', 'hooks', 'gsd-check-update"),
+      !src.includes("'brief', 'hooks', 'brief-check-update"),
       'Codex hook should not use brief/hooks/ path segment'
     );
   });
 
-  test('cache invalidation uses ~/.cache/gsd/ path', () => {
+  test('cache invalidation uses ~/.cache/brief/ path', () => {
     assert.ok(
       src.includes("os.homedir(), '.cache', 'gsd'"),
-      'Cache path should use os.homedir()/.cache/gsd/'
+      'Cache path should use os.homedir()/.cache/brief/'
     );
   });
 
@@ -187,32 +187,32 @@ describe('install.js source correctness', () => {
     );
   });
 
-  test('gsd-workflow-guard.js is in uninstall hook list', () => {
-    const gsdHooksMatch = src.match(/const gsdHooks\s*=\s*\[([^\]]+)\]/);
-    assert.ok(gsdHooksMatch, 'gsdHooks array should exist');
-    const gsdHooksContent = gsdHooksMatch[1];
+  test('brief-workflow-guard.js is in uninstall hook list', () => {
+    const briefHooksMatch = src.match(/const briefHooks\s*=\s*\[([^\]]+)\]/);
+    assert.ok(briefHooksMatch, 'briefHooks array should exist');
+    const briefHooksContent = briefHooksMatch[1];
     assert.ok(
-      gsdHooksContent.includes('gsd-workflow-guard.js'),
-      'gsdHooks should include gsd-workflow-guard.js'
+      briefHooksContent.includes('brief-workflow-guard.js'),
+      'briefHooks should include brief-workflow-guard.js'
     );
   });
 
-  test('phantom gsd-check-update.sh is not in uninstall hook list', () => {
-    const gsdHooksMatch = src.match(/const gsdHooks\s*=\s*\[([^\]]+)\]/);
-    assert.ok(gsdHooksMatch, 'gsdHooks array should exist');
-    const gsdHooksContent = gsdHooksMatch[1];
+  test('phantom brief-check-update.sh is not in uninstall hook list', () => {
+    const briefHooksMatch = src.match(/const briefHooks\s*=\s*\[([^\]]+)\]/);
+    assert.ok(briefHooksMatch, 'briefHooks array should exist');
+    const briefHooksContent = briefHooksMatch[1];
     assert.ok(
-      !gsdHooksContent.includes('gsd-check-update.sh'),
-      'gsdHooks should not include phantom gsd-check-update.sh'
+      !briefHooksContent.includes('brief-check-update.sh'),
+      'briefHooks should not include phantom brief-check-update.sh'
     );
   });
 
   test('isGsdHookCommand covers all GSD hook names', () => {
     // The consolidated uninstall cleanup uses isGsdHookCommand — verify all hook names are present
     const expectedHookNames = [
-      'gsd-check-update', 'gsd-statusline', 'gsd-session-state',
-      'gsd-context-monitor', 'gsd-phase-boundary', 'gsd-prompt-guard',
-      'gsd-read-guard', 'gsd-validate-commit', 'gsd-workflow-guard',
+      'brief-check-update', 'brief-statusline', 'brief-session-state',
+      'brief-context-monitor', 'brief-phase-boundary', 'brief-prompt-guard',
+      'brief-read-guard', 'brief-validate-commit', 'brief-workflow-guard',
     ];
     for (const name of expectedHookNames) {
       assert.ok(
@@ -279,7 +279,7 @@ describe('writeManifest includes .sh hooks', () => {
   test('manifest contains .sh hook entries', () => {
     writeManifest(tmpDir, 'claude');
 
-    const manifestPath = path.join(tmpDir, 'gsd-file-manifest.json');
+    const manifestPath = path.join(tmpDir, 'brief-file-manifest.json');
     assert.ok(fs.existsSync(manifestPath), 'manifest file should exist');
 
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
@@ -295,7 +295,7 @@ describe('writeManifest includes .sh hooks', () => {
   test('manifest contains .js hook entries', () => {
     writeManifest(tmpDir, 'claude');
 
-    const manifestPath = path.join(tmpDir, 'gsd-file-manifest.json');
+    const manifestPath = path.join(tmpDir, 'brief-file-manifest.json');
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
     const jsHooks = EXPECTED_ALL_HOOKS.filter(h => h.endsWith('.js'));
@@ -315,11 +315,11 @@ describe('writeManifest includes .sh hooks', () => {
 describe('uninstall settings cleanup preserves user hooks', () => {
   // Mirror the isGsdHookCommand logic from install.js
   const isGsdHookCommand = (cmd) =>
-    cmd && (cmd.includes('gsd-check-update') || cmd.includes('gsd-statusline') ||
-      cmd.includes('gsd-session-state') || cmd.includes('gsd-context-monitor') ||
-      cmd.includes('gsd-phase-boundary') || cmd.includes('gsd-prompt-guard') ||
-      cmd.includes('gsd-read-guard') || cmd.includes('gsd-validate-commit') ||
-      cmd.includes('gsd-workflow-guard'));
+    cmd && (cmd.includes('brief-check-update') || cmd.includes('brief-statusline') ||
+      cmd.includes('brief-session-state') || cmd.includes('brief-context-monitor') ||
+      cmd.includes('brief-phase-boundary') || cmd.includes('brief-prompt-guard') ||
+      cmd.includes('brief-read-guard') || cmd.includes('brief-validate-commit') ||
+      cmd.includes('brief-workflow-guard'));
 
   // Simulate the per-hook filtering logic from uninstall
   function filterGsdHooks(entries) {

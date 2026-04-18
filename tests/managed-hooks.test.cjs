@@ -1,12 +1,12 @@
 /**
  * Regression tests for bug #2136
  *
- * gsd-check-update.js contains a MANAGED_HOOKS array used to detect stale
+ * brief-check-update.js contains a MANAGED_HOOKS array used to detect stale
  * hooks after a GSD update. It must list every hook file that GSD ships so
  * that all deployed hooks are checked for staleness — not just the .js ones.
  *
- * The original bug: the 3 bash hooks (gsd-phase-boundary.sh,
- * gsd-session-state.sh, gsd-validate-commit.sh) were missing from
+ * The original bug: the 3 bash hooks (brief-phase-boundary.sh,
+ * brief-session-state.sh, brief-validate-commit.sh) were missing from
  * MANAGED_HOOKS, so they would never be detected as stale after an update.
  */
 
@@ -20,7 +20,7 @@ const path = require('path');
 const HOOKS_DIR = path.join(__dirname, '..', 'hooks');
 // MANAGED_HOOKS now lives in the worker script (extracted from inline -e code
 // to avoid template-literal regex-escaping concerns). The test reads the worker.
-const MANAGED_HOOKS_FILE = path.join(HOOKS_DIR, 'gsd-check-update-worker.js');
+const MANAGED_HOOKS_FILE = path.join(HOOKS_DIR, 'brief-check-update-worker.js');
 
 describe('bug #2136: MANAGED_HOOKS must include all shipped hook files', () => {
   let src;
@@ -33,7 +33,7 @@ describe('bug #2136: MANAGED_HOOKS must include all shipped hook files', () => {
   // Extract the MANAGED_HOOKS array entries from the source
   // The array is defined as a multi-line array literal of quoted strings
   const match = src.match(/const MANAGED_HOOKS\s*=\s*\[([\s\S]*?)\]/);
-  assert.ok(match, 'MANAGED_HOOKS array not found in gsd-check-update-worker.js');
+  assert.ok(match, 'MANAGED_HOOKS array not found in brief-check-update-worker.js');
 
   managedHooks = match[1]
     .split('\n')
@@ -49,7 +49,7 @@ describe('bug #2136: MANAGED_HOOKS must include all shipped hook files', () => {
     for (const hookFile of jsHooks) {
       assert.ok(
         managedHooks.includes(hookFile),
-        `${hookFile} is shipped in hooks/ but missing from MANAGED_HOOKS in gsd-check-update-worker.js`
+        `${hookFile} is shipped in hooks/ but missing from MANAGED_HOOKS in brief-check-update-worker.js`
       );
     }
   });
@@ -59,7 +59,7 @@ describe('bug #2136: MANAGED_HOOKS must include all shipped hook files', () => {
     for (const hookFile of shHooks) {
       assert.ok(
         managedHooks.includes(hookFile),
-        `${hookFile} is shipped in hooks/ but missing from MANAGED_HOOKS in gsd-check-update-worker.js`
+        `${hookFile} is shipped in hooks/ but missing from MANAGED_HOOKS in brief-check-update-worker.js`
       );
     }
   });

@@ -31,19 +31,19 @@ describe('#1656: community .sh hooks must be present in hooks/dist', () => {
     });
   });
 
-  test('gsd-session-state.sh exists in hooks/dist', () => {
-    const p = path.join(HOOKS_DIST, 'gsd-session-state.sh');
-    assert.ok(fs.existsSync(p), 'gsd-session-state.sh must be in hooks/dist/ so the installer can copy it');
+  test('brief-session-state.sh exists in hooks/dist', () => {
+    const p = path.join(HOOKS_DIST, 'brief-session-state.sh');
+    assert.ok(fs.existsSync(p), 'brief-session-state.sh must be in hooks/dist/ so the installer can copy it');
   });
 
-  test('gsd-validate-commit.sh exists in hooks/dist', () => {
-    const p = path.join(HOOKS_DIST, 'gsd-validate-commit.sh');
-    assert.ok(fs.existsSync(p), 'gsd-validate-commit.sh must be in hooks/dist/ so the installer can copy it');
+  test('brief-validate-commit.sh exists in hooks/dist', () => {
+    const p = path.join(HOOKS_DIST, 'brief-validate-commit.sh');
+    assert.ok(fs.existsSync(p), 'brief-validate-commit.sh must be in hooks/dist/ so the installer can copy it');
   });
 
-  test('gsd-phase-boundary.sh exists in hooks/dist', () => {
-    const p = path.join(HOOKS_DIST, 'gsd-phase-boundary.sh');
-    assert.ok(fs.existsSync(p), 'gsd-phase-boundary.sh must be in hooks/dist/ so the installer can copy it');
+  test('brief-phase-boundary.sh exists in hooks/dist', () => {
+    const p = path.join(HOOKS_DIST, 'brief-phase-boundary.sh');
+    assert.ok(fs.existsSync(p), 'brief-phase-boundary.sh must be in hooks/dist/ so the installer can copy it');
   });
 });
 

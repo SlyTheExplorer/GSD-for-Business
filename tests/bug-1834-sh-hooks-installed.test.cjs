@@ -6,7 +6,7 @@
  * because the install loop did not handle non-.js files from hooks/dist/.
  *
  * This test runs the actual installer (not a simulation) and verifies that
- * gsd-session-state.sh, gsd-validate-commit.sh, and gsd-phase-boundary.sh
+ * brief-session-state.sh, brief-validate-commit.sh, and brief-phase-boundary.sh
  * are present and executable in the target hooks directory.
  *
  * Distinct from:
@@ -28,9 +28,9 @@ const BUILD_SCRIPT = path.join(__dirname, '..', 'scripts', 'build-hooks.js');
 const isWindows = process.platform === 'win32';
 
 const SH_HOOKS = [
-  'gsd-session-state.sh',
-  'gsd-validate-commit.sh',
-  'gsd-phase-boundary.sh',
+  'brief-session-state.sh',
+  'brief-validate-commit.sh',
+  'brief-phase-boundary.sh',
 ];
 
 // ─── Ensure hooks/dist/ is populated before any install test ────────────────
@@ -84,30 +84,30 @@ describe('#1834: installer deploys .sh hooks alongside .js hooks', () => {
     cleanup(tmpDir);
   });
 
-  test('gsd-session-state.sh is present after install', () => {
+  test('brief-session-state.sh is present after install', () => {
     const hooksDir = runInstaller(tmpDir);
-    const target = path.join(hooksDir, 'gsd-session-state.sh');
+    const target = path.join(hooksDir, 'brief-session-state.sh');
     assert.ok(
       fs.existsSync(target),
-      'gsd-session-state.sh must be installed to hooks/ — missing file causes SessionStart hook errors'
+      'brief-session-state.sh must be installed to hooks/ — missing file causes SessionStart hook errors'
     );
   });
 
-  test('gsd-validate-commit.sh is present after install', () => {
+  test('brief-validate-commit.sh is present after install', () => {
     const hooksDir = runInstaller(tmpDir);
-    const target = path.join(hooksDir, 'gsd-validate-commit.sh');
+    const target = path.join(hooksDir, 'brief-validate-commit.sh');
     assert.ok(
       fs.existsSync(target),
-      'gsd-validate-commit.sh must be installed to hooks/ — missing file causes PreToolUse hook errors'
+      'brief-validate-commit.sh must be installed to hooks/ — missing file causes PreToolUse hook errors'
     );
   });
 
-  test('gsd-phase-boundary.sh is present after install', () => {
+  test('brief-phase-boundary.sh is present after install', () => {
     const hooksDir = runInstaller(tmpDir);
-    const target = path.join(hooksDir, 'gsd-phase-boundary.sh');
+    const target = path.join(hooksDir, 'brief-phase-boundary.sh');
     assert.ok(
       fs.existsSync(target),
-      'gsd-phase-boundary.sh must be installed to hooks/ — missing file causes PostToolUse hook errors'
+      'brief-phase-boundary.sh must be installed to hooks/ — missing file causes PostToolUse hook errors'
     );
   });
 

@@ -24,15 +24,15 @@ const INSTALL_SRC = path.join(__dirname, '..', 'bin', 'install.js');
 
 // All hooks that the installer registers for local installs
 const HOOKS = [
-  'gsd-statusline.js',
-  'gsd-check-update.js',
-  'gsd-context-monitor.js',
-  'gsd-prompt-guard.js',
-  'gsd-read-guard.js',
-  'gsd-workflow-guard.js',
-  'gsd-validate-commit.sh',
-  'gsd-session-state.sh',
-  'gsd-phase-boundary.sh',
+  'brief-statusline.js',
+  'brief-check-update.js',
+  'brief-context-monitor.js',
+  'brief-prompt-guard.js',
+  'brief-read-guard.js',
+  'brief-workflow-guard.js',
+  'brief-validate-commit.sh',
+  'brief-session-state.sh',
+  'brief-phase-boundary.sh',
 ];
 
 describe('bug #1906: local hook commands use $CLAUDE_PROJECT_DIR', () => {

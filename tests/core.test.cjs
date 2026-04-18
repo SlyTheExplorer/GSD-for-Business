@@ -1040,14 +1040,14 @@ describe('normalizeMd', () => {
 describe('stale hook filter', () => {
   test('filter should only match gsd-prefixed .js files', () => {
     const files = [
-      'gsd-check-update.js',
-      'gsd-context-monitor.js',
-      'gsd-prompt-guard.js',
-      'gsd-statusline.js',
-      'gsd-workflow-guard.js',
+      'brief-check-update.js',
+      'brief-context-monitor.js',
+      'brief-prompt-guard.js',
+      'brief-statusline.js',
+      'brief-workflow-guard.js',
       'guard-edits-outside-project.js',  // user hook
       'my-custom-hook.js',               // user hook
-      'gsd-check-update.js.bak',         // backup file
+      'brief-check-update.js.bak',         // backup file
       'README.md',                       // non-js file
     ];
 
@@ -1055,11 +1055,11 @@ describe('stale hook filter', () => {
     const filtered = files.filter(gsdFilter);
 
     assert.deepStrictEqual(filtered, [
-      'gsd-check-update.js',
-      'gsd-context-monitor.js',
-      'gsd-prompt-guard.js',
-      'gsd-statusline.js',
-      'gsd-workflow-guard.js',
+      'brief-check-update.js',
+      'brief-context-monitor.js',
+      'brief-prompt-guard.js',
+      'brief-statusline.js',
+      'brief-workflow-guard.js',
     ], 'should only include gsd-prefixed .js files');
 
     assert.ok(!filtered.includes('guard-edits-outside-project.js'), 'must not include user hooks');
@@ -1070,11 +1070,11 @@ describe('stale hook filter', () => {
 // ─── stale hook path regression (#1249) ──────────────────────────────────────
 
 describe('stale hook path', () => {
-  test('gsd-check-update.js checks configDir/hooks/ where hooks are actually installed (#1421)', () => {
+  test('brief-check-update.js checks configDir/hooks/ where hooks are actually installed (#1421)', () => {
     // The stale-hook scan logic lives in the worker (moved from inline -e template literal).
     // The worker receives configDir via env and constructs the hooksDir path.
     const content = fs.readFileSync(
-      path.join(__dirname, '..', 'hooks', 'gsd-check-update-worker.js'), 'utf-8'
+      path.join(__dirname, '..', 'hooks', 'brief-check-update-worker.js'), 'utf-8'
     );
     // Hooks are installed at configDir/hooks/ (e.g. ~/.claude/hooks/),
     // not configDir/brief/hooks/ which doesn't exist (#1421)
@@ -1088,26 +1088,26 @@ describe('stale hook path', () => {
 // ─── shared cache directory regression (#1421) ─────────────────────────────────
 
 describe('shared cache directory (#1421)', () => {
-  test('gsd-check-update.js writes cache to shared ~/.cache/gsd/ directory', () => {
+  test('brief-check-update.js writes cache to shared ~/.cache/brief/ directory', () => {
     const content = fs.readFileSync(
-      path.join(__dirname, '..', 'hooks', 'gsd-check-update.js'), 'utf-8'
+      path.join(__dirname, '..', 'hooks', 'brief-check-update.js'), 'utf-8'
     );
     // Cache must use a tool-agnostic path so statusline can find it
     // regardless of which runtime (Claude, Gemini, OpenCode) ran the check
     assert.ok(
       content.includes("path.join(homeDir, '.cache', 'gsd')"),
-      'check-update must write cache to ~/.cache/gsd/ (shared, tool-agnostic)'
+      'check-update must write cache to ~/.cache/brief/ (shared, tool-agnostic)'
     );
   });
 
-  test('gsd-statusline.js checks shared cache first, falls back to legacy (#1421)', () => {
+  test('brief-statusline.js checks shared cache first, falls back to legacy (#1421)', () => {
     const content = fs.readFileSync(
-      path.join(__dirname, '..', 'hooks', 'gsd-statusline.js'), 'utf-8'
+      path.join(__dirname, '..', 'hooks', 'brief-statusline.js'), 'utf-8'
     );
     // Statusline must check the shared cache path first
     assert.ok(
       content.includes("path.join(homeDir, '.cache', 'gsd', 'gsd-update-check.json')"),
-      'statusline must check shared cache at ~/.cache/gsd/brief-update-check.json'
+      'statusline must check shared cache at ~/.cache/brief/brief-update-check.json'
     );
     // Must fall back to legacy runtime-specific cache for backward compat
     assert.ok(
