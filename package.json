@@ -1,14 +1,14 @@
 {
-  "name": "get-shit-done-cc",
+  "name": "brief-cc",
   "version": "1.36.0",
-  "description": "A meta-prompting, context engineering and spec-driven development system for Claude Code, OpenCode, Gemini and Codex by TÂCHES.",
+  "description": "Meta-prompting framework for business and product strategy planning across Claude Code, OpenCode, Gemini, and Codex. Hard fork of GSD — DEFINE, DISCOVER, DESIGN, DELIVER before engineering's PRD work begins.",
   "bin": {
-    "get-shit-done-cc": "bin/install.js"
+    "brief-cc": "bin/install.js"
   },
   "files": [
     "bin",
     "commands",
-    "get-shit-done",
+    "brief",
     "agents",
     "hooks",
     "scripts"
@@ -19,7 +19,9 @@
     "ai",
     "meta-prompting",
     "context-engineering",
-    "spec-driven-development",
+    "business-planning",
+    "strategy",
+    "prd",
     "gemini",
     "gemini-cli",
     "codex",
@@ -29,11 +31,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gsd-build/get-shit-done.git"
+    "url": "git+https://github.com/brief-build/brief.git"
   },
-  "homepage": "https://github.com/gsd-build/get-shit-done",
+  "homepage": "https://github.com/brief-build/brief",
   "bugs": {
-    "url": "https://github.com/gsd-build/get-shit-done/issues"
+    "url": "https://github.com/brief-build/brief/issues"
   },
   "engines": {
     "node": ">=22.0.0"
@@ -47,6 +49,6 @@
     "build:hooks": "node scripts/build-hooks.js",
     "prepublishOnly": "npm run build:hooks",
     "test": "node scripts/run-tests.cjs",
-    "test:coverage": "c8 --check-coverage --lines 70 --reporter text --include 'get-shit-done/bin/lib/*.cjs' --exclude 'tests/**' --all node scripts/run-tests.cjs"
+    "test:coverage": "c8 --check-coverage --lines 70 --reporter text --include 'brief/bin/lib/*.cjs' --exclude 'tests/**' --all node scripts/run-tests.cjs"
   }
 }
