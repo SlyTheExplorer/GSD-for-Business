@@ -42,7 +42,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] 04-PLAN.md — Rename get-shit-done/ → brief/ directory + gsd-tools.cjs → brief-tools.cjs + package.json to brief-cc (FND-03 part 2)
 - [ ] 05-PLAN.md — Update internal text references to BRIEF terminology across .md/.cjs/.js (FND-03 part 3)
 - [ ] 06-PLAN.md — CLAUDE.md + README.md targeted delta; A1 + FND-06 + FND-07 verified in ASSUMPTIONS.md (FND-04, FND-06, FND-07)
-- [ ] 07-PLAN.md — GAP CLOSURE: commands/gsd residue (45 files incl. bin/install.js 13 source-paths) + npm test baseline re-capture with correct method (FND-03 full closure)
+- [x] 07-PLAN.md — GAP CLOSURE (path-substring scope, SHA b1ec9f6): commands/gsd residue 45→10 files (bin/install.js 13 SRC tuples rewritten; init.cjs dual-root; 41 files edited) + npm test baseline re-captured via `grep -cE '^✖'`. Task 4 delta-cap gate HALTed — upstream hook-rename regression (scripts/build-hooks.js + bin/install.js hook refs + worktree test assertions) deferred to Plan 08 (FND-03 partial closure).
+- [ ] 08-PLAN.md — GAP CLOSURE (hook-rename propagation): scripts/build-hooks.js `gsd-*.js/.sh` → `brief-*` + bin/install.js hook filename hardcodes at 10+ sites + tests/worktree-*.test.cjs agent-filename assertions + bin/install.js `startsWith('gsd-')` / `'gsd'` prefix residues (FND-03 full closure; re-baseline against empirical pre-Phase-1 figure of 6 failures, DELTA_CAP=16)
 
 **Pitfall coverage**: #2 Cross-runtime fragility (FND-06 verifies LCD surface), #8 Fork drift (FND-01 + FND-03 design the layered seam BEFORE rename — single-purpose rename commit), #1 Skill bloat (FND-02 removal of 28 dev surfaces creates headroom under future caps).
 

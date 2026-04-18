@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-04-18)
 ## Current Position
 
 Phase: 1 of 9 (Foundation — Fork Hygiene, Removal, Rename)
-Plan: 0 of 6 in current phase
-Status: Plans created — ready to execute
-Last activity: 2026-04-18 — Phase 1 Plan 01: backup/original-gsd branch created at main SHA 73e95132b5eedaf187e7e367ed358e8e8d769b76
+Plan: 7 of 7 in current phase — Task 4 gate HALTed; Plan 08 queued
+Status: Plan 07 path-substring scope closed (SHA b1ec9f6); hook-rename regression deferred to Plan 08
+Last activity: 2026-04-18 — Phase 1 Plan 07: commands/gsd residues 45→10, bin/install.js SOURCE tuples rewritten, init.cjs dual-root, npm-test baseline re-captured via grep -cE '^✖'
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [████████░░] 78% (7 of 9 plans complete across Phase 1; hook-rename Plan 08 + verify re-run remaining)
 
 ## Performance Metrics
 
@@ -77,5 +77,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-04-18
-Stopped at: Phase 1 planning complete (6 plans, verification passed iter 2/3 after stall-recovery); awaiting Phase 1 execution via `/gsd-execute-phase 1`
-Resume file: .planning/phases/01-foundation-fork-hygiene-removal-rename/01-PLAN.md (wave 1)
+Stopped at: Phase 1 Plan 07 path-substring closure committed (SHA b1ec9f6); Task 4 gate HALTed due to upstream hook-rename regression. Plan 08 needed for scripts/build-hooks.js + bin/install.js hook refs + agent-filename test assertions.
+Resume file: .planning/phases/01-foundation-fork-hygiene-removal-rename/07-GAP-CLOSURE-PARTIAL-AUDIT.md (forensic analysis + Plan 08 scope)
