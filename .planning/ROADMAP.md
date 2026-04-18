@@ -35,13 +35,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. User opens `package.json`, runs the documented inspection step, and confirms `dependencies` field is empty (only `devDependencies` exist) — Assumption A1 verified and recorded in `.planning/ASSUMPTIONS.md` (FND-04)
   5. User runs the same `/brief-status` invocation across Claude Code, OpenAI Codex, Gemini CLI, and OpenCode and gets equivalent output (text_mode fallback active where AskUserQuestion is unavailable) (FND-06)
   6. User opens `CLAUDE.md` and `README.md` and reads business-planning-domain language ("business planner", "OBJECTIVES.md", "workstreams", "audience") with no references to "code review", "TDD", "deployment", or "security audit" (FND-07)
-**Plans**: 6 plans
+**Plans**: 7 plans (6 original + 1 gap-closure)
 - [ ] 01-PLAN.md — Create backup/original-gsd branch (FND-01)
 - [ ] 02-PLAN.md — Drop GSD development surfaces, ~38–45 file removals (FND-02)
 - [ ] 03-PLAN.md — Rename brief-* prefix for commands, agents, hooks, tests (FND-03 part 1)
 - [ ] 04-PLAN.md — Rename get-shit-done/ → brief/ directory + gsd-tools.cjs → brief-tools.cjs + package.json to brief-cc (FND-03 part 2)
 - [ ] 05-PLAN.md — Update internal text references to BRIEF terminology across .md/.cjs/.js (FND-03 part 3)
 - [ ] 06-PLAN.md — CLAUDE.md + README.md targeted delta; A1 + FND-06 + FND-07 verified in ASSUMPTIONS.md (FND-04, FND-06, FND-07)
+- [ ] 07-PLAN.md — GAP CLOSURE: commands/gsd residue (45 files incl. bin/install.js 13 source-paths) + npm test baseline re-capture with correct method (FND-03 full closure)
 
 **Pitfall coverage**: #2 Cross-runtime fragility (FND-06 verifies LCD surface), #8 Fork drift (FND-01 + FND-03 design the layered seam BEFORE rename — single-purpose rename commit), #1 Skill bloat (FND-02 removal of 28 dev surfaces creates headroom under future caps).
 
