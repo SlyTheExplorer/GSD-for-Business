@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-04-18)
 ## Current Position
 
 Phase: 1 of 9 (Foundation — Fork Hygiene, Removal, Rename)
-Plan: 7 of 7 in current phase — Task 4 gate HALTed; Plan 08 queued
-Status: Plan 07 path-substring scope closed (SHA b1ec9f6); hook-rename regression deferred to Plan 08
-Last activity: 2026-04-18 — Phase 1 Plan 07: commands/gsd residues 45→10, bin/install.js SOURCE tuples rewritten, init.cjs dual-root, npm-test baseline re-captured via grep -cE '^✖'
+Plan: 8 of 8 in current phase — Task 6 delta-cap gate HALTed; Plan 09 queued (test-side bulk rewrite)
+Status: Plan 08 source-side fully closed (SHAs 19fcaa2 + 8f3eb9e); npm-test POST=351 vs cap=16 — 100% categorized as out-of-scope pre-Phase-1 test regressions requiring Plan 09
+Last activity: 2026-04-18 — Plan 08: scripts/build-hooks.js 11-entry brief-*, bin/install.js 100+ P-A/P-B/P-C/P-D rewrites, hooks/dist/ 11 files populated, worktree 7/7 + workspace 25/25 tests recovered; 08-GAP-CLOSURE-PARTIAL-AUDIT.md §7 Option A chosen
 
-Progress: [████████░░] 78% (7 of 9 plans complete across Phase 1; hook-rename Plan 08 + verify re-run remaining)
+Progress: [████████░░] 88% (8 of 9 plans complete source-side across Phase 1; Plan 09 test-side bulk rewrite + verify re-run remaining)
 
 ## Performance Metrics
 
@@ -77,5 +77,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-04-18
-Stopped at: Phase 1 Plan 07 path-substring closure committed (SHA b1ec9f6); Task 4 gate HALTed due to upstream hook-rename regression. Plan 08 needed for scripts/build-hooks.js + bin/install.js hook refs + agent-filename test assertions.
-Resume file: .planning/phases/01-foundation-fork-hygiene-removal-rename/07-GAP-CLOSURE-PARTIAL-AUDIT.md (forensic analysis + Plan 08 scope)
+Stopped at: Phase 1 Plan 08 source-side closure committed (SHAs 19fcaa2 + 8f3eb9e); Task 6 delta-cap gate HALTed (POST=351 vs cap=16). Plan 09 needed for test-side bulk rewrite across ~31 test files (~300 residues: commands/gsd paths, gsd-* hook filenames, gsdHooks arrays, .cache/gsd, gsd-local-patches, gsd-file-manifest).
+Resume file: .planning/phases/01-foundation-fork-hygiene-removal-rename/08-GAP-CLOSURE-PARTIAL-AUDIT.md (forensic analysis + Plan 09 scope per §7 Option A)

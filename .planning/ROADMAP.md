@@ -35,7 +35,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. User opens `package.json`, runs the documented inspection step, and confirms `dependencies` field is empty (only `devDependencies` exist) — Assumption A1 verified and recorded in `.planning/ASSUMPTIONS.md` (FND-04)
   5. User runs the same `/brief-status` invocation across Claude Code, OpenAI Codex, Gemini CLI, and OpenCode and gets equivalent output (text_mode fallback active where AskUserQuestion is unavailable) (FND-06)
   6. User opens `CLAUDE.md` and `README.md` and reads business-planning-domain language ("business planner", "OBJECTIVES.md", "workstreams", "audience") with no references to "code review", "TDD", "deployment", or "security audit" (FND-07)
-**Plans**: 8 plans (6 original + 2 gap-closure: Plan 07 path-substring, Plan 08 hook-rename propagation)
+**Plans**: 9 plans (6 original + 3 gap-closure: Plan 07 path-substring, Plan 08 hook-rename propagation, Plan 09 test-side bulk rewrite)
 - [ ] 01-PLAN.md — Create backup/original-gsd branch (FND-01)
 - [ ] 02-PLAN.md — Drop GSD development surfaces, ~38–45 file removals (FND-02)
 - [ ] 03-PLAN.md — Rename brief-* prefix for commands, agents, hooks, tests (FND-03 part 1)
@@ -43,7 +43,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] 05-PLAN.md — Update internal text references to BRIEF terminology across .md/.cjs/.js (FND-03 part 3)
 - [ ] 06-PLAN.md — CLAUDE.md + README.md targeted delta; A1 + FND-06 + FND-07 verified in ASSUMPTIONS.md (FND-04, FND-06, FND-07)
 - [x] 07-PLAN.md — GAP CLOSURE (path-substring scope, SHA b1ec9f6): commands/gsd residue 45→10 files (bin/install.js 13 SRC tuples rewritten; init.cjs dual-root; 41 files edited) + npm test baseline re-captured via `grep -cE '^✖'`. Task 4 delta-cap gate HALTed — upstream hook-rename regression (scripts/build-hooks.js + bin/install.js hook refs + worktree test assertions) deferred to Plan 08 (FND-03 partial closure).
-- [ ] 08-PLAN.md — GAP CLOSURE (hook-rename propagation): scripts/build-hooks.js `gsd-*.js/.sh` → `brief-*` + bin/install.js hook filename hardcodes at 10+ sites + tests/worktree-*.test.cjs agent-filename assertions + bin/install.js `startsWith('gsd-')` / `'gsd'` prefix residues (FND-03 full closure; re-baseline against empirical pre-Phase-1 figure of 6 failures, DELTA_CAP=16)
+- [x] 08-PLAN.md — GAP CLOSURE (hook-rename propagation, SHAs 19fcaa2 + 8f3eb9e): scripts/build-hooks.js HOOKS_TO_COPY 10→11 brief-* entries; bin/install.js 100+ P-A/P-B/P-C/P-D rewrites (copy-helper prefixes, PATCHES_DIR_NAME, MANIFEST_NAME, cache path, user-visible $gsd-*, /gsd:/ normalizers, dual-prefix startsWith/includes for uninstall+manifest); hooks/dist/ populated with 11 brief-* files; worktree 7/7 + workspace 25/25 tests recovered. Task 6 delta-cap gate HALTed (POST=351 vs cap=16) — 100% categorized as out-of-scope pre-Phase-1 test-side regressions, deferred to Plan 09 per 08-GAP-CLOSURE-PARTIAL-AUDIT.md §7 Option A (FND-03 source-side closure).
+- [ ] 09-PLAN.md — GAP CLOSURE (test-side bulk rewrite): ~31 test files with ~300 residues (commands/gsd paths, gsd-*.{js,sh} hook filenames, gsdHooks arrays, .cache/gsd/, gsd-local-patches, gsd-file-manifest) rewritten per P-A/P-C test-side decision framework. Target: POST ≤ 16 against EMPIRICAL_BASELINE=6; VERIFICATION.md Gap 2 (W4 delta-cap) closure; FND-03 full closure.
 
 **Pitfall coverage**: #2 Cross-runtime fragility (FND-06 verifies LCD surface), #8 Fork drift (FND-01 + FND-03 design the layered seam BEFORE rename — single-purpose rename commit), #1 Skill bloat (FND-02 removal of 28 dev surfaces creates headroom under future caps).
 
