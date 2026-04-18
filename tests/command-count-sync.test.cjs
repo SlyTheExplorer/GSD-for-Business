@@ -16,7 +16,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const ROOT = path.resolve(__dirname, '..');
-const COMMANDS_DIR = path.join(ROOT, 'commands', 'gsd');
+const COMMANDS_DIR = path.join(ROOT, 'commands', 'brief');
 const ARCH_MD = path.join(ROOT, 'docs', 'ARCHITECTURE.md');
 
 /**

@@ -14,14 +14,14 @@ const path = require('path');
 describe('#2188: discuss-phase --all flag', () => {
   test('discuss-phase command argument-hint includes --all', () => {
     const command = fs.readFileSync(
-      path.join(__dirname, '..', 'commands', 'gsd', 'discuss-phase.md'), 'utf8'
+      path.join(__dirname, '..', 'commands', 'brief', 'discuss-phase.md'), 'utf8'
     );
     assert.ok(command.includes('--all'), 'argument-hint should include --all');
   });
 
   test('discuss-phase command description mentions --all', () => {
     const command = fs.readFileSync(
-      path.join(__dirname, '..', 'commands', 'gsd', 'discuss-phase.md'), 'utf8'
+      path.join(__dirname, '..', 'commands', 'brief', 'discuss-phase.md'), 'utf8'
     );
     // The description frontmatter or objective should reference --all
     assert.ok(command.includes('--all'), 'command description should mention --all flag');

@@ -15,7 +15,7 @@ const path = require('path');
 
 describe('/brief-next safety gates (#1732, #2089)', () => {
   const workflowPath = path.join(__dirname, '..', 'brief', 'workflows', 'next.md');
-  const commandPath = path.join(__dirname, '..', 'commands', 'gsd', 'next.md');
+  const commandPath = path.join(__dirname, '..', 'commands', 'brief', 'next.md');
 
   test('workflow contains safety_gates step', () => {
     const content = fs.readFileSync(workflowPath, 'utf8');

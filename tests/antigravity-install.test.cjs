@@ -291,7 +291,7 @@ describe('copyCommandsAsAntigravitySkills', () => {
 
   beforeEach(() => {
     tmpDir = createTempDir('gsd-ag-test-');
-    srcDir = path.join(tmpDir, 'commands', 'gsd');
+    srcDir = path.join(tmpDir, 'commands', 'brief');
     skillsDir = path.join(tmpDir, 'skills');
     fs.mkdirSync(srcDir, { recursive: true });
 

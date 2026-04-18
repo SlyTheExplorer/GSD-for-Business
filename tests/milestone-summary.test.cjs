@@ -11,7 +11,7 @@ const fs = require('fs');
 const path = require('path');
 
 const repoRoot = path.resolve(__dirname, '..');
-const commandPath = path.join(repoRoot, 'commands', 'gsd', 'milestone-summary.md');
+const commandPath = path.join(repoRoot, 'commands', 'brief', 'milestone-summary.md');
 const workflowPath = path.join(repoRoot, 'brief', 'workflows', 'milestone-summary.md');
 
 describe('milestone-summary command', () => {

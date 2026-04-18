@@ -14,7 +14,7 @@ const fs = require('fs');
 const path = require('path');
 const { runGsdTools, createTempProject, cleanup } = require('./helpers.cjs');
 
-const COMMANDS_DIR = path.join(__dirname, '..', 'commands', 'gsd');
+const COMMANDS_DIR = path.join(__dirname, '..', 'commands', 'brief');
 const WORKFLOWS_DIR = path.join(__dirname, '..', 'brief', 'workflows');
 
 // ─────────────────────────────────────────────────────────────────────────────

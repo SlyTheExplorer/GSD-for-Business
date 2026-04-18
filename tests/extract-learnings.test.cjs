@@ -11,7 +11,7 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-const COMMAND_PATH = path.join(__dirname, '..', 'commands', 'gsd', 'extract_learnings.md');
+const COMMAND_PATH = path.join(__dirname, '..', 'commands', 'brief', 'extract_learnings.md');
 const WORKFLOW_PATH = path.join(__dirname, '..', 'brief', 'workflows', 'extract_learnings.md');
 
 describe('extract-learnings command', () => {

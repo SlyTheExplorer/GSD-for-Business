@@ -55,7 +55,7 @@ describe('#1736: local Claude install populates .claude/commands/brief/', () => 
     process.chdir(tmpDir);
     install(false, 'claude');
 
-    const commandsDir = path.join(tmpDir, '.claude', 'commands', 'gsd');
+    const commandsDir = path.join(tmpDir, '.claude', 'commands', 'brief');
     assert.ok(
       fs.existsSync(commandsDir),
       '.claude/commands/brief/ directory must exist after local install'
@@ -68,7 +68,7 @@ describe('#1736: local Claude install populates .claude/commands/brief/', () => 
     process.chdir(tmpDir);
     install(false, 'claude');
 
-    const commandsDir = path.join(tmpDir, '.claude', 'commands', 'gsd');
+    const commandsDir = path.join(tmpDir, '.claude', 'commands', 'brief');
     assert.ok(
       fs.existsSync(commandsDir),
       '.claude/commands/brief/ must exist'
@@ -87,7 +87,7 @@ describe('#1736: local Claude install populates .claude/commands/brief/', () => 
     process.chdir(tmpDir);
     install(false, 'claude');
 
-    const quickCmd = path.join(tmpDir, '.claude', 'commands', 'gsd', 'quick.md');
+    const quickCmd = path.join(tmpDir, '.claude', 'commands', 'brief', 'quick.md');
     assert.ok(
       fs.existsSync(quickCmd),
       '.claude/commands/brief/quick.md must exist after local install'

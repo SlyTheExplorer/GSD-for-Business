@@ -5,12 +5,12 @@ const path = require('path');
 
 describe('explore command', () => {
   test('command file exists', () => {
-    const p = path.join(__dirname, '..', 'commands', 'gsd', 'explore.md');
+    const p = path.join(__dirname, '..', 'commands', 'brief', 'explore.md');
     assert.ok(fs.existsSync(p), 'commands/brief/explore.md should exist');
   });
 
   test('command file has required frontmatter', () => {
-    const p = path.join(__dirname, '..', 'commands', 'gsd', 'explore.md');
+    const p = path.join(__dirname, '..', 'commands', 'brief', 'explore.md');
     const content = fs.readFileSync(p, 'utf-8');
     assert.ok(content.includes('name: gsd:explore'), 'Command must have name frontmatter');
     assert.ok(content.includes('description:'), 'Command must have description frontmatter');
@@ -62,7 +62,7 @@ describe('explore command', () => {
   });
 
   test('command references the workflow via execution_context', () => {
-    const p = path.join(__dirname, '..', 'commands', 'gsd', 'explore.md');
+    const p = path.join(__dirname, '..', 'commands', 'brief', 'explore.md');
     const content = fs.readFileSync(p, 'utf-8');
     assert.ok(
       content.includes('workflows/explore.md'),

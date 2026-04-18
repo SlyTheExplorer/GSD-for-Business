@@ -14,7 +14,7 @@ const path = require('path');
 
 describe('commands/brief/autonomous.md allowed-tools', () => {
   test('includes Agent in allowed-tools list', () => {
-    const filePath = path.join(__dirname, '..', 'commands', 'gsd', 'autonomous.md');
+    const filePath = path.join(__dirname, '..', 'commands', 'brief', 'autonomous.md');
     const content = fs.readFileSync(filePath, 'utf-8');
 
     // Extract the YAML frontmatter block between the first pair of --- delimiters

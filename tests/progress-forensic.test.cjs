@@ -13,7 +13,7 @@ const path = require('path');
 describe('#2189: progress --forensic flag', () => {
   test('progress command argument-hint includes --forensic', () => {
     const command = fs.readFileSync(
-      path.join(__dirname, '..', 'commands', 'gsd', 'progress.md'), 'utf8'
+      path.join(__dirname, '..', 'commands', 'brief', 'progress.md'), 'utf8'
     );
     assert.ok(command.includes('--forensic'), 'argument-hint should include --forensic');
   });

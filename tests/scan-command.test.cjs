@@ -5,7 +5,7 @@ const path = require('path');
 
 describe('scan command', () => {
   test('command file exists with correct name and description', () => {
-    const p = path.join(__dirname, '..', 'commands', 'gsd', 'scan.md');
+    const p = path.join(__dirname, '..', 'commands', 'brief', 'scan.md');
     assert.ok(fs.existsSync(p), 'commands/brief/scan.md should exist');
     const content = fs.readFileSync(p, 'utf-8');
     assert.ok(content.includes('name: gsd:scan'), 'Command must have name: gsd:scan');

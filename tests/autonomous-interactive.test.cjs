@@ -14,7 +14,7 @@ const path = require('path');
 
 describe('autonomous --interactive flag (#1413)', () => {
   const workflowPath = path.join(__dirname, '..', 'brief', 'workflows', 'autonomous.md');
-  const commandPath = path.join(__dirname, '..', 'commands', 'gsd', 'autonomous.md');
+  const commandPath = path.join(__dirname, '..', 'commands', 'brief', 'autonomous.md');
 
   test('command definition includes --interactive in argument-hint', () => {
     const content = fs.readFileSync(commandPath, 'utf8');

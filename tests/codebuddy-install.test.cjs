@@ -140,7 +140,7 @@ describe('copyCommandsAsCodebuddySkills', () => {
   });
 
   test('creates one skill directory per GSD command', () => {
-    const srcDir = path.join(__dirname, '..', 'commands', 'gsd');
+    const srcDir = path.join(__dirname, '..', 'commands', 'brief');
     const skillsDir = path.join(tmpDir, '.codebuddy', 'skills');
 
     copyCommandsAsCodebuddySkills(srcDir, skillsDir, 'gsd', '$HOME/.codebuddy/', 'codebuddy');

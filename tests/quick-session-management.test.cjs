@@ -7,7 +7,7 @@ const path = require('path');
 
 describe('quick session management (#2155)', () => {
   const quickCmd = fs.readFileSync(
-    path.join(__dirname, '..', 'commands', 'gsd', 'quick.md'),
+    path.join(__dirname, '..', 'commands', 'brief', 'quick.md'),
     'utf8'
   );
 

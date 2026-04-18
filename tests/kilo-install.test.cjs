@@ -207,7 +207,7 @@ describe('configureKiloPermissions', () => {
 describe('Source code integration (Kilo)', () => {
   const src = fs.readFileSync(path.join(__dirname, '..', 'bin', 'install.js'), 'utf8');
   const updateWorkflowSrc = fs.readFileSync(path.join(__dirname, '..', 'brief', 'workflows', 'update.md'), 'utf8');
-  const reapplyPatchesSrc = fs.readFileSync(path.join(__dirname, '..', 'commands', 'gsd', 'reapply-patches.md'), 'utf8');
+  const reapplyPatchesSrc = fs.readFileSync(path.join(__dirname, '..', 'commands', 'brief', 'reapply-patches.md'), 'utf8');
 
   test('--kilo flag parsing exists', () => {
     assert.ok(src.includes("args.includes('--kilo')"), '--kilo flag parsed');

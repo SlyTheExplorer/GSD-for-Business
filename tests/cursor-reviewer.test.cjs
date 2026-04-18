@@ -83,7 +83,7 @@ describe('Cursor CLI reviewer in /brief-review (#1960)', () => {
   // --- commands/brief/review.md ---
 
   describe('commands/brief/review.md', () => {
-    const cmdPath = path.join(ROOT, 'commands', 'gsd', 'review.md');
+    const cmdPath = path.join(ROOT, 'commands', 'brief', 'review.md');
 
     test('mentions --cursor flag', () => {
       const c = fs.readFileSync(cmdPath, 'utf-8');

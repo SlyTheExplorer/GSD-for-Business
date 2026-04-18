@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 
 const WORKFLOW_PATH = path.join(
-  __dirname, '..', 'commands', 'gsd', 'reapply-patches.md'
+  __dirname, '..', 'commands', 'brief', 'reapply-patches.md'
 );
 
 describe('reapply-patches post-merge verification (#1758)', () => {

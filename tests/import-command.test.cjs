@@ -9,7 +9,7 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-const CMD_PATH = path.join(__dirname, '..', 'commands', 'gsd', 'import.md');
+const CMD_PATH = path.join(__dirname, '..', 'commands', 'brief', 'import.md');
 const WF_PATH = path.join(__dirname, '..', 'brief', 'workflows', 'import.md');
 
 // ─── File Existence ────────────────────────────────────────────────────────────

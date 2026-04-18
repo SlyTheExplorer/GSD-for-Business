@@ -622,7 +622,7 @@ describe('copyCommandsAsCopilotSkills', () => {
     // Count gsd-* directories — should match number of source command files
     const dirs = fs.readdirSync(tempDir, { withFileTypes: true })
       .filter(e => e.isDirectory() && e.name.startsWith('gsd-'));
-    const expectedSkillCount = fs.readdirSync(path.join(__dirname, '..', 'commands', 'gsd'))
+    const expectedSkillCount = fs.readdirSync(path.join(__dirname, '..', 'commands', 'brief'))
       .filter(f => f.endsWith('.md')).length;
     assert.strictEqual(dirs.length, expectedSkillCount, `expected ${expectedSkillCount} skill folders, got ${dirs.length}`);
   });
@@ -1108,7 +1108,7 @@ const { execFileSync } = require('child_process');
 const crypto = require('crypto');
 
 const INSTALL_PATH = path.join(__dirname, '..', 'bin', 'install.js');
-const EXPECTED_SKILLS = fs.readdirSync(path.join(__dirname, '..', 'commands', 'gsd'))
+const EXPECTED_SKILLS = fs.readdirSync(path.join(__dirname, '..', 'commands', 'brief'))
   .filter(f => f.endsWith('.md')).length;
 const EXPECTED_AGENTS = fs.readdirSync(path.join(__dirname, '..', 'agents'))
   .filter(f => f.startsWith('gsd-') && f.endsWith('.md')).length;

@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 
 describe('discuss-phase power user mode (#1513)', () => {
-  const commandPath = path.join(__dirname, '..', 'commands', 'gsd', 'discuss-phase.md');
+  const commandPath = path.join(__dirname, '..', 'commands', 'brief', 'discuss-phase.md');
   const workflowPath = path.join(__dirname, '..', 'brief', 'workflows', 'discuss-phase.md');
   const powerWorkflowPath = path.join(__dirname, '..', 'brief', 'workflows', 'discuss-phase-power.md');
 

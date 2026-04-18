@@ -18,7 +18,7 @@ const fs = require('fs');
 const path = require('path');
 
 const REPO_ROOT = path.join(__dirname, '..');
-const COMMANDS_DIR = path.join(REPO_ROOT, 'commands', 'gsd');
+const COMMANDS_DIR = path.join(REPO_ROOT, 'commands', 'brief');
 const WORKFLOWS_DIR = path.join(REPO_ROOT, 'brief', 'workflows');
 
 // ─── 1. Command file — audit-fix.md ──────────────────────────────────────────
