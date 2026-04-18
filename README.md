@@ -1,21 +1,16 @@
 <div align="center">
 
-# GET SHIT DONE
+# BRIEF
+
+## Business Research, Insight & Execution Framework
 
 **English** · [Português](README.pt-BR.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja-JP.md) · [한국어](README.ko-KR.md)
 
-**A light-weight and powerful meta-prompting, context engineering and spec-driven development system for Claude Code, OpenCode, Gemini CLI, Kilo, Codex, Copilot, Cursor, Windsurf, Antigravity, Augment, Trae, Qwen Code, Cline, and CodeBuddy.**
+**A hard fork of GSD, purpose-built for business and product strategy planning.**
 
-**Solves context rot — the quality degradation that happens as Claude fills its context window.**
+**For business planners, product managers, founders, and strategy consultants — not software developers.**
 
-[![npm version](https://img.shields.io/npm/v/brief-cc?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/brief-cc)
-[![npm downloads](https://img.shields.io/npm/dm/brief-cc?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/brief-cc)
-[![Tests](https://img.shields.io/github/actions/workflow/status/brief-build/brief/test.yml?branch=main&style=for-the-badge&logo=github&label=Tests)](https://github.com/brief-build/brief/actions/workflows/test.yml)
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/mYgfVNfA2r)
-[![X (Twitter)](https://img.shields.io/badge/X-@gsd__foundation-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/gsd_foundation)
-[![$BRIEF Token](https://img.shields.io/badge/$BRIEF-Dexscreener-1C1C1C?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIgZmlsbD0iIzAwRkYwMCIvPjwvc3ZnPg==&logoColor=00FF00)](https://dexscreener.com/solana/dwudwjvan7bzkw9zwlbyv6kspdlvhwzrqy6ebk8xzxkv)
-[![GitHub stars](https://img.shields.io/github/stars/brief-build/brief?style=for-the-badge&logo=github&color=181717)](https://github.com/brief-build/brief)
-[![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
+BRIEF transforms a fuzzy business idea into well-researched, audience-correct, compliance-aware deliverables — before engineering's PRD work begins. Hand the DELIVER outputs to a PM; the PRD they write from BRIEF's briefs feeds cleanly back into GSD itself for execution.
 
 <br>
 
@@ -27,21 +22,9 @@ npx brief-cc@latest
 
 <br>
 
-![BRIEF Install](assets/terminal.svg)
+**Phase 1 status:** Fork hygiene complete. Dev-specific surfaces removed, identifiers renamed, multi-runtime detection preserved, zero runtime dependencies verified. Domain commands (`/brief-define`, `/brief-discover`, `/brief-design`, `/brief-deliver`) land in Phases 3–8.
 
-<br>
-
-*"If you know clearly what you want, this WILL build it for you. No bs."*
-
-*"I've done SpecKit, OpenSpec and Taskmaster — this has produced the best results for me."*
-
-*"By far the most powerful addition to my Claude Code. Nothing over-engineered. Literally just gets shit done."*
-
-<br>
-
-**Trusted by engineers at Amazon, Google, Shopify, and Webflow.**
-
-[Why I Built This](#why-i-built-this) · [How It Works](#how-it-works) · [Commands](#commands) · [Why It Works](#why-it-works) · [User Guide](docs/USER-GUIDE.md)
+[Core Value](#core-value) · [Four Phases](#four-phases) · [Status and Roadmap](#status-and-roadmap) · [Commands](#commands)
 
 </div>
 
@@ -61,42 +44,28 @@ npx brief-cc@latest
 
 ---
 
-## Why I Built This
+## Core Value
 
-I'm a solo developer. I don't write code — Claude Code does.
+A business planner can transform a fuzzy idea into well-researched, audience-correct, compliance-aware deliverables — *without already knowing what they want when they start*.
 
-Other spec-driven development tools exist; BMAD, Speckit... But they all seem to make things way more complicated than they need to be (sprint ceremonies, story points, stakeholder syncs, retrospectives, Jira workflows) or lack real big picture understanding of what you're building. I'm not a 50-person software company. I don't want to play enterprise theater. I'm just a creative person trying to build great things that work.
-
-So I built BRIEF. The complexity is in the system, not in your workflow. Behind the scenes: context engineering, XML prompt formatting, subagent orchestration, state management. What you see: a few commands that just work.
-
-The system gives Claude everything it needs to do the work *and* verify it. I trust the workflow. It just does a good job.
-
-That's what this is. No enterprise roleplay bullshit. Just an incredibly effective system for building cool stuff consistently using Claude Code.
-
-— **TÂCHES**
-
----
-
-Vibecoding has a bad reputation. You describe what you want, AI generates code, and you get inconsistent garbage that falls apart at scale.
-
-BRIEF fixes that. It's the context engineering layer that makes Claude Code reliable. Describe your idea, let the system extract everything it needs to know, and let Claude Code get to work.
-
----
+BRIEF replaces GSD's software-engineering workflow (plan → execute → verify) with a business-domain workflow (DEFINE → DISCOVER → DESIGN → DELIVER + continuous ALIGN), inherits GSD's multi-agent orchestration, context engineering, and state management, and swaps out the code-review / UI / security-audit surfaces for OBJECTIVES.md anchoring, parallel domain research, business workstreams (BMC, GTM, Financial, Operations, Compliance, Roadmap, Brand, Risk, Tech-Arch), and Type A / Type B deliverables (PRODUCT-BRIEF, SERVICE-POLICY, HIGH-LEVEL-SPEC, FEATURE-MAP + INTERNAL-DECK, PROPOSAL-DECK, EXEC-SUMMARY, DECISION-MEMO).
 
 ## Who This Is For
 
-People who want to describe what they want and have it built correctly — without pretending they're running a 50-person engineering org.
+- **Business planners** shaping a new venture or product
+- **Product managers** preparing PRD input
+- **Founders** building investor and partner material
+- **Strategy consultants** producing client-ready deliverables
+- **Korea-first** with global support: Korean compliance reference library (PIPA / ISMS-P / MyData) built in
 
-Built-in quality gates catch real problems: schema drift detection flags ORM changes missing migrations, security enforcement anchors verification to threat models, and scope reduction detection prevents the planner from silently dropping your requirements.
+Not for: production-grade software-engineering workflows. For that, use GSD directly — BRIEF outputs hand off cleanly to GSD-driven PRD execution.
 
-### v1.36.0 Highlights
+## Four Phases
 
-- **Knowledge graph integration** — `/brief-graphify` brings knowledge graphs to planning agents for richer context connections
-- **SDK typed query foundation** — Registry-based `gsd-sdk query` command with classified errors and handlers for state, roadmap, phase lifecycle, and config
-- **TDD pipeline mode** — Opt-in test-driven development workflow with `--tdd` flag
-- **Context-window-aware prompt thinning** — Automatic prompt size reduction for sub-200K models
-- **Project skills awareness** — 9 BRIEF agents now discover and use project-scoped skills
-- **30+ bug fixes** — Worktree safety, state management, installer paths, and health check optimizations
+1. **DEFINE** — Extract true intent. Push Twice + Language Precision conversational extraction, Dream State Mapping (now → 3mo → 12mo), OBJECTIVES.md per workstream as the single anchor every downstream phase reads.
+2. **DISCOVER** — Broad domain research. 9 default research categories with provenance tags on every quantitative claim. B2B/B2C context injection. AUDIENCE guard on every research artifact.
+3. **DESIGN** — Concrete business plan. 9 built-in workstreams (BMC, GTM, Financial, Operations, Compliance, Roadmap, Brand, Risk, Tech-Arch). Continuous ALIGN gate. Dynamic workstream addition via `/brief-add-workstream`. Bidirectional Phase 1 ↔ 2 flow.
+4. **DELIVER** — Final artifacts in two modes: Type A (PRD inputs) and Type B (communication decks via Marp). Audience-enforced filenames + watermarks. Mandatory `/brief-export` confirmation before any deck renders.
 
 ---
 
@@ -560,125 +529,38 @@ You're never locked in. The system adapts.
 
 ## Commands
 
-### Core Workflow
+> Phase 1 has renamed the inherited workflow primitives; the BRIEF-domain commands arrive in Phases 3–8. The tables below reflect the current workflow surfaces only.
+
+### Core Workflow (Phase 1)
 
 | Command | What it does |
 |---------|--------------|
-| `/brief-new-project [--auto]` | Full initialization: questions → research → requirements → roadmap |
-| `/brief-discuss-phase [N] [--auto] [--analyze] [--chain]` | Capture implementation decisions before planning (`--analyze` adds trade-off analysis, `--chain` auto-chains into plan+execute) |
-| `/brief-plan-phase [N] [--auto] [--reviews]` | Research + plan + verify for a phase (`--reviews` loads codebase review findings) |
-| `/brief-execute-phase <N>` | Execute all plans in parallel waves, verify when complete |
-| `/brief-verify-work [N]` | Manual user acceptance testing ¹ |
-| `/brief-ship [N] [--draft]` | Create PR from verified phase work with auto-generated body |
-| `/brief-next` | Automatically advance to the next logical workflow step |
-| `/brief-fast <text>` | Inline trivial tasks — skips planning entirely, executes immediately |
-| `/brief-audit-milestone` | Verify milestone achieved its definition of done |
-| `/brief-complete-milestone` | Archive milestone, tag release |
-| `/brief-new-milestone [name]` | Start next version: questions → research → requirements → roadmap |
-| `/brief-forensics [desc]` | Post-mortem investigation of failed workflow runs (diagnoses stuck loops, missing artifacts, git anomalies) |
-| `/brief-milestone-summary [version]` | Generate comprehensive project summary for team onboarding and review |
+| `/brief-new-project` | Initialize a new BRIEF project |
+| `/brief-discuss-phase [N]` | Capture phase-level decisions before planning |
+| `/brief-plan-phase [N]` | Research + plan a phase |
+| `/brief-execute-phase <N>` | Run phase plans in parallel waves |
+| `/brief-verify-work [N]` | Manual verification of phase outputs |
+| `/brief-help` | Categorized command listing (populated in Phase 9) |
 
-### Workstreams
+### Phases 3–8 (coming)
 
-| Command | What it does |
-|---------|--------------|
-| `/brief-workstreams list` | Show all workstreams and their status |
-| `/brief-workstreams create <name>` | Create a namespaced workstream for parallel milestone work |
-| `/brief-workstreams switch <name>` | Switch active workstream |
-| `/brief-workstreams complete <name>` | Complete and merge a workstream |
+- `/brief-define` — Phase 0 conversational intent extractor (Phase 3)
+- `/brief-discover` — Parallel domain research with provenance (Phase 5)
+- `/brief-design` — Workstream orchestration + ALIGN / COMPLIANCE gates (Phases 4, 7)
+- `/brief-deliver` — Type A + Type B artifacts with audience enforcement (Phase 8)
+- `/brief-add-workstream` — Dynamic workstream addition (Phase 7)
+- `/brief-status` — Current phase, active workstream, return-stack depth, gate findings (Phase 2)
 
-### Multi-Project Workspaces
+Inherited GSD workflow commands (new-milestone, complete-milestone, discuss-phase, plan-phase, execute-phase, verify-work, help, status, and others) are preserved and renamed with the `/brief-` prefix.
 
-| Command | What it does |
-|---------|--------------|
-| `/brief-new-workspace` | Create isolated workspace with repo copies (worktrees or clones) |
-| `/brief-list-workspaces` | Show all BRIEF workspaces and their status |
-| `/brief-remove-workspace` | Remove workspace and clean up worktrees |
+## Status and Roadmap
 
-### UI Design
+- **Phase 1 (complete):** Fork hygiene, removal of ~38–45 dev-specific files, rename to `brief-*`, A1 zero-deps verified, multi-runtime detection preserved.
+- **Phases 2–9:** See `.planning/ROADMAP.md` for the full 9-phase roadmap covering stable seams, DEFINE, ALIGN gate, DISCOVER, bidirectional foundation, DESIGN + COMPLIANCE checker, DELIVER + AUDIENCE enforcement, and cross-runtime hardening.
 
-| Command | What it does |
-|---------|--------------|
-| `/brief-ui-phase [N]` | Generate UI design contract (UI-SPEC.md) for frontend phases |
-| `/brief-ui-review [N]` | Retroactive 6-pillar visual audit of implemented frontend code |
+## Localized READMEs
 
-### Navigation
-
-| Command | What it does |
-|---------|--------------|
-| `/brief-progress` | Where am I? What's next? |
-| `/brief-next` | Auto-detect state and run the next step |
-| `/brief-help` | Show all commands and usage guide |
-| `/brief-update` | Update BRIEF with changelog preview |
-| `/brief-join-discord` | Join the BRIEF Discord community |
-| `/brief-manager` | Interactive command center for managing multiple phases |
-
-### Brownfield
-
-| Command | What it does |
-|---------|--------------|
-| `/brief-map-codebase [area]` | Analyze existing codebase before new-project |
-
-### Phase Management
-
-| Command | What it does |
-|---------|--------------|
-| `/brief-add-phase` | Append phase to roadmap |
-| `/brief-insert-phase [N]` | Insert urgent work between phases |
-| `/brief-remove-phase [N]` | Remove future phase, renumber |
-| `/brief-list-phase-assumptions [N]` | See Claude's intended approach before planning |
-| `/brief-plan-milestone-gaps` | Create phases to close gaps from audit |
-
-### Session
-
-| Command | What it does |
-|---------|--------------|
-| `/brief-pause-work` | Create handoff when stopping mid-phase (writes HANDOFF.json) |
-| `/brief-resume-work` | Restore from last session |
-| `/brief-session-report` | Generate session summary with work performed and outcomes |
-
-### Workstreams
-
-| Command | What it does |
-|---------|--------------|
-| `/brief-workstreams` | Manage parallel workstreams (list, create, switch, status, progress, complete) |
-
-### Code Quality
-
-| Command | What it does |
-|---------|--------------|
-| `/brief-review` | Cross-AI peer review of current phase or branch |
-| `/brief-secure-phase [N]` | Security enforcement with threat-model-anchored verification |
-| `/brief-pr-branch` | Create clean PR branch filtering `.planning/` commits |
-| `/brief-audit-uat` | Audit verification debt — find phases missing UAT |
-| `/brief-docs-update` | Verified documentation generation with doc-writer and doc-verifier agents |
-
-### Backlog & Threads
-
-| Command | What it does |
-|---------|--------------|
-| `/brief-plant-seed <idea>` | Capture forward-looking ideas with trigger conditions — surfaces at the right milestone |
-| `/brief-add-backlog <desc>` | Add idea to backlog parking lot (999.x numbering, outside active sequence) |
-| `/brief-review-backlog` | Review and promote backlog items to active milestone or remove stale entries |
-| `/brief-thread [name]` | Persistent context threads — lightweight cross-session knowledge for work spanning multiple sessions |
-
-### Utilities
-
-| Command | What it does |
-|---------|--------------|
-| `/brief-settings` | Configure model profile and workflow agents |
-| `/brief-set-profile <profile>` | Switch model profile (quality/balanced/budget/inherit) |
-| `/brief-add-todo [desc]` | Capture idea for later |
-| `/brief-check-todos` | List pending todos |
-| `/brief-debug [desc]` | Systematic debugging with persistent state |
-| `/brief-do <text>` | Route freeform text to the right BRIEF command automatically |
-| `/brief-note <text>` | Zero-friction idea capture — append, list, or promote notes to todos |
-| `/brief-quick [--full] [--validate] [--discuss] [--research]` | Execute ad-hoc task with BRIEF guarantees (`--full` enables all phases, `--validate` adds plan-checking and verification, `--discuss` gathers context first, `--research` investigates approaches before planning) |
-| `/brief-health [--repair]` | Validate `.planning/` directory integrity, auto-repair with `--repair` |
-| `/brief-stats` | Display project statistics — phases, plans, requirements, git metrics |
-| `/brief-profile-user [--questionnaire] [--refresh]` | Generate developer behavioral profile from session analysis for personalized responses |
-
-<sup>¹ Contributed by reddit user OracleGreyBeard</sup>
+The Korean, Japanese, Portuguese, and Simplified Chinese READMEs are being rebranded as part of Phase 9 (Hardening). They currently reflect pre-fork GSD content.
 
 ---
 
