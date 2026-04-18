@@ -1,8 +1,9 @@
 # Phase 2: Stable Seam — Anchor Schema, Caps, Workstream-as-Config - Context
 
 **Gathered:** 2026-04-18
+**Amended:** 2026-04-19 — post-research A4 fork resolution (D-05 superseded by D-20; D-21 added)
 **Status:** Ready for planning
-**Mode:** Delegated discussion — non-technical product owner. Claude held implementation decisions; user decided only the surface-visible UX (D-15, `/brief-status` output shape).
+**Mode:** Delegated discussion — non-technical product owner. Claude held implementation decisions; user decided only the surface-visible UX (D-15, `/brief-status` output shape) and the A4 fork (Option A: extend `frontmatter.cjs` — D-20).
 
 <domain>
 ## Phase Boundary
@@ -71,13 +72,24 @@ The architectural seams every later Phase depends on are put in place. Specifica
   - **No backwards-compat reader for `gsd_state_version`** — the migration is one-shot in this commit (consistent with D-07)
   - This also reduces the Phase 9 HRD-05 source-drift residue by one item
 
-- **D-05: Fallback if A4 fails verification.** If the round-trip test reveals lossy normalization, fall back to a sidecar JSON file `.planning/state-brief.json` (separate file, untouched `state.cjs`). The fallback path:
-  1. STATE.md keeps GSD-inherited fields as-is
-  2. New helper `brief/bin/lib/state-brief.cjs` reads/writes the sidecar
-  3. `/brief-status` reads from sidecar instead of frontmatter
-  4. Document the trade-off in ASSUMPTIONS.md (A4 INVALIDATED, sidecar accepted)
+- **D-05: ~~Fallback if A4 fails verification~~ — SUPERSEDED by D-20.** The A4 smoke-test outcome is now *empirically known* from 02-RESEARCH.md R-1: the existing `reconstructFrontmatter` drops/mangles `null`, nested-object leaves, and arrays-of-objects. Sidecar fallback is **abandoned** because D-20 fixes the root cause in-place and preserves D-02's nested-map semantics + Phase 6's STATE.md-as-single-source-of-truth.
 
-  **Note for planner:** Plan the happy path (A4 verified) AND the fallback as separate task lanes — do not merge them. The smoke test outcome determines which lane ships in the commit.
+  (Historical intent retained for reference: the sidecar path was `.planning/state-brief.json` + a helper module; not pursued.)
+
+- **D-20 (NEW, supersedes D-05): Extend `frontmatter.cjs` so `reconstructFrontmatter` round-trips nested maps, arrays (including arrays-of-objects), and `null` correctly.** Scope:
+  1. Fix `reconstructFrontmatter`'s serializer so a YAML value of `null` emits as `null` (not the string `"null"`), nested objects emit as indented YAML maps (not `[object Object]`), and arrays-of-objects emit as YAML sequences with object items.
+  2. Preserve existing behavior for flat scalar fields and simple string/number/bool arrays (no regressions).
+  3. A4 smoke test (D-01) is rewritten to exercise the D-03 schema shapes in full fidelity — array-of-objects (`return_stack`), nested object map (`last_gate_results.align: {decision, severity, findings_count, at}`), and `null` fields — across two write cycles.
+  4. A regression test case is added under `tests/frontmatter-roundtrip.test.cjs` (or extends an existing file) that injects each D-03 shape and asserts deep-strict-equal after one round-trip — catches future normalization drift.
+
+  **Rationale:** Option A chosen over sidecar (B) or JSON-string blob (C) because (1) preserves D-02 human-readable nested YAML; (2) Phase 6/7 writers mutate a single source (no dual-write sidecar); (3) the serializer defect will bite the workstream-spec YAML loader too if left uncorrected (yaml-mini parser is a READER; `reconstructFrontmatter` is the WRITER and must handle the same shapes on re-serialization of STATE.md when `/brief-status` or downstream commands re-emit).
+
+- **D-21 (NEW, load-bearing): Extend `cmdStateJson` + `buildStateFrontmatter` to preserve the `brief:` nested map.** Per 02-RESEARCH.md R-5, the current `cmdStateJson` allowlist covers only `stopped_at / paused_at / status`. Without this fix, the `brief:` map is silently DROPPED on the next `state json` write. Scope:
+  1. Add `brief` to `buildStateFrontmatter`'s pass-through allowlist so existing `brief:` content is preserved on rebuild.
+  2. Initialize the `brief:` map in this phase's atomic commit (not Phase 3) — a placeholder map with D-03 empty/null values. Rationale: if we defer initialization, `/brief-status` renders warnings between Phase 2 completion and Phase 3 first-write, which contradicts D-17 resilience intent.
+  3. Add a regression test that runs `node brief-tools.cjs state json` against a STATE.md containing a populated `brief:` map and asserts the map survives byte-stable through the JSON round-trip AND the subsequent rebuild.
+
+  **Note for planner:** D-20 and D-21 are prerequisites for FND-05. Order them before the A4 smoke test, not after (the smoke test is the *verification*, not the driver).
 
 ### Surface Caps — Scope and Enforcement (FND-09)
 
@@ -310,4 +322,5 @@ The planner has flexibility on:
 
 *Phase: 02-stable-seam-anchor-schema-caps-workstream-as-config*
 *Context gathered: 2026-04-18*
-*Discussion mode: Delegated (non-technical product owner) — 1 user decision (D-15, /brief-status output shape) + 18 Claude-discretion implementation decisions*
+*Context amended: 2026-04-19 — post-research A4 fork; D-20 + D-21 added, D-05 superseded*
+*Discussion mode: Delegated (non-technical product owner) — 2 user decisions (D-15 /brief-status output shape; A4 fork → Option A = D-20) + 19 Claude-discretion implementation decisions (D-01..D-14, D-16..D-19, D-21)*
