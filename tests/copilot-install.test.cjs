@@ -1039,7 +1039,7 @@ describe('Copilot manifest and patches fixes', () => {
     const manifest = writeManifest(tmpDir, 'copilot');
 
     // Check manifest file was written
-    const manifestPath = path.join(tmpDir, 'gsd-file-manifest.json');
+    const manifestPath = path.join(tmpDir, 'brief-file-manifest.json');
     assert.ok(fs.existsSync(manifestPath), 'manifest file created');
 
     // Read and verify skills are hashed
@@ -1066,7 +1066,7 @@ describe('Copilot manifest and patches fixes', () => {
 
     test('reportLocalPatches shows /brief-reapply-patches for Copilot', () => {
       // Create patches directory with metadata
-      const patchesDir = path.join(tmpDir, 'gsd-local-patches');
+      const patchesDir = path.join(tmpDir, 'brief-local-patches');
       fs.mkdirSync(patchesDir, { recursive: true });
       fs.writeFileSync(path.join(patchesDir, 'backup-meta.json'), JSON.stringify({
         from_version: '1.0',
@@ -1083,7 +1083,7 @@ describe('Copilot manifest and patches fixes', () => {
 
     test('reportLocalPatches shows /brief-reapply-patches for Claude', () => {
       // Create patches directory with metadata
-      const patchesDir = path.join(tmpDir, 'gsd-local-patches');
+      const patchesDir = path.join(tmpDir, 'brief-local-patches');
       fs.mkdirSync(patchesDir, { recursive: true });
       fs.writeFileSync(path.join(patchesDir, 'backup-meta.json'), JSON.stringify({
         from_version: '1.0',
@@ -1212,8 +1212,8 @@ describe('E2E: Copilot full install verification', () => {
   });
 
   test('creates manifest with correct structure', () => {
-    const manifestPath = path.join(tmpDir, '.github', 'gsd-file-manifest.json');
-    assert.ok(fs.existsSync(manifestPath), 'gsd-file-manifest.json should exist');
+    const manifestPath = path.join(tmpDir, '.github', 'brief-file-manifest.json');
+    assert.ok(fs.existsSync(manifestPath), 'brief-file-manifest.json should exist');
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
     assert.ok(manifest.version, 'manifest should have version');
     assert.ok(manifest.timestamp, 'manifest should have timestamp');
@@ -1224,7 +1224,7 @@ describe('E2E: Copilot full install verification', () => {
   });
 
   test('manifest contains expected file categories', () => {
-    const manifestPath = path.join(tmpDir, '.github', 'gsd-file-manifest.json');
+    const manifestPath = path.join(tmpDir, '.github', 'brief-file-manifest.json');
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
     const keys = Object.keys(manifest.files);
 
@@ -1241,7 +1241,7 @@ describe('E2E: Copilot full install verification', () => {
   });
 
   test('manifest SHA256 hashes match actual file contents', () => {
-    const manifestPath = path.join(tmpDir, '.github', 'gsd-file-manifest.json');
+    const manifestPath = path.join(tmpDir, '.github', 'brief-file-manifest.json');
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
     const githubDir = path.join(tmpDir, '.github');
 
@@ -1435,6 +1435,8 @@ describe('Claude uninstall preserves user-generated files (#1423)', () => {
     runClaudeUninstall(tmpDir);
 
     const gsdDir = path.join(tmpDir, '.claude', 'brief');
+    // Plan 09 T-B preserve: verifies LEGACY commands/gsd/ absence post-uninstall.
+    // Do NOT rewrite to commands/brief/ — that would assert a different (fresh-install) condition.
     const cmdDir = path.join(tmpDir, '.claude', 'commands', 'gsd');
     // Directories should be fully removed when no user files to preserve
     assert.ok(!fs.existsSync(gsdDir), 'brief/ should not exist after clean uninstall');
