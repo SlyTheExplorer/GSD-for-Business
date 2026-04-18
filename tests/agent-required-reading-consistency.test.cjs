@@ -15,7 +15,7 @@ const path = require('path');
 const AGENTS_DIR = path.join(__dirname, '..', 'agents');
 
 const ALL_AGENTS = fs.readdirSync(AGENTS_DIR)
-  .filter(f => f.startsWith('gsd-') && f.endsWith('.md'))
+  .filter(f => f.startsWith('brief-') && f.endsWith('.md'))
   .map(f => f.replace('.md', ''));
 
 // ─── No Legacy files_to_read Blocks ────────────────────────────────────────

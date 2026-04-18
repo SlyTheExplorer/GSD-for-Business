@@ -40,11 +40,11 @@ describe('bug #2136: MANAGED_HOOKS must include all shipped hook files', () => {
     .map(line => line.trim().replace(/^['"]|['"],?$/g, ''))
     .filter(s => s.length > 0 && !s.startsWith('//'));
 
-  // List all GSD-managed hook files in hooks/ (names starting with "gsd-")
+  // List all BRIEF-managed hook files in hooks/ (names starting with "brief-")
   shippedHooks = fs.readdirSync(HOOKS_DIR)
-    .filter(f => f.startsWith('gsd-') && (f.endsWith('.js') || f.endsWith('.sh')));
+    .filter(f => f.startsWith('brief-') && (f.endsWith('.js') || f.endsWith('.sh')));
 
-  test('every shipped gsd-*.js hook is in MANAGED_HOOKS', () => {
+  test('every shipped brief-*.js hook is in MANAGED_HOOKS', () => {
     const jsHooks = shippedHooks.filter(f => f.endsWith('.js'));
     for (const hookFile of jsHooks) {
       assert.ok(
@@ -54,7 +54,7 @@ describe('bug #2136: MANAGED_HOOKS must include all shipped hook files', () => {
     }
   });
 
-  test('every shipped gsd-*.sh hook is in MANAGED_HOOKS', () => {
+  test('every shipped brief-*.sh hook is in MANAGED_HOOKS', () => {
     const shHooks = shippedHooks.filter(f => f.endsWith('.sh'));
     for (const hookFile of shHooks) {
       assert.ok(

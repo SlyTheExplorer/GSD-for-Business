@@ -1038,7 +1038,7 @@ describe('normalizeMd', () => {
 // ─── Stale hook filter regression (#1200) ─────────────────────────────────────
 
 describe('stale hook filter', () => {
-  test('filter should only match gsd-prefixed .js files', () => {
+  test('filter should only match brief-prefixed .js files', () => {
     const files = [
       'brief-check-update.js',
       'brief-context-monitor.js',
@@ -1051,8 +1051,8 @@ describe('stale hook filter', () => {
       'README.md',                       // non-js file
     ];
 
-    const gsdFilter = f => f.startsWith('gsd-') && f.endsWith('.js');
-    const filtered = files.filter(gsdFilter);
+    const briefFilter = f => f.startsWith('brief-') && f.endsWith('.js');
+    const filtered = files.filter(briefFilter);
 
     assert.deepStrictEqual(filtered, [
       'brief-check-update.js',
@@ -1060,10 +1060,10 @@ describe('stale hook filter', () => {
       'brief-prompt-guard.js',
       'brief-statusline.js',
       'brief-workflow-guard.js',
-    ], 'should only include gsd-prefixed .js files');
+    ], 'should only include brief-prefixed .js files');
 
     assert.ok(!filtered.includes('guard-edits-outside-project.js'), 'must not include user hooks');
-    assert.ok(!filtered.includes('my-custom-hook.js'), 'must not include non-gsd hooks');
+    assert.ok(!filtered.includes('my-custom-hook.js'), 'must not include non-brief hooks');
   });
 });
 
