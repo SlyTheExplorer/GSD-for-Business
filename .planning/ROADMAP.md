@@ -35,7 +35,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. User opens `package.json`, runs the documented inspection step, and confirms `dependencies` field is empty (only `devDependencies` exist) — Assumption A1 verified and recorded in `.planning/ASSUMPTIONS.md` (FND-04)
   5. User runs the same `/brief-status` invocation across Claude Code, OpenAI Codex, Gemini CLI, and OpenCode and gets equivalent output (text_mode fallback active where AskUserQuestion is unavailable) (FND-06)
   6. User opens `CLAUDE.md` and `README.md` and reads business-planning-domain language ("business planner", "OBJECTIVES.md", "workstreams", "audience") with no references to "code review", "TDD", "deployment", or "security audit" (FND-07)
-**Plans**: 7 plans (6 original + 1 gap-closure)
+**Plans**: 8 plans (6 original + 2 gap-closure: Plan 07 path-substring, Plan 08 hook-rename propagation)
 - [ ] 01-PLAN.md — Create backup/original-gsd branch (FND-01)
 - [ ] 02-PLAN.md — Drop GSD development surfaces, ~38–45 file removals (FND-02)
 - [ ] 03-PLAN.md — Rename brief-* prefix for commands, agents, hooks, tests (FND-03 part 1)
