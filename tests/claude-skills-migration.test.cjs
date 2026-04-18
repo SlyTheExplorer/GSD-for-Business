@@ -425,7 +425,7 @@ describe('writeManifest tracks skills/ for Claude', () => {
     writeManifest(tmpDir, 'claude');
 
     const manifest = JSON.parse(
-      fs.readFileSync(path.join(tmpDir, 'gsd-file-manifest.json'), 'utf8')
+      fs.readFileSync(path.join(tmpDir, 'brief-file-manifest.json'), 'utf8')
     );
 
     // Should have skills/ entries
