@@ -4,6 +4,12 @@
  * Tests for migrating Claude Code from commands/gsd/ to skills/brief-xxx/SKILL.md
  * format for compatibility with Claude Code 2.1.88+.
  *
+ * NOTE (BRIEF): `commands/gsd/` references in this file are intentional — they
+ * describe the LEGACY pre-BRIEF install location. These tests exercise the
+ * migration logic (legacy-cleanup + manifest validation that skills replaced
+ * commands/gsd/). Do NOT rewrite to `commands/brief/` — that would defeat
+ * the test's purpose of verifying legacy-to-skills migration.
+ *
  * Uses node:test and node:assert (NOT Jest).
  */
 

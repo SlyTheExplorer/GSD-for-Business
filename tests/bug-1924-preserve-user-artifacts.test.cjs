@@ -1,9 +1,15 @@
 /**
  * Regression tests for bug #1924: gsd-update silently deletes user-generated files
  *
+ * NOTE (BRIEF): `commands/gsd/` references in this file are intentional —
+ * they describe the LEGACY pre-BRIEF install location. These tests exercise
+ * install.js's legacy-cleanup code path (detect + preserve user files +
+ * wipe + restore). Do NOT rewrite to `commands/brief/` — that would defeat
+ * the test's purpose of verifying legacy-cleanup correctness.
+ *
  * Running the installer (gsd-update / re-install) must not delete:
  *   - brief/USER-PROFILE.md  (created by /brief-profile-user)
- *   - commands/gsd/dev-preferences.md  (created by /brief-profile-user)
+ *   - commands/gsd/dev-preferences.md  (legacy pre-BRIEF path — created by /brief-profile-user)
  *
  * Root cause:
  *   1. copyWithPathReplacement() calls fs.rmSync(destDir, {recursive:true}) before

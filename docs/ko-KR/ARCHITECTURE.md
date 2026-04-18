@@ -36,7 +36,7 @@ BRIEF는 사용자와 AI 코딩 에이전트(Claude Code, Gemini CLI, OpenCode, 
                       │
 ┌─────────────────────▼────────────────────────────────┐
 │              COMMAND LAYER                            │
-│   commands/gsd/*.md — Prompt-based command files      │
+│   commands/brief/*.md — Prompt-based command files    │
 │   (Claude Code custom commands / Codex skills)        │
 └─────────────────────┬────────────────────────────────┘
                       │
@@ -104,7 +104,7 @@ BRIEF는 사용자와 AI 코딩 에이전트(Claude Code, Gemini CLI, OpenCode, 
 
 ## 컴포넌트 아키텍처
 
-### Commands (`commands/gsd/*.md`)
+### Commands (`commands/brief/*.md`)
 
 사용자 대면 진입점입니다. 각 파일은 YAML 전문(name, description, allowed-tools)과 워크플로우를 부트스트랩하는 프롬프트 본문을 포함합니다. 명령어는 다음과 같이 설치됩니다.
 - **Claude Code:** 커스텀 슬래시 명령어 (`/brief-command-name`)
@@ -340,7 +340,7 @@ UI-SPEC.md (per phase) ───────────────────
 
 ```
 ~/.claude/                          # Claude Code (전역 설치)
-├── commands/gsd/*.md               # 37개 슬래시 명령어
+├── commands/brief/*.md             # 61개 슬래시 명령어
 ├── brief/
 │   ├── bin/brief-tools.cjs           # CLI 유틸리티
 │   ├── bin/lib/*.cjs               # 15개 도메인 모듈

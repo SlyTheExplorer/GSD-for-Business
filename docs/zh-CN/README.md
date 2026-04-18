@@ -649,7 +649,7 @@ BRIEF 的代码库映射和分析命令读取文件以了解你的项目。**保
 
 **安装后找不到命令？**
 - 重启运行时以重新加载命令/技能
-- 验证文件是否存在于 `~/.claude/commands/gsd/`（全局）或 `./.claude/commands/gsd/`（本地）
+- 验证文件是否存在于 `~/.claude/commands/brief/`（全局）或 `./.claude/commands/brief/`（本地）
 - 对于 Codex，验证技能是否存在于 `~/.codex/skills/brief-*/SKILL.md`（全局）或 `./.codex/skills/brief-*/SKILL.md`（本地）
 
 **命令没有按预期工作？**

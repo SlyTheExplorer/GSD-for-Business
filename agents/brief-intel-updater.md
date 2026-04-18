@@ -67,7 +67,7 @@ Use the detected root to resolve all canonical paths below:
 | Source type | Standard `.claude` layout | `.kilo` layout |
 |-------------|--------------------------|----------------|
 | Agent files | `agents/*.md` | `.kilo/agents/*.md` |
-| Command files | `commands/gsd/*.md` | `.kilo/command/*.md` |
+| Command files | `commands/brief/*.md` | `.kilo/command/*.md` |
 | CLI tooling | `brief/bin/` | `.kilo/brief/bin/` |
 | Workflow files | `brief/workflows/` | `.kilo/brief/workflows/` |
 | Reference docs | `brief/references/` | `.kilo/brief/references/` |

@@ -163,9 +163,9 @@ Strategy: worktree
 
 | コンポーネント | パス |
 |-----------|------|
-| コマンド: new-workspace | `commands/gsd/new-workspace.md` |
-| コマンド: list-workspaces | `commands/gsd/list-workspaces.md` |
-| コマンド: remove-workspace | `commands/gsd/remove-workspace.md` |
+| コマンド: new-workspace | `commands/brief/new-workspace.md` |
+| コマンド: list-workspaces | `commands/brief/list-workspaces.md` |
+| コマンド: remove-workspace | `commands/brief/remove-workspace.md` |
 | ワークフロー: new-workspace | `brief/workflows/new-workspace.md` |
 | ワークフロー: list-workspaces | `brief/workflows/list-workspaces.md` |
 | ワークフロー: remove-workspace | `brief/workflows/remove-workspace.md` |

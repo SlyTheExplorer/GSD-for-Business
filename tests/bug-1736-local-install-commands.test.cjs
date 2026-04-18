@@ -1,10 +1,10 @@
 /**
- * Regression test for #1736: local Claude install missing commands/gsd/
+ * Regression test for #1736: local Claude install missing commands/brief/
  *
  * After a fresh local install (`--claude --local`), all /brief-* commands
  * except /brief-help return "Unknown skill: gsd-quick" because
- * .claude/commands/gsd/ is not populated. Claude Code reads local project
- * commands from .claude/commands/gsd/ (the commands/ format), not from
+ * .claude/commands/brief/ is not populated. Claude Code reads local project
+ * commands from .claude/commands/brief/ (the commands/ format), not from
  * .claude/skills/ — only the global ~/.claude/skills/ is used for skills.
  */
 
@@ -36,9 +36,9 @@ before(() => {
   });
 });
 
-// ─── #1736: local install deploys commands/gsd/ ─────────────────────────────
+// ─── #1736: local install deploys commands/brief/ ─────────────────────────────
 
-describe('#1736: local Claude install populates .claude/commands/gsd/', () => {
+describe('#1736: local Claude install populates .claude/commands/brief/', () => {
   let tmpDir;
 
   beforeEach(() => {
@@ -49,7 +49,7 @@ describe('#1736: local Claude install populates .claude/commands/gsd/', () => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
-  test('local install creates .claude/commands/gsd/ directory', (t) => {
+  test('local install creates .claude/commands/brief/ directory', (t) => {
     const origCwd = process.cwd();
     t.after(() => { process.chdir(origCwd); });
     process.chdir(tmpDir);
@@ -58,11 +58,11 @@ describe('#1736: local Claude install populates .claude/commands/gsd/', () => {
     const commandsDir = path.join(tmpDir, '.claude', 'commands', 'gsd');
     assert.ok(
       fs.existsSync(commandsDir),
-      '.claude/commands/gsd/ directory must exist after local install'
+      '.claude/commands/brief/ directory must exist after local install'
     );
   });
 
-  test('local install deploys at least one .md command file to .claude/commands/gsd/', (t) => {
+  test('local install deploys at least one .md command file to .claude/commands/brief/', (t) => {
     const origCwd = process.cwd();
     t.after(() => { process.chdir(origCwd); });
     process.chdir(tmpDir);
@@ -71,17 +71,17 @@ describe('#1736: local Claude install populates .claude/commands/gsd/', () => {
     const commandsDir = path.join(tmpDir, '.claude', 'commands', 'gsd');
     assert.ok(
       fs.existsSync(commandsDir),
-      '.claude/commands/gsd/ must exist'
+      '.claude/commands/brief/ must exist'
     );
 
     const files = fs.readdirSync(commandsDir).filter(f => f.endsWith('.md'));
     assert.ok(
       files.length > 0,
-      `.claude/commands/gsd/ must contain at least one .md file, found: ${JSON.stringify(files)}`
+      `.claude/commands/brief/ must contain at least one .md file, found: ${JSON.stringify(files)}`
     );
   });
 
-  test('local install deploys quick.md to .claude/commands/gsd/', (t) => {
+  test('local install deploys quick.md to .claude/commands/brief/', (t) => {
     const origCwd = process.cwd();
     t.after(() => { process.chdir(origCwd); });
     process.chdir(tmpDir);
@@ -90,7 +90,7 @@ describe('#1736: local Claude install populates .claude/commands/gsd/', () => {
     const quickCmd = path.join(tmpDir, '.claude', 'commands', 'gsd', 'quick.md');
     assert.ok(
       fs.existsSync(quickCmd),
-      '.claude/commands/gsd/quick.md must exist after local install'
+      '.claude/commands/brief/quick.md must exist after local install'
     );
   });
 });

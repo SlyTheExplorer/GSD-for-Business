@@ -20,7 +20,7 @@ const HELP_PATH = path.join(__dirname, '..', 'brief', 'workflows', 'help.md');
 
 describe('execute-phase command: --wave flag', () => {
   test('command file exists', () => {
-    assert.ok(fs.existsSync(COMMAND_PATH), 'commands/gsd/execute-phase.md should exist');
+    assert.ok(fs.existsSync(COMMAND_PATH), 'commands/brief/execute-phase.md should exist');
   });
 
   test('argument-hint includes --wave, --gaps-only, and --interactive', () => {

@@ -2,7 +2,7 @@
  * GSD Tools Tests — update workflow custom file backup detection (#1997)
  *
  * The update workflow must detect user-added files inside GSD-managed
- * directories (brief/, agents/, commands/gsd/, hooks/) before the
+ * directories (brief/, agents/, commands/brief/, hooks/) before the
  * installer wipes those directories.
  *
  * This tests the `detect-custom-files` subcommand of brief-tools.cjs, which is

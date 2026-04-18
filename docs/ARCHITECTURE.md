@@ -36,7 +36,7 @@ BRIEF is a **meta-prompting framework** that sits between the user and AI coding
                       │
 ┌─────────────────────▼────────────────────────────────┐
 │              COMMAND LAYER                            │
-│   commands/gsd/*.md — Prompt-based command files      │
+│   commands/brief/*.md — Prompt-based command files    │
 │   (Claude Code custom commands / Codex skills)        │
 └─────────────────────┬────────────────────────────────┘
                       │
@@ -104,7 +104,7 @@ Multiple layers prevent common failure modes:
 
 ## Component Architecture
 
-### Commands (`commands/gsd/*.md`)
+### Commands (`commands/brief/*.md`)
 
 User-facing entry points. Each file contains YAML frontmatter (name, description, allowed-tools) and a prompt body that bootstraps the workflow. Commands are installed as:
 - **Claude Code:** Custom slash commands (`/brief-command-name`)
@@ -407,7 +407,7 @@ UI-SPEC.md (per phase) ───────────────────
 
 ```
 ~/.claude/                          # Claude Code (global install)
-├── commands/gsd/*.md               # 75 slash commands
+├── commands/brief/*.md             # 61 slash commands
 ├── brief/
 │   ├── bin/brief-tools.cjs           # CLI utility
 │   ├── bin/lib/*.cjs               # 19 domain modules

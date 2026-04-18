@@ -22,7 +22,7 @@ const ARCH_CONTENT = fs.readFileSync(ARCH_MD, 'utf-8');
 
 /** Components whose counts must stay in sync with ARCHITECTURE.md. */
 const COMPONENTS = [
-  { label: 'commands',  dir: 'commands/gsd' },
+  { label: 'commands',  dir: 'commands/brief' },
   { label: 'workflows', dir: 'brief/workflows' },
   { label: 'agents',    dir: 'agents' },
 ];

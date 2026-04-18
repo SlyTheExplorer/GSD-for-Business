@@ -16,7 +16,7 @@ const WORKFLOW_PATH = path.join(__dirname, '..', 'brief', 'workflows', 'extract_
 
 describe('extract-learnings command', () => {
   test('command file exists', () => {
-    assert.ok(fs.existsSync(COMMAND_PATH), 'commands/gsd/extract_learnings.md should exist');
+    assert.ok(fs.existsSync(COMMAND_PATH), 'commands/brief/extract_learnings.md should exist');
   });
 
   test('command file has correct name frontmatter', () => {

@@ -26,7 +26,7 @@ describe('quick command: --research in frontmatter', () => {
   let content;
 
   test('quick.md exists', () => {
-    assert.ok(fs.existsSync(commandPath), 'commands/gsd/quick.md should exist');
+    assert.ok(fs.existsSync(commandPath), 'commands/brief/quick.md should exist');
   });
 
   test('argument-hint includes --research', () => {

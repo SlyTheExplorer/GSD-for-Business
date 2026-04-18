@@ -29,7 +29,7 @@ describe('AUDIT-FIX: command file', () => {
   test('command file exists', () => {
     assert.ok(
       fs.existsSync(cmdPath),
-      'audit-fix.md must exist in commands/gsd/'
+      'audit-fix.md must exist in commands/brief/'
     );
   });
 

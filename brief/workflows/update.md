@@ -351,7 +351,7 @@ Exit.
 ────────────────────────────────────────────────────────────
 
 ⚠️  **Note:** The installer performs a clean install of BRIEF folders:
-- `commands/gsd/` will be wiped and replaced
+- `commands/brief/` will be wiped and replaced
 - `brief/` will be wiped and replaced
 - `agents/brief-*` files will be replaced
 
@@ -360,7 +360,7 @@ global: `~/.claude/`, `~/.config/opencode/`, `~/.opencode/`, `~/.gemini/`, `~/.c
 local: `./.claude/`, `./.config/opencode/`, `./.opencode/`, `./.gemini/`, `./.kilo/`, or `./.codex/`)
 
 Your custom files in other locations are preserved:
-- Custom commands not in `commands/gsd/` ✓
+- Custom commands not in `commands/brief/` ✓
 - Custom agents not prefixed with `gsd-` ✓
 - Custom hooks ✓
 - Your CLAUDE.md files ✓

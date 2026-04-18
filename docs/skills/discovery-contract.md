@@ -31,11 +31,12 @@ These roots are used for managed runtime installs and inventory reporting.
 
 This root is kept for legacy migration only. Inventory code may report it, but new installs should not write here.
 
-### Legacy Claude Commands
+### Claude Commands
 
+- `~/.claude/commands/brief/`
 - `~/.claude/commands/gsd/`
 
-This is not a skills root. Discovery code only checks whether it exists so inventory can report legacy Claude installs.
+The `~/.claude/commands/brief/` root is the current BRIEF install location. The `~/.claude/commands/gsd/` root is retained for legacy-install detection only — discovery code checks whether it exists so inventory can report pre-BRIEF Claude installs.
 
 ## Normalization Rules
 

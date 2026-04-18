@@ -778,7 +778,7 @@ BRIEFのコードベースマッピングおよび分析コマンドは、プロ
 
 **インストール後にコマンドが見つからない？**
 - ランタイムを再起動してコマンド/スキルを再読み込みしてください
-- `~/.claude/commands/gsd/`（グローバル）または `./.claude/commands/gsd/`（ローカル）にファイルが存在するか確認してください
+- `~/.claude/commands/brief/`（グローバル）または `./.claude/commands/brief/`（ローカル）にファイルが存在するか確認してください
 - Codexの場合、`~/.codex/skills/brief-*/SKILL.md`（グローバル）または `./.codex/skills/brief-*/SKILL.md`（ローカル）にスキルが存在するか確認してください
 
 **コマンドが期待通りに動作しない？**

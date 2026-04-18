@@ -3,7 +3,7 @@
  *
  * Verifies that /brief-review includes Cursor CLI as a peer reviewer:
  *   - review.md workflow contains cursor detection, flag parsing, self-detection, invocation
- *   - commands/gsd/review.md command file mentions --cursor flag
+ *   - commands/brief/review.md command file mentions --cursor flag
  *   - help.md lists --cursor in the /brief-review signature
  *   - docs/COMMANDS.md has --cursor flag row
  *   - docs/FEATURES.md has Cursor in the review section
@@ -80,16 +80,16 @@ describe('Cursor CLI reviewer in /brief-review (#1960)', () => {
     });
   });
 
-  // --- commands/gsd/review.md ---
+  // --- commands/brief/review.md ---
 
-  describe('commands/gsd/review.md', () => {
+  describe('commands/brief/review.md', () => {
     const cmdPath = path.join(ROOT, 'commands', 'gsd', 'review.md');
 
     test('mentions --cursor flag', () => {
       const c = fs.readFileSync(cmdPath, 'utf-8');
       assert.ok(
         c.includes('--cursor'),
-        'commands/gsd/review.md should mention --cursor flag'
+        'commands/brief/review.md should mention --cursor flag'
       );
     });
 
@@ -97,7 +97,7 @@ describe('Cursor CLI reviewer in /brief-review (#1960)', () => {
       const c = fs.readFileSync(cmdPath, 'utf-8');
       assert.ok(
         c.includes('Cursor'),
-        'commands/gsd/review.md should mention Cursor'
+        'commands/brief/review.md should mention Cursor'
       );
     });
   });

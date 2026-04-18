@@ -22,7 +22,7 @@ describe('discuss-phase power user mode (#1513)', () => {
       const content = fs.readFileSync(commandPath, 'utf8');
       assert.ok(
         content.includes('--power'),
-        'commands/gsd/discuss-phase.md should document the --power flag'
+        'commands/brief/discuss-phase.md should document the --power flag'
       );
     });
 

@@ -6,7 +6,7 @@ const path = require('path');
 describe('analyze-dependencies command', () => {
   test('command file exists', () => {
     const p = path.join(__dirname, '..', 'commands', 'gsd', 'analyze-dependencies.md');
-    assert.ok(fs.existsSync(p), 'commands/gsd/analyze-dependencies.md should exist');
+    assert.ok(fs.existsSync(p), 'commands/brief/analyze-dependencies.md should exist');
   });
 
   test('command file has description frontmatter', () => {

@@ -86,7 +86,7 @@ Verify with:
 - Cline: BRIEF installs via `.clinerules` — verify by checking `.clinerules` exists
 
 > [!NOTE]
-> Claude Code 2.1.88+, Qwen Code, and Codex install as skills (`.claude/skills/`, `./.codex/skills/`, or the matching global `~/.claude/skills/` / `~/.codex/skills/` roots). Older Claude Code versions use `commands/gsd/`. `~/.claude/brief/skills/` is import-only for legacy migration. The installer handles all formats automatically.
+> Claude Code 2.1.88+, Qwen Code, and Codex install as skills (`.claude/skills/`, `./.codex/skills/`, or the matching global `~/.claude/skills/` / `~/.codex/skills/` roots). Older Claude Code versions (pre-2.1.88) install BRIEF to `commands/brief/`. Legacy installs that predate the BRIEF fork still have `commands/gsd/` on disk — the installer detects and cleans this. `~/.claude/brief/skills/` is import-only for legacy migration. The installer handles all formats automatically.
 
 The canonical discovery contract is documented in [docs/skills/discovery-contract.md](docs/skills/discovery-contract.md).
 
@@ -704,7 +704,7 @@ This prevents Claude from reading these files entirely, regardless of what comma
 - Restart your runtime to reload commands/skills
 - Verify files exist in `~/.claude/skills/brief-*/SKILL.md` or `~/.codex/skills/brief-*/SKILL.md` for managed global installs
 - For local installs, verify `.claude/skills/brief-*/SKILL.md` or `./.codex/skills/brief-*/SKILL.md`
-- Legacy Claude Code installs still use `~/.claude/commands/gsd/`
+- Legacy Claude Code installs (pre-BRIEF-fork) still have `~/.claude/commands/gsd/` — the installer cleans this directory automatically
 
 **Commands not working as expected?**
 - Run `/brief-help` to verify installation

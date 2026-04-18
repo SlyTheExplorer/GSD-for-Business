@@ -1698,6 +1698,12 @@ function buildSkillManifest(cwd, skillsDir = null) {
       deprecated: true,
     },
     {
+      root: '.claude/commands/brief',
+      path: path.join(os.homedir(), '.claude', 'commands', 'brief'),
+      scope: 'global',
+      kind: 'commands',
+    },
+    {
       root: '.claude/commands/gsd',
       path: path.join(os.homedir(), '.claude', 'commands', 'gsd'),
       scope: 'legacy-commands',

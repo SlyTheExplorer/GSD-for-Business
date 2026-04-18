@@ -16,7 +16,7 @@ const workflowPath = path.join(repoRoot, 'brief', 'workflows', 'milestone-summar
 
 describe('milestone-summary command', () => {
   test('command file exists', () => {
-    assert.ok(fs.existsSync(commandPath), 'commands/gsd/milestone-summary.md should exist');
+    assert.ok(fs.existsSync(commandPath), 'commands/brief/milestone-summary.md should exist');
   });
 
   test('command has correct frontmatter name', () => {

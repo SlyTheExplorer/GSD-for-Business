@@ -2,9 +2,9 @@
  * Regression test for bug #2351
  *
  * brief-intel-updater used hardcoded canonical paths (`agents/*.md`,
- * `commands/gsd/*.md`, `hooks/*.js`, etc.) that assumed the standard
+ * `commands/brief/*.md`, `hooks/*.js`, etc.) that assumed the standard
  * `.claude/` runtime layout. Under a `.kilo` install, the runtime root is
- * `.kilo/`, and the command directory is `command/` (not `commands/gsd/`).
+ * `.kilo/`, and the command directory is `command/` (not `commands/brief/`).
  * Globs against the old paths returned no results, producing semantically
  * empty intel files (`"entries": {}`).
  *
@@ -51,11 +51,11 @@ describe('bug #2351: intel updater kilo layout support', () => {
     );
   });
 
-  test('scope section maps .kilo/command path (not commands/gsd)', () => {
+  test('scope section maps .kilo/command path (not commands/brief)', () => {
     content = content || fs.readFileSync(AGENT_PATH, 'utf-8');
     assert.ok(
       content.includes('.kilo/command'),
-      'scope section must include .kilo/command path — kilo uses "command/" not "commands/gsd/"'
+      'scope section must include .kilo/command path — kilo uses "command/" not "commands/brief/"'
     );
   });
 

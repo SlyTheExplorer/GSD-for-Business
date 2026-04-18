@@ -317,7 +317,7 @@ brief/
   references/           — Reference documentation (.md)
   templates/            — File templates
 agents/                 — Agent definitions (.md)
-commands/gsd/           — Slash command definitions (.md)
+commands/brief/         — Slash command definitions (.md)
 tests/                  — Test files (.test.cjs)
   helpers.cjs           — Shared test utilities
 docs/                   — User-facing documentation

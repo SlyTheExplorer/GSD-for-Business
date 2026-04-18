@@ -6,7 +6,7 @@ const path = require('path');
 describe('explore command', () => {
   test('command file exists', () => {
     const p = path.join(__dirname, '..', 'commands', 'gsd', 'explore.md');
-    assert.ok(fs.existsSync(p), 'commands/gsd/explore.md should exist');
+    assert.ok(fs.existsSync(p), 'commands/brief/explore.md should exist');
   });
 
   test('command file has required frontmatter', () => {

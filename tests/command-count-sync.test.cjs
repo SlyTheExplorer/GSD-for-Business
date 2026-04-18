@@ -1,6 +1,6 @@
 /**
  * Regression test: command count in docs/ARCHITECTURE.md must match
- * the actual number of .md files in commands/gsd/.
+ * the actual number of .md files in commands/brief/.
  *
  * Counts are extracted from the doc programmatically — never hardcoded
  * in this test — so any future drift (adding a command without updating
@@ -20,7 +20,7 @@ const COMMANDS_DIR = path.join(ROOT, 'commands', 'gsd');
 const ARCH_MD = path.join(ROOT, 'docs', 'ARCHITECTURE.md');
 
 /**
- * Count .md files that actually live in commands/gsd/.
+ * Count .md files that actually live in commands/brief/.
  * Does not recurse into subdirectories.
  */
 function actualCommandCount() {
@@ -41,7 +41,7 @@ function docProseCount(content) {
 
 /**
  * Extract the integer from the directory-tree comment line:
- *   ├── commands/gsd/*.md               # N slash commands
+ *   ├── commands/brief/*.md               # N slash commands
  * Returns null if the pattern is not found.
  */
 function docTreeCount(content) {
@@ -63,21 +63,21 @@ describe('ARCHITECTURE.md command count sync', () => {
     assert.notEqual(count, null, 'Expected "# N slash commands" tree comment not found in ARCHITECTURE.md');
   });
 
-  test('"Total commands:" prose count matches actual commands/gsd/ file count', () => {
+  test('"Total commands:" prose count matches actual commands/brief/ file count', () => {
     const prose = docProseCount(archContent);
     assert.equal(
       prose,
       actual,
-      `ARCHITECTURE.md "Total commands:" says ${prose} but commands/gsd/ has ${actual} .md files — update the doc`,
+      `ARCHITECTURE.md "Total commands:" says ${prose} but commands/brief/ has ${actual} .md files — update the doc`,
     );
   });
 
-  test('directory-tree slash-command count matches actual commands/gsd/ file count', () => {
+  test('directory-tree slash-command count matches actual commands/brief/ file count', () => {
     const tree = docTreeCount(archContent);
     assert.equal(
       tree,
       actual,
-      `ARCHITECTURE.md directory tree says ${tree} slash commands but commands/gsd/ has ${actual} .md files — update the doc`,
+      `ARCHITECTURE.md directory tree says ${tree} slash commands but commands/brief/ has ${actual} .md files — update the doc`,
     );
   });
 

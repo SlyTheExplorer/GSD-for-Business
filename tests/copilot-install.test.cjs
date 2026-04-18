@@ -599,7 +599,7 @@ Check ~/.claude/settings and run gsd:health.`;
 // ─── copyCommandsAsCopilotSkills (integration) ─────────────────────────────────
 
 describe('copyCommandsAsCopilotSkills', () => {
-  const srcDir = path.join(__dirname, '..', 'commands', 'gsd');
+  const srcDir = path.join(__dirname, '..', 'commands', 'brief');
   let tempDir;
 
   beforeEach(() => {
@@ -644,7 +644,7 @@ describe('copyCommandsAsCopilotSkills', () => {
   test('generates gsd-autonomous skill from autonomous.md command', () => {
     // Fail-fast: source command must exist
     const srcFile = path.join(srcDir, 'autonomous.md');
-    assert.ok(fs.existsSync(srcFile), 'commands/gsd/autonomous.md must exist as source');
+    assert.ok(fs.existsSync(srcFile), 'commands/brief/autonomous.md must exist as source');
 
     copyCommandsAsCopilotSkills(srcDir, tempDir, 'gsd');
 

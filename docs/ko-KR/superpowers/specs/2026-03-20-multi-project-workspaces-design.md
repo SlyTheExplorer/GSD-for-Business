@@ -163,9 +163,9 @@ Strategy: worktree
 
 | 컴포넌트 | 경로 |
 |-----------|------|
-| 명령어: new-workspace | `commands/gsd/new-workspace.md` |
-| 명령어: list-workspaces | `commands/gsd/list-workspaces.md` |
-| 명령어: remove-workspace | `commands/gsd/remove-workspace.md` |
+| 명령어: new-workspace | `commands/brief/new-workspace.md` |
+| 명령어: list-workspaces | `commands/brief/list-workspaces.md` |
+| 명령어: remove-workspace | `commands/brief/remove-workspace.md` |
 | 워크플로우: new-workspace | `brief/workflows/new-workspace.md` |
 | 워크플로우: list-workspaces | `brief/workflows/list-workspaces.md` |
 | 워크플로우: remove-workspace | `brief/workflows/remove-workspace.md` |

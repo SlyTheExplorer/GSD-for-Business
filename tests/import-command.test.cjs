@@ -16,7 +16,7 @@ const WF_PATH = path.join(__dirname, '..', 'brief', 'workflows', 'import.md');
 
 describe('import command file structure', () => {
   test('command file exists', () => {
-    assert.ok(fs.existsSync(CMD_PATH), 'commands/gsd/import.md should exist');
+    assert.ok(fs.existsSync(CMD_PATH), 'commands/brief/import.md should exist');
   });
 
   test('workflow file exists', () => {

@@ -49,13 +49,13 @@ Use `--local` instead of `--global` for a project-scoped install.
 The installer performs a clean wipe-and-replace of BRIEF-managed directories only:
 
 - `~/.claude/brief/` — workflows, references, templates
-- `~/.claude/commands/gsd/` — slash commands
+- `~/.claude/commands/brief/` — slash commands
 - `~/.claude/agents/brief-*.md` — BRIEF agents
 - `~/.claude/hooks/dist/` — compiled hooks
 
 **What is preserved:**
 - Custom agents not prefixed with `gsd-`
-- Custom commands outside `commands/gsd/`
+- Custom commands outside `commands/brief/`
 - Your `CLAUDE.md` files
 - Custom hooks
 

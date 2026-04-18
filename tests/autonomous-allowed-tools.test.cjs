@@ -12,7 +12,7 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-describe('commands/gsd/autonomous.md allowed-tools', () => {
+describe('commands/brief/autonomous.md allowed-tools', () => {
   test('includes Agent in allowed-tools list', () => {
     const filePath = path.join(__dirname, '..', 'commands', 'gsd', 'autonomous.md');
     const content = fs.readFileSync(filePath, 'utf-8');
