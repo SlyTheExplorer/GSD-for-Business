@@ -17,7 +17,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { planningPaths, atomicWriteFileSync } = require('./core.cjs');
+const { planningPaths, atomicWriteFileSync, output } = require('./core.cjs');
 const {
   extractFrontmatter,
   spliceFrontmatter,
@@ -228,12 +228,93 @@ function checkStaleAnchor(cwd) {
   };
 }
 
+// ─── Korean block-gate renderer (Pitfall 5, D-12) ──────────────────────────
+// Recovery-oriented, non-developer-friendly. No `ERROR:`, no Python-list
+// brackets, no backticks beyond the recovery command. Exit-code non-zero
+// is set by the caller via process.exit(1) (W-6 silent exit).
+
+const FIELD_NAME_KO = {
+  business_model: '비즈니스 모델 (business_model)',
+  region: '지역 (region)',
+  audience_policy: '청중 정책 (audience_policy)',
+  compliance_packs: '규제 팩 (compliance_packs)',
+  status: '상태 (status)',
+  immutable_items: '잠금 항목 (immutable_items)',
+};
+
+function renderBlockGateMessage(missing) {
+  if (Array.isArray(missing) && missing.length === 1 && missing[0] === 'FILE_NOT_EXIST') {
+    return [
+      '⚠ /brief-discover는 아직 실행할 수 없습니다.',
+      '',
+      'OBJECTIVES.md 파일이 아직 없습니다.',
+      '',
+      '시작 방법:',
+      '  /brief-define',
+      '',
+      '새 기획은 약 20~35분이 걸립니다.',
+      '',
+    ].join('\n');
+  }
+  const lines = [
+    '⚠ /brief-discover는 아직 실행할 수 없습니다.',
+    '',
+    'OBJECTIVES.md에 아직 작성되지 않은 필수 항목이 있습니다:',
+  ];
+  for (const f of missing) {
+    lines.push(`  • ${FIELD_NAME_KO[f] || f}`);
+  }
+  lines.push(
+    '',
+    '보완 방법:',
+    '  /brief-define --amend',
+    '',
+    '지금 쓰신 내용은 그대로 남아있습니다.',
+    '보완이 끝나면 다시 /brief-discover를 실행해주세요.',
+    '',
+  );
+  return lines.join('\n');
+}
+
+// ─── CLI wrappers (Plan 05 dispatcher + Plan 06 stale-anchor) ──────────────
+
+// cmdValidate — W-6 contract: on failure, writes the Korean block-gate to
+// stderr and calls process.exit(1) directly. Never invokes core.error() —
+// that would leak English developer terminology, violating Pitfall 5 tone.
+function cmdValidate(cwd, raw) {
+  const r = validateObjectivesComplete(cwd);
+  if (r.valid) {
+    output(r, raw, 'OBJECTIVES.md: 모든 필수 항목이 작성되어 있습니다.');
+    return r;
+  }
+  const msg = renderBlockGateMessage(r.missing);
+  // Korean block-gate always goes to stderr so the planner sees it regardless
+  // of --raw. In --raw mode, structured JSON still lands on stdout for machines.
+  fs.writeSync(2, msg + '\n');
+  if (raw) fs.writeSync(1, JSON.stringify(r, null, 2));
+  process.exit(1); // W-6 silent non-zero — no English phrase leaked to stderr.
+  // eslint-disable-next-line no-unreachable
+  return r;
+}
+
+function cmdStaleCheck(cwd, raw) {
+  const r = checkStaleAnchor(cwd);
+  output(r, raw,
+    r.stale
+      ? `OBJECTIVES.md이 ${r.age_hours}시간 전에 마지막으로 수정되었습니다 (48시간 경과).`
+      : 'OBJECTIVES.md은 최신 상태입니다.');
+  return r;
+}
+
 module.exports = {
   writeObjectivesMd,
   readObjectivesMd,
   validateObjectivesComplete,
   checkStaleAnchor,
   enforceImmutableLock,
+  cmdValidate,                // NEW — Plan 05 block-gate CLI wrapper (W-6 silent exit)
+  cmdStaleCheck,              // NEW — Plan 06 stale-anchor CLI wrapper
+  renderBlockGateMessage,     // exposed for unit-test reuse and renderer parity
   OBJECTIVES_SCHEMA,          // exported for Plan 05 block-gate reuse
   STALE_ANCHOR_THRESHOLD_MS,  // exported for Plan 06 stale-anchor reuse
 };
