@@ -1,0 +1,8 @@
+name: _example
+description: Example workstream proving the loader picks up a spec.yaml without code changes (FND-08 acceptance demo; Phase 7 replaces this with real workstreams).
+research_prompts:
+  - "What is the current state of X in the target market?"
+  - "Who are the top 3 competitors for X?"
+design_prompts:
+  - "Draft an artifact describing X per the template."
+output_artifact_template: templates/artifact.md

@@ -1,0 +1,112 @@
+/**
+ * workstream-loader — discover and validate business-workstream YAML specs
+ *
+ * Sibling module to brief/bin/lib/workstream (which handles the DIFFERENT
+ * parallel-milestone workstream concept under .planning/workstreams/). Per
+ * Phase 2 Plan 5 / R-2, this loader MUST NOT import or extend that adjacent
+ * module — they are different concepts with no shared consumer surface.
+ *
+ * Contract (D-11, D-13):
+ *   loadWorkstreams(cwd) → WorkstreamSpec[]
+ *     - Globs brief/workstreams/*\/spec.yaml
+ *     - Parses each via yaml-mini.cjs
+ *     - Validates required fields: name, description, research_prompts[],
+ *       design_prompts[], output_artifact_template
+ *     - Enforces: name === parent-dir, all referenced paths resolve WITHIN
+ *       the workstream directory (T-02-05-02 directory-traversal guard)
+ *     - Throws Error with workstream slug + rule on any violation
+ */
+
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const { parseYamlDocument } = require('./yaml-mini.cjs');
+
+function validatePathWithin(workstreamDir, rel, fieldLabel, slug) {
+  const abs = path.resolve(workstreamDir, rel);
+  const boundary = workstreamDir + path.sep;
+  if (abs !== workstreamDir && !abs.startsWith(boundary)) {
+    throw new Error(
+      `Workstream "${slug}": ${fieldLabel} "${rel}" resolves outside workstream ` +
+      `directory (directory traversal rejected — T-02-05-02)`
+    );
+  }
+  if (!fs.existsSync(abs)) {
+    throw new Error(
+      `Workstream "${slug}": ${fieldLabel} "${rel}" does not exist`
+    );
+  }
+}
+
+function loadWorkstreams(cwd) {
+  const root = path.join(cwd, 'brief', 'workstreams');
+  if (!fs.existsSync(root)) return [];
+
+  const entries = fs.readdirSync(root, { withFileTypes: true })
+    .filter(e => e.isDirectory() && !e.name.startsWith('.'))
+    .map(e => e.name)
+    .sort();
+
+  const specs = [];
+  for (const dir of entries) {
+    const workstreamDir = path.join(root, dir);
+    const specPath = path.join(workstreamDir, 'spec.yaml');
+    if (!fs.existsSync(specPath)) continue;
+
+    const content = fs.readFileSync(specPath, 'utf-8');
+    const parsed = parseYamlDocument(content);
+
+    // D-13 required-field validation
+    if (parsed.name !== dir) {
+      throw new Error(
+        `Workstream "${dir}": name "${parsed.name}" does not match directory name "${dir}"`
+      );
+    }
+    if (!parsed.description || typeof parsed.description !== 'string') {
+      throw new Error(`Workstream "${dir}": missing required description`);
+    }
+    if (!Array.isArray(parsed.research_prompts) || parsed.research_prompts.length === 0) {
+      throw new Error(
+        `Workstream "${dir}": missing required research_prompts (non-empty list)`
+      );
+    }
+    if (!Array.isArray(parsed.design_prompts) || parsed.design_prompts.length === 0) {
+      throw new Error(
+        `Workstream "${dir}": missing required design_prompts (non-empty list)`
+      );
+    }
+    if (!parsed.output_artifact_template || typeof parsed.output_artifact_template !== 'string') {
+      throw new Error(
+        `Workstream "${dir}": missing required output_artifact_template`
+      );
+    }
+
+    // T-02-05-02 directory-traversal + existence for output_artifact_template
+    validatePathWithin(workstreamDir, parsed.output_artifact_template, 'output_artifact_template', dir);
+
+    // Optional path fields — same validation
+    if (parsed.business_model_variants && typeof parsed.business_model_variants === 'object') {
+      for (const [variant, rel] of Object.entries(parsed.business_model_variants)) {
+        if (typeof rel !== 'string') continue;
+        validatePathWithin(workstreamDir, rel, `business_model_variants.${variant}`, dir);
+      }
+    }
+    if (parsed.region_overrides && typeof parsed.region_overrides === 'object') {
+      for (const [region, rel] of Object.entries(parsed.region_overrides)) {
+        if (typeof rel !== 'string') continue;
+        validatePathWithin(workstreamDir, rel, `region_overrides.${region}`, dir);
+      }
+    }
+
+    // Emit spec object with slug prepended; parsed has null-prototype so copy
+    // fields explicitly into a plain object for downstream predictability.
+    const spec = { slug: dir };
+    for (const k of Object.keys(parsed)) spec[k] = parsed[k];
+    specs.push(spec);
+  }
+
+  return specs;
+}
+
+module.exports = { loadWorkstreams };
