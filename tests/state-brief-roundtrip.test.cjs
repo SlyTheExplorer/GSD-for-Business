@@ -104,13 +104,17 @@ describe('state.brief.* round-trip (A4 verification, FND-05)', () => {
       'array-of-objects (gap_queue) preserved',
     );
 
-    // Nested object at leaf
+    // Nested object at leaf.
+    // Per D-20 contract (documented in tests/frontmatter-roundtrip.test.cjs:20-27):
+    // extractFrontmatter returns every non-array, non-null scalar as a STRING
+    // — numeric findings_count round-trips as '0', not 0. D-20 preserves that
+    // contract and only fixes nested-object / array-of-objects / null defects.
     assert.deepStrictEqual(
       fm1.brief.last_gate_results.align,
       {
         decision: 'ALIGNED',
         severity: 'info',
-        findings_count: 0,
+        findings_count: '0',
         at: '2026-04-18T10:00:00Z',
       },
       'nested object leaf (last_gate_results.align) preserved with all fields',
