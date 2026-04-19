@@ -16,6 +16,15 @@
  *     not JSON.stringify). JSON.stringify collapses null vs "null" drift;
  *     assert.ok passes on corrupted leaves. Both are forbidden per
  *     02-PATTERNS.md "Anti-patterns to avoid".
+ *
+ * Scalar-type contract:
+ *   extractFrontmatter returns every non-array, non-null scalar as a STRING
+ *   (see tests/frontmatter.test.cjs:206-213 — phase/wave/depends_on all come
+ *   back as strings). D-20 preserves that contract and only fixes the
+ *   nested-object / array-of-objects / null-coercion defects. Numeric
+ *   findings_count values in fixtures below are therefore written as strings
+ *   ('0') so round-trip assertions match the documented contract, not a
+ *   desired-but-un-specified integer coercion.
  */
 
 const { test, describe } = require('node:test');
@@ -43,7 +52,7 @@ describe('reconstructFrontmatter D-20 nested object leaves (FND-05)', () => {
           align: {
             decision: 'ALIGNED',
             severity: 'info',
-            findings_count: 0,
+            findings_count: '0',
             at: '2026-04-18T00:00:00Z',
           },
         },
@@ -59,9 +68,9 @@ describe('reconstructFrontmatter D-20 nested object leaves (FND-05)', () => {
     const input = {
       brief: {
         last_gate_results: {
-          align: { decision: 'ALIGNED', severity: 'info', findings_count: 0, at: '2026-04-18T00:00:00Z' },
-          audience: { decision: 'PASSED', severity: 'info', findings_count: 1, at: '2026-04-18T00:00:01Z' },
-          compliance: { decision: 'PASSED', severity: 'warn', findings_count: 2, at: '2026-04-18T00:00:02Z' },
+          align: { decision: 'ALIGNED', severity: 'info', findings_count: '0', at: '2026-04-18T00:00:00Z' },
+          audience: { decision: 'PASSED', severity: 'info', findings_count: '1', at: '2026-04-18T00:00:01Z' },
+          compliance: { decision: 'PASSED', severity: 'warn', findings_count: '2', at: '2026-04-18T00:00:02Z' },
         },
       },
     };
@@ -148,7 +157,7 @@ describe('extractFrontmatter D-20 null literal preservation (FND-05)', () => {
       brief: {
         current_workstream: null,
         last_gate_results: {
-          align: { decision: 'ALIGNED', severity: 'info', findings_count: 0, at: '2026-04-18T00:00:00Z' },
+          align: { decision: 'ALIGNED', severity: 'info', findings_count: '0', at: '2026-04-18T00:00:00Z' },
           audience: null,
           compliance: null,
         },
@@ -174,7 +183,7 @@ describe('reconstructFrontmatter D-20 two-cycle integrity (FND-05)', () => {
           { topic: 'pricing-model', criticality: 'high', raised_at: '2026-04-18' },
         ],
         last_gate_results: {
-          align: { decision: 'ALIGNED', severity: 'info', findings_count: 0, at: '2026-04-18T00:00:00Z' },
+          align: { decision: 'ALIGNED', severity: 'info', findings_count: '0', at: '2026-04-18T00:00:00Z' },
           audience: null,
           compliance: null,
         },
