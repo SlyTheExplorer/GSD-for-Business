@@ -79,7 +79,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. User declares `business_model` (b2b / b2c / b2b2c / enterprise), `region` (kr / us / eu / ...), `audience policy` defaults, and `compliance_packs` list as part of `/brief-define` and these are written to `.planning/config.json` under the `brief.*` namespace, ready for context injection (DEF-04)
   5. User attempts to advance to `/brief-discover` with an OBJECTIVES.md missing required fields and is BLOCKED with a structured error listing the missing fields (block-style, not warning) (DEF-05)
   6. User attempts to start a new milestone and OBJECTIVES.md was last amended >48h ago: a stale-anchor warning is surfaced before any new work begins (DEF-06)
-**Plans**: TBD
+**Plans**: 6 plans
+- [ ] 03-01-objectives-foundation-PLAN.md — objectives.cjs primitives (write/read/validate/lock/stale-anchor) + D-20 frontmatter round-trip test + immutable-lock test + canonical Korea-first B2C fixture (DEF-03)
+- [ ] 03-02-define-mode-a-greenfield-PLAN.md — commands/brief/define.md + brief/workflows/define.md (Mode A prompt orchestration with TEXT_MODE fallback) + brief/bin/lib/define.cjs (fixture-aware flow controller) + brief-tools.cjs dispatcher + Mode A smoke Cycle 1 + docs/ARCHITECTURE.md count bumps (DEF-01, DEF-02)
+- [ ] 03-03-define-mode-b-amendment-PLAN.md — Mode B amendment branch (Section Picker with 🔒 markers, D-07 footer verbatim) + applyModeBAmendment lib + --unlock-intent audit-log + Mode B immutable-lock integration test (DEF-03)
+- [ ] 03-04-config-korea-atomic-commit-PLAN.md — Korea-signal detection (Hangul + English keywords + company names) + config.json brief.* namespace write + atomic 3-artifact commit (OBJECTIVES.md+config.json+STATE.md) + canary structural test + Mode A smoke Cycles 2+3+4 (DEF-04, parallel to Plan 03)
+- [ ] 03-05-discover-stub-block-gate-PLAN.md — commands/brief/discover.md + brief/workflows/discover.md stubs + objectives.cmdValidate CLI wrapper with Pitfall 5 Korean block-gate + dispatcher case + block-gate smoke test (positive + negative + missing-file) + docs/ARCHITECTURE.md count bumps (DEF-05)
+- [ ] 03-06-stale-anchor-text-mode-parity-PLAN.md — shouldStaleAnchorFire entry-point gating + 3-option D-13 interrupt prompt rendering + stale-anchor hook wired in both /brief-discover (replaces Plan 05 STUB) and /brief-define --amend Step 0.5 + stale-anchor smoke (positive discover + negative /brief-status + negative fresh + unit) + text_mode parity smoke on canonical fixture (DEF-06 + FND-06 flowdown)
 
 **Pitfall coverage**: #3 OBJECTIVES.md anchor drift (DEF-03 immutable/mutable layers + DEF-06 stale-anchor warning are designed-in from Phase 0), #9 Non-developer friction (DEF-01 conversational extractor adapts to non-developer planner persona).
 

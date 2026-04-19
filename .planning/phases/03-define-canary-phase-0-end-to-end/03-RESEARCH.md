@@ -977,27 +977,27 @@ Print: "다음 단계: /brief-discover — 선택하신 연구 영역으로 분�
 
 **If this table is empty:** N/A — 8 assumptions tagged for user confirmation (A1, A4–A8) or already verified (A2, A3, A8).
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Korean prompt template exact wording (A1)**
    - What we know: D-03 locks implicit Push Twice; D-04 locks hybrid Dream State format; Claude's Discretion permits planner to author exact prose.
    - What's unclear: Whether the Pattern 2–4 Korean templates as drafted here will feel natural or clinical to pilot users.
-   - Recommendation: Planner records these templates verbatim in workflow markdown as v1 baseline. Phase 9 HRD-04 pilot surfaces refinements. Do NOT open CONTEXT.md to re-debate — D-08 meta-discipline says planner/executor resolve this level of detail themselves.
+   - RESOLVED: Planner records these templates verbatim in workflow markdown as v1 baseline. Phase 9 HRD-04 pilot surfaces refinements. Do NOT open CONTEXT.md to re-debate — D-08 meta-discipline says planner/executor resolve this level of detail themselves.
 
 2. **Dialogue pause/resume mid-session**
    - What we know: CONTEXT.md Deferred Ideas acknowledges this but offers a suggested default (status: in_progress).
    - What's unclear: Will users actually quit mid-session? Will they want to re-enter with a "resume from last question" UX, or restart fresh?
-   - Recommendation: Ship v1 with the suggested default: partial writes use `status: in_progress`, block-gate treats `in_progress` as incomplete. Mode B `--amend` re-entry on `in_progress` OBJECTIVES.md jumps to the step where the conversation stopped. If pilot reveals this UX feels lossy, refine in v1.x.
+   - RESOLVED: Ship v1 with the suggested default: partial writes use `status: in_progress`, block-gate treats `in_progress` as incomplete. Mode B `--amend` re-entry on `in_progress` OBJECTIVES.md jumps to the step where the conversation stopped. If pilot reveals this UX feels lossy, refine in v1.x.
 
 3. **`/brief-confirm-objectives` as real command vs sub-flag**
    - What we know: D-13 stale-anchor flow references it; planner's call per Surface Caps discipline.
    - What's unclear: Whether a dedicated command is warranted (memorability) or a sub-flag on `/brief-status` is sufficient.
-   - Recommendation: Absorb into stale-anchor 3-choice flow. The 3 options (`잠시 검토에` / `현재 OBJECTIVES를 보고 맞으면 승인` / `이제 승인, 빠르게 진행`) implement all the needed paths without a new command. Phase 3's net command additions stay at +2 (`/brief-define`, `/brief-discover` stub) preserving the "+1 per phase" implicit cadence Phase 2 D-09 narrative assumes.
+   - RESOLVED: Absorb into stale-anchor 3-choice flow. The 3 options (`잠시 검토에` / `현재 OBJECTIVES를 보고 맞으면 승인` / `이제 승인, 빠르게 진행`) implement all the needed paths without a new command. Phase 3's net command additions stay at +2 (`/brief-define`, `/brief-discover` stub) preserving the "+1 per phase" implicit cadence Phase 2 D-09 narrative assumes.
 
 4. **Mode B selection UI for mutable sections**
    - What we know: D-07 immutable lock; Mode B "어느 부분을 다시 보시겠어요?" prompt.
    - What's unclear: Whether to show Immutable Intent items with a 🔒 marker (visible but unselectable) or omit them entirely from the Mode B selection prompt.
-   - Recommendation: Show with 🔒 marker as greyed-out/disabled options — surfaces the existence of the lock AND the `--unlock-intent` escape, per Pitfall 1 two-layer enforcement mandate. In `text_mode`, render as: `(잠김 — --unlock-intent 필요) 창업자 정체성`.
+   - RESOLVED: Show with 🔒 marker as greyed-out/disabled options — surfaces the existence of the lock AND the `--unlock-intent` escape, per Pitfall 1 two-layer enforcement mandate. In `text_mode`, render as: `(잠김 — --unlock-intent 필요) 창업자 정체성`.
 
 ## Environment Availability
 
