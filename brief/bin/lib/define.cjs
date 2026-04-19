@@ -215,9 +215,87 @@ function applyFromFixture(cwd, fixtureName, raw) {
   };
 }
 
+// ─── Mode B Amendment (Plan 03-03) ───────────────────────────────────────────
+
+/**
+ * applyModeBAmendment — Mode B delta-merge primitive.
+ *
+ * Drives the dispatcher path for `/brief-define --amend`. The writer-layer
+ * lock (enforceImmutableLock inside objectives.writeObjectivesMd) is the
+ * second layer of Pitfall #3 / D-07 enforcement — the first layer is the
+ * UI-side 🔒 marker in brief/workflows/define.md Step 2B (Task 2 of this
+ * plan). If the user attempts to mutate an immutable field WITHOUT
+ * `--unlock-intent`, the writer throws the Korean structured error and the
+ * file is left untouched (verified by tests/brief-objectives-immutable-lock
+ * + tests/brief-define-mode-b).
+ *
+ * Audit log discipline (D-07 intent, T-03-06 repudiation mitigation):
+ *   Every --unlock-intent-triggered immutable mutation appends a line to
+ *   .planning/OBJECTIVES-UNLOCK-AUDIT.log with format
+ *   `<ISO8601Timestamp> UNLOCK <field>`. Multiple mutations in one call
+ *   emit one line per field. Append semantics (fs.appendFileSync) so
+ *   concurrent sessions accumulate rather than overwrite.
+ *
+ * @param {string} cwd — repo root
+ * @param {string[]} selectedSections — section names the user opted to revisit (workflow-driven; retained for future introspection)
+ * @param {object} updatesPayload — { frontmatter?, body? } delta to splice onto existing OBJECTIVES.md
+ * @param {object} opts — { unlockIntent?: boolean, auditLogPath?: string }
+ * @returns {{status:'amended', mutatedImmutables:string[], unlockIntent:boolean}}
+ */
+function applyModeBAmendment(cwd, selectedSections, updatesPayload, opts = {}) {
+  const unlockIntent = opts && opts.unlockIntent === true;
+
+  const existing = objectives.readObjectivesMd(cwd);
+  const existingFm = (existing && existing.frontmatter) || {};
+
+  const payload = {
+    frontmatter: { ...((updatesPayload && updatesPayload.frontmatter) || {}) },
+    body: updatesPayload ? updatesPayload.body : undefined,
+  };
+  // Mode B always tags mode=amended so D-05 distinguishes greenfield vs amendment.
+  payload.frontmatter.mode = 'amended';
+
+  // Detect which immutable fields are actually being mutated — BEFORE calling the
+  // writer — so we can emit audit lines only on real unlock events (not on
+  // unlock-flagged no-op writes).
+  const immItems = Array.isArray(existingFm.immutable_items)
+    ? existingFm.immutable_items
+    : [];
+  const mutatedImmutables = immItems.filter((k) => {
+    if (!Object.prototype.hasOwnProperty.call(payload.frontmatter, k)) return false;
+    return (
+      JSON.stringify(payload.frontmatter[k]) !==
+      JSON.stringify(existingFm[k])
+    );
+  });
+
+  // Delegate to the Plan 01 writer. When unlockIntent===false, the writer
+  // throws IMMUTABLE_LOCK_ERROR_KO (Korean) before any disk write. We let the
+  // error propagate so the caller (workflow / test) can surface it.
+  objectives.writeObjectivesMd(cwd, payload, { unlockIntent });
+
+  // Audit log ONLY when an immutable mutation actually happened AND the
+  // user supplied --unlock-intent. Mutable-only edits emit no audit noise.
+  if (unlockIntent && mutatedImmutables.length > 0) {
+    const paths = require('./core.cjs').planningPaths(cwd);
+    const base = (paths && paths.planning) || path.join(cwd, '.planning');
+    const auditPath =
+      (opts && opts.auditLogPath) ||
+      path.join(base, 'OBJECTIVES-UNLOCK-AUDIT.log');
+    const iso = new Date().toISOString();
+    const lines = mutatedImmutables
+      .map((f) => `${iso} UNLOCK ${f}\n`)
+      .join('');
+    fs.appendFileSync(auditPath, lines, 'utf-8');
+  }
+
+  return { status: 'amended', mutatedImmutables, unlockIntent };
+}
+
 module.exports = {
   cmdDefineApply,
   runInteractiveModeA,
   applyFromFixture,
+  applyModeBAmendment,
   IMMUTABLE_DEFAULT_ITEMS,
 };
