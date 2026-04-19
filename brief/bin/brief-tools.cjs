@@ -811,10 +811,13 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
     }
 
     case 'discover': {
-      // Phase 3 STUB — block-gate + Phase 5 placeholder. Real DISCOVER body
-      // (parallel domain research flow) arrives in Phase 5. This case exists
-      // so Plan 05 can wire the DEF-05 gate to a user-facing entry point
-      // (`/brief-discover`) without scope creep into Phase 5 research logic.
+      // Phase 3 STUB — block-gate + stale-anchor + Phase 5 placeholder. Real
+      // DISCOVER body (parallel domain research flow) arrives in Phase 5. This
+      // case wires:
+      //   Plan 05 — DEF-05 block-gate (cmdValidate).
+      //   Plan 06 — DEF-06 stale-anchor 48h interrupt (shouldStaleAnchorFire
+      //             + renderStaleAnchorPrompt), ordered BEFORE the Phase 5
+      //             placeholder so W-8 `idxPrompt < idxPlaceholder` holds.
       const objectives = require('./lib/objectives.cjs');
       const r = objectives.validateObjectivesComplete(cwd);
       if (!r.valid) {
@@ -822,6 +825,18 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
         // non-zero SILENTLY (W-6 — no English "validation failed" leakage).
         return objectives.cmdValidate(cwd, raw);
       }
+
+      // Stale-anchor check (DEF-06, D-13). Qualifying entry point:
+      // 'discover-entry'. shouldStaleAnchorFire returns {fire:false} for any
+      // non-qualifying entry or fresh OBJECTIVES.md.
+      const define = require('./lib/define.cjs');
+      const stale = define.shouldStaleAnchorFire(cwd, 'discover-entry');
+      if (stale.fire) {
+        // W-8 ordering: write the stale-anchor prompt to stdout BEFORE the
+        // Phase 5 placeholder so `combined.indexOf('48시간') < combined.indexOf('Phase 5')`.
+        process.stdout.write(define.renderStaleAnchorPrompt(stale.age_hours));
+      }
+
       // Pass-through placeholder. Human-readable reminder to stderr so it is
       // visible regardless of --raw mode; structured JSON to stdout follows the
       // status.cjs (D-19) convention — raw=true emits the plain text, raw=false

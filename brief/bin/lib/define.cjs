@@ -50,6 +50,20 @@ const IMMUTABLE_DEFAULT_ITEMS = Object.freeze([
   'problem-statement',
 ]);
 
+// D-13 qualifying entry points for the stale-anchor 48h interrupt.
+// W-1: `phase-entry` and `milestone-entry` are scaffolded here for Phase 4+
+// and v2 wiring but have NO live dispatcher call site in Phase 3. Only
+// `discover-entry` (Plan 06 /brief-discover dispatcher) and
+// `define-amend-entry` (Plan 06 workflow Step 0.5 on --amend) are live.
+// EXPLICITLY REFUSED: `status-entry` / `help-entry` / `mid-workflow` —
+// Pitfall 6 `train users to ignore` guard.
+const QUALIFYING_ENTRY_POINTS = new Set([
+  'discover-entry',       // /brief-discover first invocation — live in Phase 3 Plan 06
+  'define-amend-entry',   // /brief-define --amend entry — live in Phase 3 Plan 06
+  'phase-entry',          // Phase 4+ new-phase-start — scaffolded only, no dispatcher wire in Phase 3
+  'milestone-entry',      // v2 /brief-new-milestone — scaffolded only, no dispatcher wire in Phase 3
+]);
+
 // Korea-signal detection (D-11, Pitfall 2 over-suggest bias).
 // Three layers of matching — Hangul block (primary), romanized/regulatory
 // keywords (secondary), common Korean company names (tertiary). Frozen for
@@ -360,6 +374,63 @@ function applyFromFixture(cwd, fixtureName, raw) {
   }
 }
 
+// ─── Stale-anchor 48h interrupt (Plan 03-06, DEF-06, D-13) ───────────────────
+
+/**
+ * shouldStaleAnchorFire — entry-point gate + mtime check.
+ *
+ * Called from the dispatcher or a workflow hook BEFORE any new-activity work
+ * runs. Returns `{fire, age_hours, reason?}`. The interrupt fires only when
+ * both conditions hold:
+ *   1. entryPoint is in QUALIFYING_ENTRY_POINTS (D-13 scope),
+ *   2. objectives.checkStaleAnchor reports `stale: true` (>48h since last
+ *      OBJECTIVES.md mtime).
+ *
+ * Pitfall 6 mitigation: any unrecognized entryPoint — including `status-entry`,
+ * `help-entry`, `mid-workflow` — returns `{fire: false, reason: 'entry-not-qualifying'}`
+ * deterministically, so `/brief-status` can never train users to click through.
+ */
+function shouldStaleAnchorFire(cwd, entryPoint) {
+  if (!QUALIFYING_ENTRY_POINTS.has(entryPoint)) {
+    return { fire: false, age_hours: 0, reason: 'entry-not-qualifying' };
+  }
+  const stale = objectives.checkStaleAnchor(cwd);
+  if (!stale.stale) {
+    return {
+      fire: false,
+      age_hours: stale.age_hours || 0,
+      reason: stale.reason || 'fresh',
+    };
+  }
+  return { fire: true, age_hours: stale.age_hours };
+}
+
+/**
+ * renderStaleAnchorPrompt — deterministic Korean 3-option text.
+ *
+ * D-13 verbatim options: `잠시 검토에` / `현재 OBJECTIVES를 보고 맞으면 승인`
+ * / `이제 승인, 빠르게 진행`. The `48시간` threshold phrase is required by
+ * the workflow file grep asserts (Plan 03-06 Task 2 acceptance criteria).
+ *
+ * AskUserQuestion wrapping happens in the runtime-specific workflow file
+ * (brief/workflows/discover.md + brief/workflows/define.md). This helper
+ * produces the raw prompt text the dispatcher prints to stdout BEFORE the
+ * Phase 5 placeholder (W-8 ordering guarantee).
+ */
+function renderStaleAnchorPrompt(ageHours) {
+  return [
+    `⚠ OBJECTIVES.md이 ${ageHours}시간 전 마지막으로 수정되었습니다 (48시간 경과).`,
+    '',
+    '본격적으로 일을 시작하기 전에 한 번 정비하시는 것을 권장합니다.',
+    '',
+    '어떻게 진행하시겠어요?',
+    '  1) 잠시 검토에 — /brief-define --amend 로 수정 흐름 진입',
+    '  2) 현재 OBJECTIVES를 보고 맞으면 승인 — 내용 확인 후 mtime 갱신',
+    '  3) 이제 승인, 빠르게 진행 — 즉시 mtime 갱신하고 다음 단계로',
+    '',
+  ].join('\n');
+}
+
 // ─── Mode B Amendment (Plan 03-03) ───────────────────────────────────────────
 
 /**
@@ -445,6 +516,9 @@ module.exports = {
   detectKoreaSignals,
   writeConfigBrief,
   performAtomicCommit,
+  shouldStaleAnchorFire,
+  renderStaleAnchorPrompt,
   KOREA_SIGNAL_PATTERNS,
   IMMUTABLE_DEFAULT_ITEMS,
+  QUALIFYING_ENTRY_POINTS,
 };
