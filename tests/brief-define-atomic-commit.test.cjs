@@ -124,29 +124,51 @@ describe('Atomic 3-artifact commit (Pitfall 3 mitigation, DEF-04 supporting)', (
 
   test('W-2 secondary — chmod-based rollback (may skip on filesystems that ignore read-only bit)', () => {
     // Opportunistic second pass — triggers the rollback via filesystem
-    // permission denial rather than stub-throw. Skips silently on
-    // filesystems that ignore chmod 0o444 (Docker-as-root, Windows).
+    // permission denial rather than stub-throw. Skips silently on any
+    // filesystem where atomicWriteFileSync can still overwrite a 0o444
+    // target (macOS/Linux allow rename-over-readonly when the parent dir
+    // is writable, Docker-as-root bypasses mode bits entirely, Windows
+    // treats chmod as a best-effort attribute). The W-2 primary test is
+    // the deterministic guarantor; this secondary exists only to catch
+    // regressions on filesystems that DO honor the bit.
     const configPath = path.join(tmpDir, '.planning', 'config.json');
+    const ATOMIC_WRITE = require('../brief/bin/lib/core.cjs').atomicWriteFileSync;
+
     try {
       fs.chmodSync(configPath, 0o444);
     } catch (_) {
       return; // chmod unsupported — skip silently
     }
-    let writeable = false;
+
+    // Probe whether THIS filesystem denies overwrite via
+    // atomicWriteFileSync specifically (not just writeFileSync). We don't
+    // care about the success mode — if the probe either writes or throws
+    // silently via the fallback, the secondary test cannot distinguish
+    // real denial from rename-over-readonly tolerance.
+    let writeableViaAtomic = false;
     try {
-      fs.writeFileSync(configPath, '{"probe":1}');
-      writeable = true;
+      ATOMIC_WRITE(configPath, '{"probe":1}');
+      writeableViaAtomic = true;
     } catch (_) {
-      /* expected when chmod is honored */
+      /* expected when chmod bits block the final rename */
     }
-    if (writeable) {
-      // Filesystem ignored chmod — skip.
+
+    if (writeableViaAtomic) {
+      // Filesystem permits rename-over-readonly — secondary is inapplicable.
       try {
         fs.chmodSync(configPath, 0o644);
       } catch (_) {
         /* best-effort */
       }
       return;
+    }
+
+    // Re-chmod the probed-back file so the subsequent apply encounters
+    // the same readonly target.
+    try {
+      fs.chmodSync(configPath, 0o444);
+    } catch (_) {
+      /* already 0o444 or perm denied — tolerate */
     }
 
     const r = runGsdTools(
