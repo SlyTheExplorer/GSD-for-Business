@@ -797,6 +797,41 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
       break;
     }
 
+    case 'objectives': {
+      // Plan 05 dispatcher — OBJECTIVES.md gate primitives exposed via CLI.
+      //   objectives validate       — DEF-05 block-gate (non-zero exit + Korean
+      //                               block message on missing fields, W-6 silent)
+      //   objectives stale-check    — DEF-06 mtime-based 48h staleness check (Plan 06 wiring)
+      const subcommand = args[1];
+      const objectives = require('./lib/objectives.cjs');
+      if (subcommand === 'validate') return objectives.cmdValidate(cwd, raw);
+      if (subcommand === 'stale-check') return objectives.cmdStaleCheck(cwd, raw);
+      error('Unknown objectives subcommand. Available: validate, stale-check');
+      break;
+    }
+
+    case 'discover': {
+      // Phase 3 STUB — block-gate + Phase 5 placeholder. Real DISCOVER body
+      // (parallel domain research flow) arrives in Phase 5. This case exists
+      // so Plan 05 can wire the DEF-05 gate to a user-facing entry point
+      // (`/brief-discover`) without scope creep into Phase 5 research logic.
+      const objectives = require('./lib/objectives.cjs');
+      const r = objectives.validateObjectivesComplete(cwd);
+      if (!r.valid) {
+        // cmdValidate renders the Korean block-gate to stderr and exits
+        // non-zero SILENTLY (W-6 — no English "validation failed" leakage).
+        return objectives.cmdValidate(cwd, raw);
+      }
+      // Pass-through placeholder. Human-readable reminder to stderr so it is
+      // visible regardless of --raw mode; structured JSON to stdout follows the
+      // status.cjs (D-19) convention — raw=true emits the plain text, raw=false
+      // emits a structured wrapper object for machine consumers.
+      const placeholderText = 'Phase 5 DISCOVER body — coming in Phase 5. Block-gate is live.';
+      fs.writeSync(2, placeholderText + '\n');
+      core.output({ phase: 5, status: 'placeholder', message: placeholderText }, raw, placeholderText);
+      return;
+    }
+
     case 'audit-uat': {
       const uat = require('./lib/uat.cjs');
       uat.cmdAuditUat(cwd, raw);
