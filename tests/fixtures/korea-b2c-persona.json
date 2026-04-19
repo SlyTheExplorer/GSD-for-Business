@@ -1,0 +1,95 @@
+{
+  "persona_name": "한국-첫-B2C-피트니스-앱-기획자",
+  "entry_mode": "A",
+  "language": "ko",
+  "region_signal": "kr",
+  "conversation_transcript": {
+    "opening": "저는 퇴근 후 혼자 집에서 운동하는 1인 가구 직장인을 위한 피트니스 앱을 만들고 싶습니다. 지금 시중에 나와있는 홈트 앱들은 영상만 보여주는데, 저는 사용자 자세를 직접 봐주는 앱이 필요하다고 생각해요.",
+    "push_twice_core_value": {
+      "push_1_question": "구체적으로 말씀해 주세요. '자세를 봐주는' 것이 정확히 어떤 가치를 제공하나요?",
+      "push_1_answer": "혼자 운동하면 자세가 맞는지 확신이 안 서요. 그냥 영상만 보면서 따라하면 잘못 배울 수도 있고, 그래서 헬스장에 가거나 PT를 받아야 하는 건데, AI가 봐주면서 '지금 자세 틀렸어요'라고 알려주면 집에서도 혼자 바르게 운동할 수 있지 않을까요.",
+      "push_2_question": "'바르게'가 어떤 의미인지 좀 더 들려주세요. 의학적인 정렬을 말씀하시는 건가요, 아니면 특정 운동의 효과를 극대화하는 관점이신가요?",
+      "push_2_answer": "의학적 완벽까지는 아니고, 부상을 막는 수준이면 됩니다. 초보자가 유튜브 보고 스쿼트 따라하다가 무릎 나가는 케이스가 많은데, 그걸 막아주는 정도요."
+    },
+    "language_precision_audience": {
+      "precision_question": "'1인 가구 직장인'이라고 하셨는데, 연령대 / 운동 경험 / 예산 / 시간대 중 어떤 축이 가장 핵심인가요?",
+      "precision_answer": "시간대가 가장 핵심이에요. 밤 10시 이후에 혼자 운동하는 사람들. 그 시간에는 헬스장도 닫혀 있고, 주변에 사람도 없어서 자세를 봐줄 사람이 없거든요. 이 '혼자·밤·집' 조합이 제일 중요합니다."
+    },
+    "dream_state": {
+      "now": {
+        "prose": "지금은 아무도 이 문제를 정확히 해결하지 못하고 있어요. 홈트 앱은 영상만 보여주고, 피트니스 시계는 심박수만 재고, 자세 교정 PT는 너무 비싸고 시간이 안 맞아요. '혼자·밤·집'이라는 이 3박자의 사용자를 위한 해결책이 공백 상태예요.",
+        "metrics": { "users_reached": 0, "observed_quotes": "(해당없음)", "revenue": "(해당없음)" }
+      },
+      "three_month": {
+        "prose": "3개월 뒤에는 최소한의 자세 판정 모델 1개와, 가장 기본인 스쿼트/플랭크/런지 3종의 라이브 피드백이 동작하면 좋겠습니다. 베타 사용자 100명이 밤 10시 이후에 실제로 이 앱을 켜고 운동하는 습관이 붙었는지를 관찰하고 싶어요.",
+        "metrics": { "users_reached": 100, "observed_quotes": "'PT 안 가도 되겠는데요'", "revenue": "(모름)" }
+      },
+      "twelve_month": {
+        "prose": "12개월 뒤에는 '혼자·밤·집'이라는 고유 포지셔닝이 확립되어 있고, 유료 사용자가 월 구독으로 고정 수익을 만들어주는 상태였으면 합니다. 무엇보다 '자세 잘못해서 부상 난 적 없다'는 후기가 50개 이상 쌓여 있어야 해요. 그게 제가 이 앱을 만드는 진짜 이유니까요.",
+        "metrics": { "users_reached": 5000, "observed_quotes": "'덕분에 무릎 안 나갔어요'", "revenue": "월 1천만원 MRR" }
+      }
+    },
+    "korea_context_mentions": [
+      "한국 1인 가구 비율이 40%를 넘어가고 있고, 밤 늦게 혼자 사는 직장인 시장은 점점 커지고 있어요.",
+      "한국 PT 시장은 가격이 비싸고 접근성이 낮아서, 이 부분이 AI로 대체될 수 있는 공간이라고 봅니다.",
+      "개인정보는 PIPA를 지켜야 하니까 영상은 로컬에서만 처리하고 서버로 안 보내는 구조를 고려하고 있습니다."
+    ]
+  },
+  "korea_signals_detected": [
+    "language: Korean (Hangul throughout transcript)",
+    "region keyword: 한국",
+    "compliance keyword: PIPA",
+    "cultural context: 1인 가구, 퇴근 후, 헬스장, PT",
+    "market signal: 한국 1인 가구 비율이 40%를 넘어가고 있고"
+  ],
+  "expected_configs": {
+    "business_model": "b2c",
+    "region": "kr",
+    "audience_policy": "internal",
+    "compliance_packs": ["PIPA", "ISMS-P", "MyData"]
+  },
+  "expected_objectives": {
+    "frontmatter": {
+      "brief_objectives_version": "1.0",
+      "status": "ready",
+      "business_model": "b2c",
+      "region": "kr",
+      "audience_policy": "internal",
+      "compliance_packs": ["PIPA", "ISMS-P", "MyData"],
+      "immutable_items": ["creator-identity", "core-value", "problem-statement"]
+    },
+    "body_sections_present": [
+      "# OBJECTIVES",
+      "## Immutable Intent",
+      "### Creator Identity",
+      "### Core Value",
+      "### Problem Statement",
+      "## Mutable Hypotheses",
+      "### Target Audience Specifics",
+      "### Verification Metrics",
+      "### Hypothesized Alternative Tools / Competitors",
+      "### Dream State — Now",
+      "### Dream State — 3-month",
+      "### Dream State — 12-month"
+    ]
+  },
+  "expected_body_fragments": {
+    "creator_identity": "비개발자 피트니스 앱 기획자 (1인 가구 직장인 본인)",
+    "core_value": "AI가 봐주면서 혼자·밤·집 운동 시 부상을 막아주는 실시간 자세 판정",
+    "problem_statement": "밤 10시 이후에 혼자 운동하는 사용자는 자세를 봐줄 사람이 없어, 유튜브 영상을 따라하다 잘못된 자세로 부상 위험이 높다.",
+    "target_audience": "퇴근 후 혼자 집에서 운동하는 1인 가구 직장인 (밤 10시 이후 운동 시간대)",
+    "verification_metrics": "3개월: 베타 사용자 100명이 주 3회 이상 밤 10시 이후 앱 사용 / 12개월: 유료 월 구독 전환 + 부상 예방 후기 50건+",
+    "competitors": "홈트레이닝 영상 앱 (눔, 홈트), 피트니스 웨어러블 (Apple Watch, 갤럭시 워치), 오프라인 PT"
+  },
+  "notes": {
+    "w3_verbatim_strings_required": [
+      "퇴근 후 혼자 집에서 운동하는 1인 가구 직장인",
+      "AI가 봐주면서"
+    ],
+    "w3_placement": {
+      "퇴근 후 혼자 집에서 운동하는 1인 가구 직장인": "conversation_transcript.opening",
+      "AI가 봐주면서": "conversation_transcript.push_twice_core_value.push_1_answer"
+    },
+    "fixture_owner": "Plan 03-01 (this plan). Consumers: Plan 02 (Mode A smoke), Plan 04 (Korea-signal detection + atomic commit + canary)."
+  }
+}
