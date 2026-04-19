@@ -109,3 +109,55 @@ grep -ci 'spec-driven\|get-shit-done-cc\|gsd-build/get-shit-done' package.json  
 - package.json GSD-domain residue: 0. The descriptive fields were rewritten in Plan 04 Task 2; this Plan 06 check confirms no regression. The `brief-build/brief` placeholder URL is explicitly permitted (see A-REPO entry above).
 
 
+---
+
+## Phase 2 Verifications
+
+### A4 — STATE.md round-trips state.brief.* without loss — VERIFIED
+
+**Status:** VERIFIED
+**Timestamp:** 2026-04-19T01:22:55Z
+**Phase:** 02-stable-seam-anchor-schema-caps-workstream-as-config
+**Requirement:** FND-05 (ROADMAP.md Success Criterion #1 for Phase 2)
+**Verification source:** `tests/state-brief-roundtrip.test.cjs`
+
+**Coverage (full D-03 schema):**
+- **array-of-objects:** `return_stack` (frame `{from_phase, to_phase, reason, pushed_at}`) and `gap_queue` (`{topic, criticality, raised_at}`) round-trip via `writeStateMd` + `extractFrontmatter` with `assert.deepStrictEqual` fidelity — catches Pitfall 1 `[object Object]` drift from 02-RESEARCH.md R-1.
+- **nested object leaves:** `last_gate_results.align` (`{decision, severity, findings_count, at}`) round-trips with all four fields intact. Per D-20 scalar-type contract (see `tests/frontmatter-roundtrip.test.cjs` lines 20-27), numeric scalar leaves round-trip as strings (`findings_count: '0'`), not JS numbers — documented expected behavior.
+- **null leaves:** `last_gate_results.audience` and `last_gate_results.compliance` come back as JS `null`, not string `"null"` — validates D-20 rule 3.
+- **scalar strings:** `current_workstream: 'bmc'` preserved as JS string.
+- **placeholder shapes:** the Phase 2 initial-state fixture (all empty arrays + null leaves + null scalar) round-trips cleanly, mirroring the exact shape seeded into `.planning/STATE.md` by Plan 02-04.
+
+**Verification command:**
+```bash
+node --test tests/state-brief-roundtrip.test.cjs
+```
+
+**Expected output:** 0 failures across 4 test cases (Cycle 1, Cycle 2, Cycle 3, Placeholder).
+
+**Actual output:**
+```
+ℹ tests 4
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+```
+
+**Implication — D-05 sidecar path NOT activated.** The 02-CONTEXT.md fallback plan (sidecar `.planning/state-brief.json`) is formally SUPERSEDED. The D-20 extension (`frontmatter.cjs` recursive serializer + null preservation — Plan 02-01) plus D-21 extension (`state.cjs` `cmdStateJson` + `syncStateFrontmatter` allowlist branch for `existingFm.brief` — Plan 02-04) close both halves of the round-trip defect in-place. Phase 6 keeps STATE.md as the single source of truth for return-stack state; no dual-write sidecar is required.
+
+**R-5 stronger-test compliance.** Cycle 3 of the smoke test invokes `runGsdTools(['state', 'json'], tmpDir)` between writes and asserts the `brief:` map survives the `cmdStateJson` rebuild-from-body path. Without D-21, this cycle fails RED (silently dropped map). With D-21 (commit `03c5e6b`), this cycle passes — proving the allowlist extension is live and wired through the CLI dispatch.
+
+**Downstream unblock:**
+- **Phase 4 (ALIGN):** may write `state.brief.last_gate_results.align = {decision, severity, findings_count, at}` without round-trip drift.
+- **Phase 5 (AUDIENCE):** may write `state.brief.last_gate_results.audience` via the same shape.
+- **Phase 6 (Return Stack):** may push/pop `state.brief.return_stack` frames and append to `state.brief.gap_queue` without data loss across writes.
+- **Phase 7 (COMPLIANCE + workstream selection):** may write `state.brief.last_gate_results.compliance` and update `state.brief.current_workstream` with string-slug values.
+
+**Risk if future code re-introduces drop:** The regression guard is `tests/state-brief-roundtrip.test.cjs` Cycle 3 — it calls the production CLI (`brief-tools.cjs state json`) and fails loudly if either preservation branch is removed or narrowed. Any future edit to `state.cjs` that touches `cmdStateJson` or `syncStateFrontmatter` preservation logic will trip this test. The ≤63-failure delta-cap policy ensures the test is noticed at CI time.
+
+**Relevant commits:**
+- Plan 02-01 (eccd94f) — D-20 `frontmatter.cjs` recursive serializer + null preservation
+- Plan 02-04 Task 1 (4ac7f94) — RED test file
+- Plan 02-04 Task 2 (03c5e6b) — D-21 allowlist extension + STATE.md brief: initialization
+
