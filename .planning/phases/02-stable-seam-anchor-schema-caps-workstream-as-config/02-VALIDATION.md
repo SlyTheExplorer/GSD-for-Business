@@ -2,7 +2,7 @@
 phase: 2
 slug: stable-seam-anchor-schema-caps-workstream-as-config
 status: draft
-nyquist_compliant: false
+nyquist_compliant: true
 wave_0_complete: false
 created: 2026-04-19
 ---
@@ -46,7 +46,7 @@ created: 2026-04-19
 | 02-0X-0Y | state-brief-schema | 2 | FND-05 (D-21) | — | `cmdStateJson` + `buildStateFrontmatter` preserve `brief:` map on rebuild | unit (regression) | same file — dedicated test case | ❌ W0 | ⬜ pending |
 | 02-0X-0Y | state-brief-schema | 2 | FND-05 | — | `.planning/ASSUMPTIONS.md` appends `### A4 —` entry (VERIFIED) | doc (grep) | `grep -q "^### A4 —" .planning/ASSUMPTIONS.md` | ❌ W0 script | ⬜ pending |
 | 02-0X-0Y | brief-state-version-rename | 2 | FND-05 (D-04) | — | `brief_state_version: 1.0` in STATE.md; `gsd_state_version` absent | doc (grep) | `grep -q "^brief_state_version:" .planning/STATE.md && ! grep -q "^gsd_state_version:" .planning/STATE.md` | ❌ W0 script | ⬜ pending |
-| 02-0X-0Y | brief-state-version-rename | 2 | FND-05 (D-04) | — | `tests/state.test.cjs` assertions at lines 350/365/382/442 updated to `brief_state_version` and pass | unit (regression) | `node --test tests/state.test.cjs` | ✅ exists; needs edits | ⬜ pending |
+| 02-0X-0Y | brief-state-version-rename | 2 | FND-05 (D-04) | — | `tests/state.test.cjs` assertions at lines 350/365/382/442/1725 updated to `brief_state_version` and pass | unit (regression) | `node --test tests/state.test.cjs` | ✅ exists; needs edits | ⬜ pending |
 | 02-0X-0Y | workstream-loader | 3 | FND-08 (D-10/D-11) | — | loader globs `brief/workstreams/*/spec.yaml` and returns parsed specs | unit | `node --test tests/workstream-loader-discovery.test.cjs` | ❌ W0 | ⬜ pending |
 | 02-0X-0Y | workstream-loader | 3 | FND-08 (D-12) | — | inline YAML mini-parser handles string/number/boolean/null/list/nested map | unit | `node --test tests/workstream-loader-discovery.test.cjs` (subset) | ❌ W0 | ⬜ pending |
 | 02-0X-0Y | workstream-loader | 3 | FND-08 (D-13) | — | loader rejects `name != parent dir name` with structured error | unit | `node --test tests/workstream-loader-validation.test.cjs` | ❌ W0 | ⬜ pending |

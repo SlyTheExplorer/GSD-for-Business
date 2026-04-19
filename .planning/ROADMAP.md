@@ -58,7 +58,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. User declares a new built-in workstream by writing one `workstream-spec.yaml` file (with name, description, research-prompts, design-prompts, output-artifact-template) and the framework picks it up without any `.cjs` source change (FND-08)
   3. User opens CLAUDE.md and reads explicit caps: ≤12 user-facing slash commands, ≤8 skills, with rationale; the cap is enforced before any feature work is added in subsequent phases (FND-09)
   4. User runs `/brief-status` and gets a one-screen summary showing current phase, active workstream (none yet — placeholder OK at this phase), return-stack depth (0), last ALIGN finding (none yet), last COMPLIANCE finding (none yet) — the schema is in place even if values are placeholder (FND-10)
-**Plans**: TBD
+**Plans**: 6 plans
+- [ ] 02-01-PLAN.md — Extend frontmatter.cjs recursive serializer for D-20 (nested maps, arrays-of-objects, null) + tests/frontmatter-roundtrip.test.cjs (FND-05 prerequisite)
+- [ ] 02-02-PLAN.md — Add ## Surface Caps section to CLAUDE.md with regeneration guard (FND-09)
+- [ ] 02-03-PLAN.md — Atomic D-04 rename gsd_state_version → brief_state_version across state.cjs + STATE.md + 5 test-assertion lines (FND-05)
+- [ ] 02-04-PLAN.md — State.brief.* schema: D-21 allowlist extension + STATE.md brief: map initialization + A4 smoke test + ASSUMPTIONS.md VERIFIED entry (FND-05)
+- [ ] 02-05-PLAN.md — Workstream-as-YAML loader: yaml-mini.cjs + workstream-loader.cjs + brief/workstreams/_example/ fixture + discovery + validation tests (FND-08)
+- [ ] 02-06-PLAN.md — /brief-status compact-dashboard renderer + commands/brief/status.md + brief-tools.cjs case 'status' (FND-10)
 
 **Pitfall coverage**: #13 Framework specialization lock-in (FND-08 workstream-as-yaml committed UP-FRONT, before any built-in workstream is written), #1 Skill/command bloat (FND-09 caps in CLAUDE.md before commands proliferate), #8 Fork drift (FND-05 namespaced extension preserves stable seam).
 
@@ -169,7 +175,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation — Fork Hygiene, Removal, Rename | 10/10 | HALT-ACCEPTED 2026-04-18 — 288 tests recovered (83.5%) across 4 gap-closure cycles (Plans 07/08/09/10); 63 residual source/doc drift deferred to Phase 9 HRD-05; functional fork-rename goal fully achieved | 2026-04-18 |
-| 2. Stable Seam — Anchor Schema, Caps, Workstream-as-Config | 0/TBD | Not started | - |
+| 2. Stable Seam — Anchor Schema, Caps, Workstream-as-Config | 0/6 | Planned 2026-04-18 (6 plans, 4 waves) | - |
 | 3. DEFINE Canary — Phase 0 End-to-End | 0/TBD | Not started | - |
 | 4. First Gate — ALIGN Pattern Established | 0/TBD | Not started | - |
 | 5. DISCOVER — Parallel Research with Provenance | 0/TBD | Not started | - |
