@@ -44,17 +44,47 @@ If OBJECTIVES.md is entirely absent, the CLI emits a dedicated Korean message
 (`OBJECTIVES.md 파일이 아직 없습니다`) with a `/brief-define` start hint and the 20–35
 min greenfield-session time estimate.
 
-## Step 2: Stale-anchor check (DEF-06, D-13) — WIRED IN PLAN 06
+## Step 2: Stale-anchor check (DEF-06, D-13)
 
-Plan 06 fills in this step. Placeholder: invoke `brief-tools objectives stale-check`;
-if `stale === true` AND this is a new-activity entry, present a 3-option AskUserQuestion:
+Invoke `brief-tools objectives stale-check` to get `{ stale, age_hours }`.
 
-1. 잠시 검토에 → launches `/brief-define --amend`
-2. 현재 OBJECTIVES를 보고 맞으면 승인 → mtime bump after user reads the anchor
-3. 이제 승인, 빠르게 진행 → immediate mtime bump
+D-13 gating: this check runs ONLY because `/brief-discover` is a qualifying
+new-activity entry point. It does NOT run on `/brief-status`, `/brief-help`,
+or mid-workflow invocations (that logic lives in `shouldStaleAnchorFire` in
+`brief/bin/lib/define.cjs` — `QUALIFYING_ENTRY_POINTS` closed set).
 
-NO bypass without a choice. Under TEXT_MODE, render the three options as a plain-text
-numbered list and prompt the user to type 1, 2, or 3.
+If `stale === true`:
+
+<askuserquestion>
+  <question>
+⚠ OBJECTIVES.md이 {age_hours}시간 전 마지막으로 수정되었습니다 (48시간 경과).
+
+본격적으로 일을 시작하기 전에 한 번 정비하시는 것을 권장합니다.
+
+어떻게 진행하시겠어요?
+  </question>
+  <options>
+    <option>잠시 검토에 — /brief-define --amend 로 수정 흐름 진입</option>
+    <option>현재 OBJECTIVES를 보고 맞으면 승인 — 내용 확인 후 mtime 갱신</option>
+    <option>이제 승인, 빠르게 진행 — 즉시 mtime 갱신하고 다음 단계로</option>
+  </options>
+</askuserquestion>
+
+Under TEXT_MODE, render the three options as a plain-text numbered list (1/2/3)
+and prompt the user to type their choice number. NO bypass — the user MUST pick
+one of the three options to proceed.
+
+Action per selection:
+
+- **1. 잠시 검토에** — Dispatch to `/brief-define --amend`; the discover flow
+  exits until the amend completes, at which point the user re-runs `/brief-discover`.
+- **2. 현재 OBJECTIVES를 보고 맞으면 승인** — Display the current OBJECTIVES.md
+  content (via `brief-tools objectives` or a direct read of `.planning/OBJECTIVES.md`);
+  ask "내용 확인하셨나요? 맞으면 승인해 주세요." Upon approval, touch
+  `.planning/OBJECTIVES.md` mtime (e.g., `fs.utimesSync` with the current time, or
+  re-save via `writeObjectivesMd` with an identical payload) and continue to Step 3.
+- **3. 이제 승인, 빠르게 진행** — Immediately touch `.planning/OBJECTIVES.md`
+  mtime without content review; continue to Step 3.
 
 ## Step 3: Phase 5 Placeholder
 

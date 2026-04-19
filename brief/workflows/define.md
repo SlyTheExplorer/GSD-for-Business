@@ -25,6 +25,45 @@ both modes; only the button-seed primitive changes shape.
 This TEXT_MODE fallback is the canonical #2012 remedy for runtimes that do
 not support AskUserQuestion (OpenAI Codex, Gemini CLI, OpenCode, …).
 
+## Step 0.5: Stale-anchor check on --amend entry (DEF-06, D-13)
+
+If `--amend` is set, this is a qualifying new-activity entry per D-13
+(`define-amend-entry` in `brief/bin/lib/define.cjs` `QUALIFYING_ENTRY_POINTS`).
+Invoke `brief-tools objectives stale-check` to get `{ stale, age_hours }`.
+
+If `stale === true`:
+
+<askuserquestion>
+  <question>
+⚠ OBJECTIVES.md이 {age_hours}시간 전 마지막으로 수정되었습니다 (48시간 경과).
+
+본격적으로 일을 시작하기 전에 한 번 정비하시는 것을 권장합니다.
+
+어떻게 진행하시겠어요?
+  </question>
+  <options>
+    <option>잠시 검토에 — 지금 이 /brief-define --amend 흐름에서 검토</option>
+    <option>현재 OBJECTIVES를 보고 맞으면 승인 — 내용 확인 후 mtime 갱신</option>
+    <option>이제 승인, 빠르게 진행 — 즉시 mtime 갱신하고 Mode B 진행</option>
+  </options>
+</askuserquestion>
+
+Under TEXT_MODE, render the three options as a plain-text numbered list (1/2/3)
+and prompt the user to type their choice number. NO bypass.
+
+Action per selection:
+
+- **1. 잠시 검토에** — Continue the current `--amend` flow; no dispatch needed
+  (the user already invoked `--amend`). Proceed to Step 2B (Mode B entry).
+- **2. 현재 OBJECTIVES를 보고 맞으면 승인** — Display the current OBJECTIVES.md
+  content; ask "내용 확인하셨나요? 맞으면 승인해 주세요." On approval, touch
+  `.planning/OBJECTIVES.md` mtime and continue to Step 2B.
+- **3. 이제 승인, 빠르게 진행** — Immediately touch `.planning/OBJECTIVES.md`
+  mtime without content review; continue to Step 2B.
+
+If `--amend` is NOT set (Mode A greenfield), skip this step — Mode A is the
+INITIAL anchor creation, not an amendment, so stale-anchor does not apply.
+
 ## Step 1: Entry Mode Selection (D-05)
 
 Mode is detected by the user's answer to this first question — NEVER by

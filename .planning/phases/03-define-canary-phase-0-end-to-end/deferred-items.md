@@ -79,3 +79,55 @@ factor `writeConfigBrief` / `performAtomicCommit` / `touchStateActivity`
 into a new `brief/bin/lib/define-commit.cjs` helper during a later Phase 3
 polish pass, or relax the budget to ≤500 in a subsequent plan-checker
 amendment.
+
+## From Plan 03-06 Execution (2026-04-19)
+
+### 4. Stale-anchor `phase-entry` and `milestone-entry` dispatcher wiring (W-1)
+
+**Status:** INTENTIONAL SCAFFOLD — tracked for Phase 4+ (`phase-entry`) and v2
+(`milestone-entry`). No Phase 3 dispatcher call site exists.
+
+**Context:** `brief/bin/lib/define.cjs` exports a closed
+`QUALIFYING_ENTRY_POINTS` Set with four members: `discover-entry`,
+`define-amend-entry`, `phase-entry`, `milestone-entry`. Plan 06 wires only
+the first two to live dispatcher call sites (the `case 'discover':` in
+`brief/bin/brief-tools.cjs` and Step 0.5 in `brief/workflows/define.md`).
+
+`phase-entry` and `milestone-entry` are present in the Set (with inline
+`scaffolded only, no dispatcher wire in Phase 3` comments) so that Phase 4+
+`/brief-plan-phase` and v2 `/brief-new-milestone` can wire them by calling
+`define.shouldStaleAnchorFire(cwd, 'phase-entry' | 'milestone-entry')`
+without editing `define.cjs` again. The Set is the single source of truth
+for the D-13 qualifying entry vocabulary.
+
+**Deferred to Phase 4+/v2:** `phase-entry` and `milestone-entry`
+stale-anchor dispatcher wiring — scaffolded in `QUALIFYING_ENTRY_POINTS`
+but no live call site in Phase 3.
+
+### 5. `brief/bin/lib/define.cjs` line budget creep (450 → 524)
+
+**Status:** ACCEPTED — extends the Item 3 deferral above.
+
+**Observation during Plan 03-06:** Adding `shouldStaleAnchorFire` +
+`renderStaleAnchorPrompt` + `QUALIFYING_ENTRY_POINTS` + JSDoc pushes the
+file from 450 to 524 lines. Plan 06's acceptance criterion requested ≤400,
+but the file was already over budget from Plan 04 (450). The 74-line delta
+is 2 public functions + one constant + their JSDoc + the W-1 scaffolded
+comment block.
+
+**Why Plan 03-06 does NOT split the module:** Same reasoning as Item 3 —
+splitting Phase 3 `brief/bin/lib/define.cjs` during a wave-6 execute plan
+would thrash the module surface that Plans 03/04/05/06 all import from.
+Factoring into a `brief/bin/lib/define-stale-anchor.cjs` helper is a Phase 9
+HRD-05 / polish-pass task.
+
+### 6. `tests/architecture-counts.test.cjs` remains RED (Phase 1 residual)
+
+**Status:** ACCEPTED — pre-existing failure, unchanged by Plan 06.
+
+**Observation during Plan 03-06 regression:** Plan 06 touches
+`brief/workflows/define.md` and `brief/workflows/discover.md` but does not
+add new user-facing command/workflow/agent files, so the `-13` delta
+documented in Item 1 is unchanged. The architecture-counts test is not part
+of the Plan 06 acceptance set (not listed in the Phase 3 regression
+command) and remains deferred to Phase 9 HRD-05.
