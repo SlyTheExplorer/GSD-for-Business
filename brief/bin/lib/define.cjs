@@ -23,7 +23,7 @@
  *   D-11: 4-config inference at wrap-up — NOT in Plan 02 scope; Plan 04 fills in.
  *
  * Composition + zero-deps (A1 guard):
- *   - Imports core.cjs + objectives.cjs only. No gray-matter, ajv, js-yaml.
+ *   - Imports core.cjs + objectives.cjs only; no external YAML/schema packages.
  *   - Fixture path is resolved RELATIVE to repo root (tests/fixtures/<name>).
  *     Path traversal in `--fixture` rejected explicitly per T-03-04.
  */
