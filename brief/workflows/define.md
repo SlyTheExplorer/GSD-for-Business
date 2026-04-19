@@ -214,17 +214,101 @@ block directly.
 
 ## Step 2B: Mode B (Amendment)
 
-→ **Plan 03-03 fills in this step.** It will read existing OBJECTIVES.md
-via `readObjectivesMd(cwd)`, show Immutable Intent items with the 🔒 marker
-(CONTEXT.md D-07 + Pitfall #3 two-layer enforcement), present a
-mutable-section picker, revisit only the user-chosen mutable sub-sections,
-and pass `--unlock-intent` through to `writeObjectivesMd(cwd, payload, {unlockIntent: true})`
-when explicitly requested.
+### 2B.1 — Read existing OBJECTIVES.md
 
-In Plan 02 the workflow exits Step 2B with a friendly placeholder:
+Invoke `objectives.readObjectivesMd(cwd)` (via lib import from
+`brief/bin/lib/define.cjs`) to load the current frontmatter + body. If the
+file does not exist, exit with:
 
-> "Mode B (기존 프로젝트 다듬기)는 Plan 03-03에서 구현됩니다. 지금은 Mode A
->  greenfield 흐름만 사용할 수 있습니다. /brief-define 로 다시 시작해주세요."
+> "OBJECTIVES.md가 아직 없습니다. `/brief-define` 를 `--amend` 없이 실행해
+>  Mode A(새 기획)로 시작해 주세요."
+
+### 2B.2 — Section Picker (D-07 + Pitfall #1 two-layer enforcement)
+
+Present a multi-choice picker that lists ONLY the Mutable Hypotheses
+section headings as selectable options. Immutable Intent items are shown in
+an adjacent read-only block with the 🔒 marker — the picker MUST NOT allow
+clicking a 🔒-marked item by default (that is the `--unlock-intent` path).
+
+The picker header itself carries a visible 🔒 glyph so the user sees the
+lock boundary even before scanning the options (W-5 reinforcement).
+
+<askuserquestion>
+  <question>
+🔒 어느 부분을 다시 보시겠어요?
+
+(잠긴 항목은 `/brief-define --amend --unlock-intent` 로 다시 실행해야 편집할 수 있습니다.)
+
+## Mutable Hypotheses
+  </question>
+  <options>
+    <option>Target Audience Specifics</option>
+    <option>Verification Metrics</option>
+    <option>Hypothesized Alternative Tools / Competitors</option>
+    <option>Dream State — Now</option>
+    <option>Dream State — 3-month</option>
+    <option>Dream State — 12-month</option>
+  </options>
+</askuserquestion>
+
+Immediately after the picker, display the Immutable Intent items as a
+read-only block (NOT as AskUserQuestion options) so the user sees exactly
+what is locked and how to unlock if truly needed:
+
+```
+## Immutable Intent  (잠김)
+  🔒 Creator Identity        — /brief-define --amend --unlock-intent 로만 편집 가능
+  🔒 Core Value              — /brief-define --amend --unlock-intent 로만 편집 가능
+  🔒 Problem Statement       — /brief-define --amend --unlock-intent 로만 편집 가능
+```
+
+In TEXT_MODE (when AskUserQuestion is not available — Codex / Gemini /
+OpenCode), render the picker as a plain-text numbered list of the mutable
+sections. The Immutable Intent items appear below the numbered list with a
+`(잠김 — --unlock-intent 필요)` suffix and are NOT assigned a number, so the
+user cannot pick them by typing a number.
+
+Footer on every Mode B question (D-07 verbatim):
+
+```
+immutable 섹션은 잠겨있습니다. 수정하려면 /brief-define --unlock-intent
+```
+
+### 2B.3 — Conversational refinement on chosen mutable sections
+
+For each user-selected mutable section, ask one focused free-text question
+in Korean:
+
+- Target Audience Specifics: "타깃 사용자에 대해 업데이트하실 내용이 있으신가요?"
+- Verification Metrics: "검증 지표 중 추가하거나 수정하실 항목이 있으신가요?"
+- Hypothesized Alternative Tools / Competitors: "가설된 대안 도구나 경쟁 제품 중 최근에 달라진 것이 있으신가요?"
+- Dream State — Now / 3-month / 12-month: "이 시점의 상태를 어떻게 업데이트하시겠어요?"
+
+### 2B.4 — Confirm updated fields + atomic write
+
+Display the proposed diff (old → new) for each updated section. Ask:
+
+<askuserquestion>
+  <question>변경 사항을 저장할까요?</question>
+  <options>
+    <option>예, 저장</option>
+    <option>한 항목씩 다시 확인</option>
+    <option>취소 (저장하지 않음)</option>
+  </options>
+</askuserquestion>
+
+On approval, invoke `applyModeBAmendment(cwd, selectedSections, payload, {unlockIntent})`
+(where `unlockIntent` is TRUE only if the user originally invoked
+`/brief-define --amend --unlock-intent`). The lib writes the delta via
+`objectives.writeObjectivesMd` — if the user somehow tried to mutate an
+immutable item without `--unlock-intent` (e.g., a UI-layer bypass in a
+runtime that ignored the 🔒 marker), the writer throws the Korean error and
+control returns to 2B.2 with a reminder of the `--unlock-intent` escape.
+
+When `--unlock-intent` is in effect AND an immutable edit actually occurs,
+an audit-log line is appended to `.planning/OBJECTIVES-UNLOCK-AUDIT.log`
+(format: `<ISO8601Timestamp> UNLOCK <field>`) — append-only, one line per
+mutated immutable field.
 
 ## Step 3: Atomic Write + Commit
 
