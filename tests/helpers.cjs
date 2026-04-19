@@ -107,4 +107,54 @@ function cleanup(tmpDir) {
   fs.rmSync(tmpDir, { recursive: true, force: true });
 }
 
-module.exports = { runGsdTools, createTempDir, createTempProject, createTempGitProject, cleanup, TOOLS_PATH };
+// Baseline .planning/config.json seed for Phase 3 Plan 04 tests.
+// Centralizing this avoids duplication across every beforeEach AND keeps the
+// shape consistent across positive and negative test cases so that assertions
+// on cfg.model_profile / cfg.workflow / cfg.mode / cfg.granularity do not
+// false-red on empty temp dirs (B-2).
+const BRIEF_BASELINE_CONFIG = {
+  model_profile: 'quality',
+  commit_docs: true,
+  workflow: {
+    nyquist_validation: true,
+    text_mode: false,
+  },
+  mode: 'interactive',
+  granularity: 'fine',
+};
+
+function createTempProjectWithConfig(prefix = 'gsd-test-') {
+  const tmpDir = createTempProject(prefix);
+  fs.writeFileSync(
+    path.join(tmpDir, '.planning', 'config.json'),
+    JSON.stringify(BRIEF_BASELINE_CONFIG, null, 2) + '\n',
+    'utf-8',
+  );
+  return tmpDir;
+}
+
+function createTempGitProjectWithConfig(prefix = 'gsd-test-') {
+  const tmpDir = createTempGitProject(prefix);
+  fs.writeFileSync(
+    path.join(tmpDir, '.planning', 'config.json'),
+    JSON.stringify(BRIEF_BASELINE_CONFIG, null, 2) + '\n',
+    'utf-8',
+  );
+  // Re-stage + commit the seeded config so the atomic-commit rollback test
+  // starts from a clean HEAD (no pending modifications).
+  execSync('git add -A', { cwd: tmpDir, stdio: 'pipe' });
+  execSync('git commit -m "seed config"', { cwd: tmpDir, stdio: 'pipe' });
+  return tmpDir;
+}
+
+module.exports = {
+  runGsdTools,
+  createTempDir,
+  createTempProject,
+  createTempGitProject,
+  createTempProjectWithConfig,
+  createTempGitProjectWithConfig,
+  cleanup,
+  TOOLS_PATH,
+  BRIEF_BASELINE_CONFIG,
+};

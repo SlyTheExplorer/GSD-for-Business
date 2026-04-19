@@ -1,0 +1,46 @@
+{
+  "persona_name": "us-east-b2b-saas-planner",
+  "entry_mode": "A",
+  "language": "en",
+  "region_signal": "us",
+  "conversation_transcript": {
+    "opening": "I want to build a B2B SaaS product for US enterprise customers to streamline procurement workflows.",
+    "push_twice_core_value": {
+      "push_1_question": "What does streamline mean here?",
+      "push_1_answer": "Faster approvals, fewer manual touches, fewer lost purchase orders."
+    },
+    "language_precision_audience": {
+      "precision_question": "Which slice of procurement teams specifically?",
+      "precision_answer": "Mid-market procurement teams at Fortune 2000 companies, primarily on the East Coast of the US."
+    },
+    "dream_state": {
+      "now": {
+        "prose": "Teams juggle spreadsheets, PDFs, and manual emails across procurement. Approvals get lost, vendors resend invoices, finance has no visibility."
+      },
+      "three_month": {
+        "prose": "Procurement leads see a dashboard with approval backlog and bottlenecks. Email-to-PO conversion is automated for the top 20% of vendors."
+      },
+      "twelve_month": {
+        "prose": "Entire procurement cycle runs in the tool; CFO trusts the numbers. Audit trail is single-source for year-end review."
+      }
+    }
+  },
+  "signals_detected": [],
+  "expected_configs": {
+    "business_model": "b2b",
+    "region": "us",
+    "audience_policy": "partner",
+    "compliance_packs": []
+  },
+  "expected_body_fragments": {
+    "creator_identity": "Non-technical B2B SaaS product planner",
+    "core_value": "Streamline procurement workflows — faster approvals, fewer manual touches.",
+    "problem_statement": "Mid-market procurement teams juggle spreadsheets, PDFs, and manual emails with no single source of truth.",
+    "target_audience": "Mid-market procurement teams at Fortune 2000 companies, East Coast US.",
+    "verification_metrics": "3-month: top-20 vendor email-to-PO automated. 12-month: full cycle in tool, CFO trust.",
+    "competitors": "SAP Ariba, Coupa, manual spreadsheet-plus-email workflows."
+  },
+  "notes": {
+    "fixture_owner": "Plan 03-04 (this plan). Purpose: B-6 negative case — transcript contains zero regional signal keywords; asserts inferredCompliance resolves to empty list when the detector returns false."
+  }
+}

@@ -50,3 +50,32 @@ document", this IS satisfied. Plan 03-02 takes the latter interpretation
 and records the former as a cross-phase reconciliation issue here.
 
 This is a documentation-only note; no code changes follow from it.
+
+## From Plan 03-04 Execution (2026-04-19)
+
+### 3. `brief/bin/lib/define.cjs` line budget overshoot (450 vs plan ≤400)
+
+**Status:** ACCEPTED — tracked for a future Phase 3 cleanup or Phase 9 HRD-05
+sweep. No behavior change required to honor the budget.
+
+**Observation during Plan 03-04:** The plan's acceptance criterion sets a
+≤400-line budget on `brief/bin/lib/define.cjs`. After Plan 03-03 brought the
+file to 301 lines and Plan 03-04 adds `detectKoreaSignals` +
+`writeConfigBrief` + `performAtomicCommit` + `touchStateActivity` +
+rewritten `applyFromFixture` (B-6 sole-source rule + rollback branch), the
+file lands at 450 lines.
+
+**Why Plan 03-04 does NOT split the module:** Splitting Korea-signal detection
+into its own file would thrash the module surface for Plans 05/06 which
+already import from `./define.cjs`; a cosmetic refactor to chase 50 lines
+is out of scope for a wave-4 execute plan and risks destabilizing the
+canary contract the plan just locked.
+
+**Plan 03-04 impact:** All 42 Phase 3 tests GREEN, including the canary
+structural assertion on define.cjs's 6-primitive export surface and the
+3-file atomic-commit contract. The 50-line overage is doc-weight (JSDoc +
+guarded error paths), not logic density. Recommended resolution: either
+factor `writeConfigBrief` / `performAtomicCommit` / `touchStateActivity`
+into a new `brief/bin/lib/define-commit.cjs` helper during a later Phase 3
+polish pass, or relax the budget to ≤500 in a subsequent plan-checker
+amendment.
