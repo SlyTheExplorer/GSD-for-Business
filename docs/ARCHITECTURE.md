@@ -113,7 +113,7 @@ User-facing entry points. Each file contains YAML frontmatter (name, description
 - **Copilot:** Slash commands (`/brief-command-name`)
 - **Antigravity:** Skills
 
-**Total commands:** 75
+**Total commands:** 76
 
 ### Workflows (`brief/workflows/*.md`)
 
@@ -124,7 +124,7 @@ Orchestration logic that commands reference. Contains the step-by-step process i
 - State update patterns
 - Error handling and recovery
 
-**Total workflows:** 72
+**Total workflows:** 73
 
 ### Agents (`agents/*.md`)
 

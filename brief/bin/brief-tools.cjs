@@ -782,6 +782,21 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
       break;
     }
 
+    case 'define': {
+      const subcommand = args[1];
+      const define = require('./lib/define.cjs');
+      if (subcommand === 'apply') {
+        const parsed = parseNamedArgs(args, ['fixture'], ['amend', 'unlock-intent']);
+        return define.cmdDefineApply(cwd, {
+          fixture: parsed.fixture,
+          amend: parsed.amend,
+          unlockIntent: parsed['unlock-intent'],
+        }, raw);
+      }
+      error('Unknown define subcommand. Available: apply');
+      break;
+    }
+
     case 'audit-uat': {
       const uat = require('./lib/uat.cjs');
       uat.cmdAuditUat(cwd, raw);
