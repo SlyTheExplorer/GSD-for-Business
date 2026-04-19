@@ -811,7 +811,7 @@ function buildStateFrontmatter(bodyContent, cwd) {
     normalizedStatus = 'executing';
   }
 
-  const fm = { gsd_state_version: '1.0' };
+  const fm = { brief_state_version: '1.0' };
 
   if (milestone) fm.milestone = milestone;
   if (milestoneName) fm.milestone_name = milestoneName;
