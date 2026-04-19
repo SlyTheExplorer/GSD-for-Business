@@ -86,29 +86,50 @@ function extractFrontmatter(content) {
         // Inline array: key: [a, b, c] — quote-aware split (REG-04 fix)
         current.obj[key] = splitInlineArray(value.slice(1, -1));
         current.key = null;
+      } else if (value === 'null' || value === '~') {
+        // D-20 rule 3: YAML literal null (or tilde) → JS null (not string "null")
+        current.obj[key] = null;
+        current.key = null;
       } else {
         // Simple key: value
         current.obj[key] = value.replace(/^["']|["']$/g, '');
         current.key = null;
       }
     } else if (line.trim().startsWith('- ')) {
-      // Array item
-      const itemValue = line.trim().slice(2).replace(/^["']|["']$/g, '');
+      // Array item — supports scalar, null (D-20), and `- key: value` block-mapping-in-sequence (D-20 array-of-objects)
+      const rawItem = line.trim().slice(2);
+      const dashKvMatch = rawItem.match(/^([a-zA-Z0-9_-]+):\s*(.*)$/);
 
-      // If current context is an empty object, convert to array
+      // Convert empty-object placeholder to array on first dash item.
       if (typeof current.obj === 'object' && !Array.isArray(current.obj) && Object.keys(current.obj).length === 0) {
-        // Find the key in parent that points to this object and convert it
         const parent = stack.length > 1 ? stack[stack.length - 2] : null;
         if (parent) {
           for (const k of Object.keys(parent.obj)) {
             if (parent.obj[k] === current.obj) {
-              parent.obj[k] = [itemValue];
+              parent.obj[k] = [];
               current.obj = parent.obj[k];
+              stack[stack.length - 1].obj = parent.obj[k];
               break;
             }
           }
         }
-      } else if (Array.isArray(current.obj)) {
+      }
+      if (!Array.isArray(current.obj)) continue;
+
+      if (dashKvMatch) {
+        const k = dashKvMatch[1];
+        const vRaw = dashKvMatch[2].trim();
+        let v;
+        if (vRaw === '' || vRaw === '[') v = vRaw === '[' ? [] : {};
+        else if (vRaw.startsWith('[') && vRaw.endsWith(']')) v = splitInlineArray(vRaw.slice(1, -1));
+        else if (vRaw === 'null' || vRaw === '~') v = null;
+        else v = vRaw.replace(/^["']|["']$/g, '');
+        const newItem = { [k]: v };
+        current.obj.push(newItem);
+        // New frame so subsequent deeper `key: value` lines accumulate into this item.
+        stack.push({ obj: newItem, key: null, indent });
+      } else {
+        const itemValue = (rawItem === 'null' || rawItem === '~') ? null : rawItem.replace(/^["']|["']$/g, '');
         current.obj.push(itemValue);
       }
     }
@@ -117,65 +138,84 @@ function extractFrontmatter(content) {
   return frontmatter;
 }
 
+// ─── Serialization engine (D-20) ──────────────────────────────────────────────
+
+const RESERVED_KEYS = new Set(['__proto__', 'constructor', 'prototype']); // T-02-01-01 guard
+
+// Serialize a JS value as YAML content lines (caller prepends key header).
+// Recursion capped at 10 levels (T-02-01-01). Nested nulls emit literal 'null' (D-20 rule 1).
+function serializeValue(value, indent, depth) {
+  if (depth > 10) throw new Error('reconstructFrontmatter: nesting depth exceeded 10 levels (pathological or cyclic input)');
+  const pad = ' '.repeat(indent);
+  if (value === null || value === undefined) return ['null'];
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) return ['[]'];
+    // Legacy inline-array contract: all-strings, ≤3 items, joined <60 chars.
+    if (value.every(v => typeof v === 'string') && value.length <= 3 && value.join(', ').length < 60) {
+      return [`[${value.join(', ')}]`];
+    }
+    const out = [];
+    for (const item of value) {
+      if (item === null || item === undefined) {
+        out.push(`${pad}- null`);
+      } else if (typeof item === 'object' && !Array.isArray(item)) {
+        // Array-of-objects: `- key: value` block-mapping-in-sequence.
+        const keys = Object.keys(item).filter(k => !RESERVED_KEYS.has(k));
+        if (keys.length === 0) { out.push(`${pad}- {}`); continue; }
+        let first = true;
+        for (const k of keys) {
+          const v = item[k];
+          if (v === undefined) continue;
+          const sub = serializeValue(v, indent + 4, depth + 1);
+          const prefix = first ? `${pad}- ` : `${pad}  `;
+          first = false;
+          if (sub.length === 1 && !sub[0].startsWith(' ')) out.push(`${prefix}${k}: ${sub[0]}`);
+          else { out.push(`${prefix}${k}:`); for (const ln of sub) out.push(ln); }
+        }
+      } else if (Array.isArray(item)) {
+        const sub = serializeValue(item, indent + 2, depth + 1);
+        if (sub.length === 1) out.push(`${pad}- ${sub[0]}`);
+        else { out.push(`${pad}-`); for (const ln of sub) out.push(ln); }
+      } else {
+        const s = String(item);
+        const quoted = (typeof item === 'string' && (s.includes(':') || s.includes('#'))) ? `"${s}"` : s;
+        out.push(`${pad}- ${quoted}`);
+      }
+    }
+    return out;
+  }
+
+  if (typeof value === 'object') {
+    const keys = Object.keys(value).filter(k => !RESERVED_KEYS.has(k));
+    if (keys.length === 0) return ['{}'];
+    const out = [];
+    for (const k of keys) {
+      const v = value[k];
+      if (v === undefined) continue;
+      const sub = serializeValue(v, indent + 2, depth + 1);
+      if (sub.length === 1 && !sub[0].startsWith(' ')) out.push(`${pad}${k}: ${sub[0]}`);
+      else { out.push(`${pad}${k}:`); for (const ln of sub) out.push(ln); }
+    }
+    return out;
+  }
+
+  const s = String(value);
+  return (s.includes(':') || s.includes('#') || s.startsWith('[') || s.startsWith('{')) ? [`"${s}"`] : [s];
+}
+
 function reconstructFrontmatter(obj) {
   const lines = [];
   for (const [key, value] of Object.entries(obj)) {
+    if (RESERVED_KEYS.has(key)) continue;
+    // Legacy top-level null/undefined skip (nested nulls emit literal via serializeValue).
     if (value === null || value === undefined) continue;
-    if (Array.isArray(value)) {
-      if (value.length === 0) {
-        lines.push(`${key}: []`);
-      } else if (value.every(v => typeof v === 'string') && value.length <= 3 && value.join(', ').length < 60) {
-        lines.push(`${key}: [${value.join(', ')}]`);
-      } else {
-        lines.push(`${key}:`);
-        for (const item of value) {
-          lines.push(`  - ${typeof item === 'string' && (item.includes(':') || item.includes('#')) ? `"${item}"` : item}`);
-        }
-      }
-    } else if (typeof value === 'object') {
-      lines.push(`${key}:`);
-      for (const [subkey, subval] of Object.entries(value)) {
-        if (subval === null || subval === undefined) continue;
-        if (Array.isArray(subval)) {
-          if (subval.length === 0) {
-            lines.push(`  ${subkey}: []`);
-          } else if (subval.every(v => typeof v === 'string') && subval.length <= 3 && subval.join(', ').length < 60) {
-            lines.push(`  ${subkey}: [${subval.join(', ')}]`);
-          } else {
-            lines.push(`  ${subkey}:`);
-            for (const item of subval) {
-              lines.push(`    - ${typeof item === 'string' && (item.includes(':') || item.includes('#')) ? `"${item}"` : item}`);
-            }
-          }
-        } else if (typeof subval === 'object') {
-          lines.push(`  ${subkey}:`);
-          for (const [subsubkey, subsubval] of Object.entries(subval)) {
-            if (subsubval === null || subsubval === undefined) continue;
-            if (Array.isArray(subsubval)) {
-              if (subsubval.length === 0) {
-                lines.push(`    ${subsubkey}: []`);
-              } else {
-                lines.push(`    ${subsubkey}:`);
-                for (const item of subsubval) {
-                  lines.push(`      - ${item}`);
-                }
-              }
-            } else {
-              lines.push(`    ${subsubkey}: ${subsubval}`);
-            }
-          }
-        } else {
-          const sv = String(subval);
-          lines.push(`  ${subkey}: ${sv.includes(':') || sv.includes('#') ? `"${sv}"` : sv}`);
-        }
-      }
+    const sub = serializeValue(value, 2, 0);
+    if (sub.length === 1 && !sub[0].startsWith(' ')) {
+      lines.push(`${key}: ${sub[0]}`);
     } else {
-      const sv = String(value);
-      if (sv.includes(':') || sv.includes('#') || sv.startsWith('[') || sv.startsWith('{')) {
-        lines.push(`${key}: "${sv}"`);
-      } else {
-        lines.push(`${key}: ${sv}`);
-      }
+      lines.push(`${key}:`);
+      for (const ln of sub) lines.push(ln);
     }
   }
   return lines.join('\n');
@@ -370,6 +410,7 @@ module.exports = {
   extractFrontmatter,
   reconstructFrontmatter,
   spliceFrontmatter,
+  splitInlineArray,
   parseMustHavesBlock,
   FRONTMATTER_SCHEMAS,
   cmdFrontmatterGet,
