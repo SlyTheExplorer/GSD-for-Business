@@ -201,6 +201,28 @@ Conventions not yet established. Will populate as patterns emerge during develop
 Architecture not yet mapped. Follow existing patterns found in the codebase.
 <!-- BRIEF:architecture-end -->
 
+<!-- BRIEF PHASE 2 / FND-09 — DO NOT REGENERATE. Preserve across CLAUDE.md template rebuilds. -->
+
+## Surface Caps
+
+BRIEF enforces a minimal command/skill surface for memorability and to prevent bloat (Pitfalls #1 skill bloat and #12 slash-command memorability failure from the inherited GSD pitfall catalog):
+
+- **≤12 user-facing slash commands**
+- **≤8 skills**
+
+**Definition of "user-facing":** what `bin/install.js` registers under `commands/<runtime>/brief/` for end-user invocation. Internal helpers, sub-commands routed through a parent command, and template files do NOT count against the cap.
+
+**Rationale:** Command surface memorability degrades rapidly past ~12 items (Miller's Law, applied to CLI surfaces); skill bloat degrades agent selection accuracy as the skill catalog grows. Fixing the cap BEFORE domain features ship in Phase 3-8 prevents the inherited GSD surface from re-expanding.
+
+**Enforcement:** Documentation-only in Phase 2 (per Phase 2 decision D-07). No pre-commit hook, no automated gate in Phase 2 — that would block planner work mid-stream and is out of scope for the stable-seam phase. The audit + pruning runs in **Phase 9 HRD-02** (v1 launch gate).
+
+**Current state:** As of v1 design (Phase 2 entry, 2026-04), BRIEF inherits 61 renamed `brief-*` commands and 18 renamed agents from GSD. Both counts exceed the cap. The reduction to ≤12 user-facing commands and ≤8 skills is the Phase 9 HRD-02 audit. Subsequent Phases (3-8) MUST NOT add new commands beyond their requirement-mapped set (e.g., Phase 2 adds `+1` with `/brief-status`; Phase 3 adds `/brief-define`; etc.).
+
+**Scope clarification:** This cap applies to the *user-facing* command surface defined above. It does NOT constrain:
+- Internal `brief/bin/brief-tools.cjs` subcommands (e.g., `brief-tools.cjs state json`, `brief-tools.cjs status`) — these are implementation dispatchers, not user slash commands.
+- Workflow markdown files under `brief/workflows/` — these are agent-internal and not user-invocable.
+- Reference files under `brief/references/` — these are documentation, not skills.
+
 <!-- BRIEF:skills-start source:skills/ -->
 ## Project Skills
 
