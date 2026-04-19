@@ -62,6 +62,7 @@
  *
  * Progress:
  *   progress [json|table|bar]          Render progress in various formats
+ *   status                             Render /brief-status compact dashboard (read-only)
  *
  * Todos:
  *   todo complete <filename>           Move todo from pending to completed
@@ -772,6 +773,12 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
     case 'progress': {
       const subcommand = args[1] || 'json';
       commands.cmdProgressRender(cwd, subcommand, raw);
+      break;
+    }
+
+    case 'status': {
+      const status = require('./lib/status.cjs');
+      status.renderStatus(cwd, raw);
       break;
     }
 
