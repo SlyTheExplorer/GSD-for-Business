@@ -863,6 +863,14 @@ function syncStateFrontmatter(content, cwd) {
     derivedFm.status = existingFm.status;
   }
 
+  // Preserve brief:* namespaced map across write cycles (buildStateFrontmatter
+  // doesn't regenerate it). Per Phase 2 D-21 — paired with the cmdStateJson
+  // allowlist extension below. Without this, the `brief:` map is silently
+  // dropped on every STATE.md write.
+  if (existingFm && existingFm.brief) {
+    derivedFm.brief = existingFm.brief;
+  }
+
   const yamlStr = reconstructFrontmatter(derivedFm);
   return `---\n${yamlStr}\n---\n\n${body}`;
 }
@@ -978,6 +986,13 @@ function cmdStateJson(cwd, raw) {
   // Preserve existing status when body-derived status is 'unknown' (same logic as syncStateFrontmatter).
   if (built.status === 'unknown' && existingFm && existingFm.status && existingFm.status !== 'unknown') {
     built.status = existingFm.status;
+  }
+  // Preserve the brief:* namespaced map (cannot be recovered from body).
+  // Per Phase 2 D-21 — without this, the brief: map is silently dropped on
+  // `state json` rebuild because buildStateFrontmatter doesn't regenerate it
+  // (R-5: 02-RESEARCH.md). Paired with the syncStateFrontmatter mirror above.
+  if (existingFm && existingFm.brief) {
+    built.brief = existingFm.brief;
   }
 
   output(built, raw, JSON.stringify(built, null, 2));

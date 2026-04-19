@@ -12,6 +12,14 @@ progress:
   total_plans: 15
   completed_plans: 10
   percent: 67
+brief:
+  return_stack: []
+  gap_queue: []
+  last_gate_results:
+    align: null
+    audience: null
+    compliance: null
+  current_workstream: null
 ---
 
 # Project State
