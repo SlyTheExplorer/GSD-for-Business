@@ -15,12 +15,12 @@ Pre-build infrastructure: fork hygiene, rename, removal of inherited dev surface
 - [ ] **FND-02**: User sees no GSD development-specific commands (`/gsd-code-review`, `/gsd-ui-phase`, `/gsd-ai-integration-phase`, `/gsd-add-tests`, `/gsd-secure-phase`) — all 28 development-specific files removed
 - [ ] **FND-03**: User invokes commands as `/brief-*` exclusively — `gsd-*` aliases do not exist (hard rename, no shim)
 - [ ] **FND-04**: User can confirm Assumption A1 status (GSD bin layer ships with zero runtime `dependencies` in `package.json`) via a documented inspection step
-- [ ] **FND-05**: User can confirm Assumption A4 status (inherited `state.cjs` round-trips namespaced `state.brief.*` fields without loss) via a smoke test in `tests/`
+- [x] **FND-05**: User can confirm Assumption A4 status (inherited `state.cjs` round-trips namespaced `state.brief.*` fields without loss) via a smoke test in `tests/`
 - [ ] **FND-06**: User runs BRIEF identically across Claude Code, OpenAI Codex, Gemini CLI, OpenCode (multi-runtime detection inherited from GSD preserved)
 - [ ] **FND-07**: User opens CLAUDE.md / README.md and reads business-planning-domain language, not software-development language
-- [ ] **FND-08**: User can declare new built-in workstreams via yaml `workstream-spec.yaml` files (workstream-as-config, NOT bespoke code) — verified by adding one workstream without touching `.cjs` source
-- [ ] **FND-09**: User sees no more than 12 user-facing slash commands and 8 skills (CLAUDE.md cap enforced)
-- [ ] **FND-10**: User runs `/brief-status` and sees current phase, active workstream, return-stack depth, last ALIGN finding, last COMPLIANCE finding
+- [x] **FND-08**: User can declare new built-in workstreams via yaml `workstream-spec.yaml` files (workstream-as-config, NOT bespoke code) — verified by adding one workstream without touching `.cjs` source
+- [x] **FND-09**: User sees no more than 12 user-facing slash commands and 8 skills (CLAUDE.md cap enforced)
+- [x] **FND-10**: User runs `/brief-status` and sees current phase, active workstream, return-stack depth, last ALIGN finding, last COMPLIANCE finding
 
 ### Phase 0 — DEFINE (DEF)
 
@@ -165,12 +165,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FND-02 | Phase 1 (Foundation — Fork Hygiene, Removal, Rename) | Pending |
 | FND-03 | Phase 1 (Foundation — Fork Hygiene, Removal, Rename) | Pending |
 | FND-04 | Phase 1 (Foundation — Fork Hygiene, Removal, Rename) | Pending |
-| FND-05 | Phase 2 (Stable Seam — Anchor Schema, Caps, Workstream-as-Config) | Pending |
+| FND-05 | Phase 2 (Stable Seam — Anchor Schema, Caps, Workstream-as-Config) | Complete |
 | FND-06 | Phase 1 (Foundation — Fork Hygiene, Removal, Rename) | Pending |
 | FND-07 | Phase 1 (Foundation — Fork Hygiene, Removal, Rename) | Pending |
-| FND-08 | Phase 2 (Stable Seam — Anchor Schema, Caps, Workstream-as-Config) | Pending |
-| FND-09 | Phase 2 (Stable Seam — Anchor Schema, Caps, Workstream-as-Config) | Pending |
-| FND-10 | Phase 2 (Stable Seam — Anchor Schema, Caps, Workstream-as-Config) | Pending |
+| FND-08 | Phase 2 (Stable Seam — Anchor Schema, Caps, Workstream-as-Config) | Complete |
+| FND-09 | Phase 2 (Stable Seam — Anchor Schema, Caps, Workstream-as-Config) | Complete |
+| FND-10 | Phase 2 (Stable Seam — Anchor Schema, Caps, Workstream-as-Config) | Complete |
 | DEF-01 | Phase 3 (DEFINE Canary — Phase 0 End-to-End) | Pending |
 | DEF-02 | Phase 3 (DEFINE Canary — Phase 0 End-to-End) | Pending |
 | DEF-03 | Phase 3 (DEFINE Canary — Phase 0 End-to-End) | Pending |
