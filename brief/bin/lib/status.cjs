@@ -28,7 +28,12 @@ function formatGate(gate) {
   const findings = (gate.findings_count !== undefined && gate.findings_count !== null)
     ? gate.findings_count
     : 0;
-  return `${decision} (${findings} findings)`;
+  // Phase 4 D-07 + Specific Ideas: ALIGNED-by-override must NEVER collapse
+  // into plain ALIGNED display. D-20 serializer may round-trip boolean true
+  // as string 'true' (Pitfall #5) — treat both as equivalent here.
+  const override = gate.override === true || gate.override === 'true';
+  const suffix = override ? ' (override applied)' : '';
+  return `${decision} (${findings} findings)${suffix}`;
 }
 
 /**

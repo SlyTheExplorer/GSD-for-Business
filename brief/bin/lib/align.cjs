@@ -301,49 +301,46 @@ function runAlign(cwd, opts) {
 }
 
 // ─── _resolveSafePath (T-04-01) ────────────────────────────────────────────
-// Path-traversal guard: resolves a path and ensures it lives within
-// <cwd>/.planning/. Throws with a sanitized message (no absolute paths) on
-// violation so the CLI-layer try/catch can safely forward err.message.
+// Path-traversal guard. Realpaths both sides (tolerating missing files by
+// walking parents) so startsWith compares canonical paths — otherwise macOS
+// /private/var symlinks desync cwd from a user-passed path. Throws with a
+// sanitized message so the CLI try/catch can forward err.message safely.
+function _canonicalize(p) {
+  let cur = p;
+  while (cur && cur !== path.dirname(cur)) {
+    try { return path.join(fs.realpathSync(cur), path.relative(cur, p)); }
+    catch { cur = path.dirname(cur); }
+  }
+  return p;
+}
 function _resolveSafePath(cwd, candidatePath) {
-  const absolute = path.resolve(cwd, candidatePath);
-  const planningRoot = path.resolve(cwd, '.planning');
+  const absolute = _canonicalize(path.resolve(cwd, candidatePath));
+  const planningRoot = _canonicalize(path.resolve(cwd, '.planning'));
   if (absolute !== planningRoot && !absolute.startsWith(planningRoot + path.sep)) {
     throw new Error(`path traversal refused: ${candidatePath} resolves outside .planning/`);
   }
   return absolute;
 }
 
-// ─── commitAlignVerdict (D-07, T-04-01, T-04-02, T-04-03) ──────────────────
-// Renders ALIGN-00.md, updates state.brief.last_gate_results.align atomically,
-// and deletes the tmp verdict file. Caller (brief-tools align commit) issues
-// the multi-file git commit via brief-tools commit --files for Pattern 4
-// visibility.
-//
-// opts:
-//   verdictPath     — path to verdict .tmp.json (path-traversal guarded)
-//   override        — boolean
-//   overrideReason  — raw user text (sanitized here before state write)
+// ─── commitAlignVerdict (D-07, T-04-01/02/03) ──────────────────────────────
+// Renders ALIGN-00.md, updates state.brief.last_gate_results.align atomically
+// via readModifyWriteStateMd, and deletes the tmp verdict file in finally.
+// sanitizeForPrompt runs BEFORE state write (T-04-02). Caller issues the
+// multi-file git commit for Pattern 4 visibility.
 function commitAlignVerdict(cwd, opts) {
   const verdictPath = _resolveSafePath(cwd, opts.verdictPath);
   const override = !!opts.override;
   const rawReason = override ? String(opts.overrideReason || '').trim() : '';
-  if (override && !rawReason) {
-    throw new Error('overrideReason required when override=true');
-  }
+  if (override && !rawReason) throw new Error('overrideReason required when override=true');
   const sanitizedReason = override ? sanitizeForPrompt(rawReason) : '';
 
   try {
-    const raw = fs.readFileSync(verdictPath, 'utf-8');
-    const verdict = JSON.parse(raw);
+    const verdict = JSON.parse(fs.readFileSync(verdictPath, 'utf-8'));
     const err = validateVerdict(verdict);
     if (err) throw new Error(`ALIGN verdict invalid: ${err}`);
 
     const korea = detectKoreaSignalFromConfig(cwd);
-    const alignMd = renderAlignReport(verdict, {
-      korea,
-      override,
-      overrideReason: sanitizedReason,
-    });
+    const alignMd = renderAlignReport(verdict, { korea, override, overrideReason: sanitizedReason });
     const alignPath = path.join(planningPaths(cwd).planning, 'ALIGN-00.md');
     atomicWriteFileSync(alignPath, alignMd, 'utf-8');
 
@@ -352,11 +349,8 @@ function commitAlignVerdict(cwd, opts) {
     readModifyWriteStateMd(statePath, (content) => {
       const body = stripFrontmatter(content);
       const fm = extractFrontmatter(content) || {};
-      // Coerce non-object brief (extractFrontmatter returns '{}' as a string
-      // when YAML holds the inline-empty-object literal) into a real object.
-      if (!fm.brief || typeof fm.brief !== 'object' || Array.isArray(fm.brief)) {
-        fm.brief = {};
-      }
+      // extractFrontmatter surfaces `brief: {}` as the string '{}' — coerce to real object.
+      if (!fm.brief || typeof fm.brief !== 'object' || Array.isArray(fm.brief)) fm.brief = {};
       if (!fm.brief.last_gate_results || typeof fm.brief.last_gate_results !== 'object') {
         fm.brief.last_gate_results = {};
       }
@@ -367,13 +361,11 @@ function commitAlignVerdict(cwd, opts) {
         at,
         ...(override ? { override: true, override_reason: sanitizedReason } : {}),
       };
-      const yaml = reconstructFrontmatter(fm);
-      return `---\n${yaml}\n---\n\n${body}`;
+      return `---\n${reconstructFrontmatter(fm)}\n---\n\n${body}`;
     }, cwd);
 
     return { alignPath, stateUpdated: true };
   } finally {
-    // T-04-03 defensive leak prevention — unlink tmp verdict even on throw.
     try { fs.unlinkSync(verdictPath); } catch { /* already deleted */ }
   }
 }

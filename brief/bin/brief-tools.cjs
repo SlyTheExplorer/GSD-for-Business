@@ -483,6 +483,78 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
       break;
     }
 
+    case 'align': {
+      // Phase 4 Plan 04-04 — ALIGN gate dispatcher. Both subcommand branches
+      // wrap the align.cjs calls in try/catch that forwards err.message to
+      // `error` (core.error). Without this, Node's default uncaught-exception
+      // handler prints the full stack trace including absolute paths to
+      // align.cjs — which would fail Test 10's doesNotMatch assertion on
+      // `/\/Users\/[a-z0-9_-]+\/GSD-for-Business/i`.
+      const align = require('./lib/align.cjs');
+      const subcommand = args[1];
+      const candIdx = args.indexOf('--candidate');
+      const baseIdx = args.indexOf('--baseline');
+      const outIdx = args.indexOf('--verdict-out');
+      const vIdx = args.indexOf('--verdict');
+      const reasonIdx = args.indexOf('--override-reason');
+      const override = args.includes('--override');
+
+      if (subcommand === 'run') {
+        const candidate = candIdx !== -1 ? args[candIdx + 1] : null;
+        const baseline = baseIdx !== -1 ? args[baseIdx + 1] : null;
+        const verdictOutPath = outIdx !== -1 ? args[outIdx + 1] : null;
+        if (!candidate || !baseline) {
+          error('align run requires --candidate <path> --baseline <path>');
+          break;
+        }
+        try {
+          const screen = align.runDeterministicScreen(cwd, { candidate, baseline });
+          const outPath = verdictOutPath
+            || path.join(core.planningPaths(cwd).planning, '.align-verdict.tmp.json');
+          if (screen.verdict) {
+            align.writeVerdict(outPath, screen.verdict);
+            core.output(
+              { short_circuited: true, verdict: screen.verdict, verdictPath: outPath },
+              raw,
+              'short_circuited',
+            );
+          } else {
+            core.output(
+              { short_circuited: false, deterministic_findings: screen.findings },
+              raw,
+              'llm_pass_needed',
+            );
+          }
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      if (subcommand === 'commit') {
+        const verdictPath = vIdx !== -1 ? args[vIdx + 1] : null;
+        const overrideReason = reasonIdx !== -1 ? args[reasonIdx + 1] : null;
+        if (!verdictPath) {
+          error('align commit requires --verdict <path>');
+          break;
+        }
+        try {
+          const result = align.commitAlignVerdict(cwd, {
+            verdictPath,
+            override,
+            overrideReason,
+          });
+          core.output(result, raw, `ALIGN-00.md written at ${result.alignPath}`);
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      error(`align: unknown subcommand '${subcommand}'. Valid: run, commit`);
+      break;
+    }
+
     case 'resolve-model': {
       commands.cmdResolveModel(cwd, args[1], raw);
       break;
