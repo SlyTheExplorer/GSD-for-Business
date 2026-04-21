@@ -823,32 +823,32 @@ function grepBanList(candidatePath) {
 
 **If this table is empty:** (not empty — the 3 load-bearing `[ASSUMED]` items are A10 which requires empirical validation during Phase 4 execution; others are `[VERIFIED]` / `[CITED]`).
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Temporary verdict file location and gitignore strategy.**
    - What we know: The subagent Writes verdict JSON to a `.tmp` path; the lib reads, commits the rendered `ALIGN-00.md`, then deletes the `.tmp`.
    - What's unclear: Should `.tmp.json` live at `.planning/.align-verdict.tmp.json` (requires gitignore entry) or at `/tmp/brief-align-<timestamp>.json` (no repo pollution, but platform-specific)?
-   - Recommendation: `.planning/.align-verdict.tmp.json` + add to `.gitignore` in the Phase 4 wave that ships `align.cjs`. Rationale: stays in the project (CWD-relative), matches Phase 3 discipline of `.planning/` as the scratch surface, easier to debug by inspecting. The gitignore entry is a 1-line addition.
+   - RESOLVED: Recommendation: `.planning/.align-verdict.tmp.json` + add to `.gitignore` in the Phase 4 wave that ships `align.cjs`. Rationale: stays in the project (CWD-relative), matches Phase 3 discipline of `.planning/` as the scratch surface, easier to debug by inspecting. The gitignore entry is a 1-line addition.
 
 2. **Where exactly in `brief/workflows/define.md` does the ALIGN invocation land?**
    - What we know: D-08 says "after OBJECTIVES.md draft is approved but before /brief-define exits". Phase 3's define.md has Step 3 "Atomic Write + Commit" with a forward-reference to Plan 04.
    - What's unclear: ALIGN happens BEFORE the atomic commit (so a DRIFTED outcome can block the commit) OR AFTER (so ALIGN-00.md is written as part of the same atomic commit)?
-   - Recommendation: **AFTER the approval (2A.7) but BEFORE the atomic commit of Step 3.** ALIGN's own commit is separate atomic boundary that includes `ALIGN-00.md` + re-committed `OBJECTIVES.md` + updated `STATE.md`. If ALIGN returns DRIFTED-objective → force-accept path re-issues commit with override flag. Rationale: Phase 3's existing atomic commit already writes OBJECTIVES.md + config.json + STATE.md (per Plan 04); Phase 4 layers a SECOND atomic commit on top — first commit for the DEFINE artifact trio, second for the ALIGN artifact trio. Two commits is cleaner than "one mega-commit where Phase 3 and Phase 4 both mutate STATE.md". Planner should confirm with Phase 3 executor.
+   - RESOLVED: Recommendation: **AFTER the approval (2A.7) but BEFORE the atomic commit of Step 3.** ALIGN's own commit is separate atomic boundary that includes `ALIGN-00.md` + re-committed `OBJECTIVES.md` + updated `STATE.md`. If ALIGN returns DRIFTED-objective → force-accept path re-issues commit with override flag. Rationale: Phase 3's existing atomic commit already writes OBJECTIVES.md + config.json + STATE.md (per Plan 04); Phase 4 layers a SECOND atomic commit on top — first commit for the DEFINE artifact trio, second for the ALIGN artifact trio. Two commits is cleaner than "one mega-commit where Phase 3 and Phase 4 both mutate STATE.md". Planner should confirm with Phase 3 executor.
 
 3. **What is the LLM pass's timeout and failure behavior?**
    - What we know: D-06 forbids auto-retry. Subagent timeouts should emit a DRIFTED-output verdict (per Pattern 1 example above).
    - What's unclear: What exact timeout? BRIEF's Task default? A new `align_timeout_ms` config?
-   - Recommendation: Use the inherited Task default (no new config). If pilots surface timeout issues, add config in Phase 9 HRD-04. For Phase 4 canary, treat timeout = `DRIFTED-output + material + "evaluator timed out; manual review required"`.
+   - RESOLVED: Recommendation: Use the inherited Task default (no new config). If pilots surface timeout issues, add config in Phase 9 HRD-04. For Phase 4 canary, treat timeout = `DRIFTED-output + material + "evaluator timed out; manual review required"`.
 
 4. **Should the ALIGN step run on Mode B amendments (Phase 3 D-05)?**
    - What we know: D-08 wires into Mode A wrap-up. Mode B is the amendment branch.
    - What's unclear: After a Mode B amendment to Mutable Hypotheses, should ALIGN re-run to check the post-amendment self-coherence?
-   - Recommendation: **YES, but planner should confirm.** The amendment may introduce new contradictions between Mutable Hypotheses and Immutable Intent. Cheapest integration: after Mode B Step 2B.4 atomic commit, invoke the SAME align workflow. Ship Mode A canary first (D-08 literal scope); add Mode B ALIGN as a follow-on task in Phase 4 if budget allows, else defer to Phase 5 (where cross-artifact ALIGN goes online anyway).
+   - RESOLVED: Recommendation: **YES, but planner should confirm.** The amendment may introduce new contradictions between Mutable Hypotheses and Immutable Intent. Cheapest integration: after Mode B Step 2B.4 atomic commit, invoke the SAME align workflow. Ship Mode A canary first (D-08 literal scope); add Mode B ALIGN as a follow-on task in Phase 4 if budget allows, else defer to Phase 5 (where cross-artifact ALIGN goes online anyway).
 
 5. **How does Phase 4 coordinate with Phase 5's first cross-artifact caller?**
    - What we know: CONTEXT.md Deferred: "Cross-artifact ALIGN on Phase 5 research outputs — Phase 5 territory."
    - What's unclear: Does Phase 4 ship generic templating (`{{CANDIDATE_PATH}}`, `{{BASELINE_PATH}}`) that Phase 5 just fills in, or does Phase 5 rewrite?
-   - Recommendation: **Generic templating in Phase 4.** The subagent prompt uses placeholder paths; the lib accepts `candidate` and `baseline` params; the workflow's ALIGN invocation line passes them. Phase 5 reuses the triad by changing candidate/baseline and adding no new code to `align.cjs`. Confirms CONTEXT.md §Specific Ideas: "Favor generic, template-friendly patterns."
+   - RESOLVED: Recommendation: **Generic templating in Phase 4.** The subagent prompt uses placeholder paths; the lib accepts `candidate` and `baseline` params; the workflow's ALIGN invocation line passes them. Phase 5 reuses the triad by changing candidate/baseline and adding no new code to `align.cjs`. Confirms CONTEXT.md §Specific Ideas: "Favor generic, template-friendly patterns."
 
 ## Environment Availability
 

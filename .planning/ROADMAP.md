@@ -98,7 +98,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. User reads any ALIGN gate output file and sees findings vocabulary ("Documented obligations addressed:", "Obligations needing further work:") — never the words "compliant", "passed", or green checkmarks (foundation for AUDIENCE/COMPLIANCE replication)
   3. User can verify by reading the orchestrator command markdown file that the gate is invoked as a visible, mandatory orchestrator step — there is no PostToolUse or SubagentStop hook that does the invocation invisibly
   4. User can see in STATE.md `state.brief.last_gate_results` that the most recent ALIGN gate result is recorded with severity, findings count, and decision (proceed / amend objectives / revise output)
-**Plans**: TBD
+**Plans**: 6 plans
+- [ ] 04-01-PLAN.md — Foundational lib primitives: deterministic screen + ban-list grepper + verdict validator + writer + Korea-signal detector + vocabulary reference file + .gitignore entry (Wave 1)
+- [ ] 04-02-PLAN.md — Subagent markdown (agents/brief-align-gate.md) + orchestrator workflow markdown (brief/workflows/align-gate.md) with templated candidate/baseline/verdict paths and D-06 3-path interrupt Korean prompts (Wave 1, parallel to 04-01)
+- [ ] 04-03-PLAN.md — 4 decision-path fixtures + combined decision-path test suite with MUST-PASS canary (Pitfall #6 B2B-enterprise + App-Store-consumer contradiction) + runAlign + mergeVerdicts extension (Wave 2)
+- [ ] 04-04-PLAN.md — commitAlignVerdict + renderAlignReport + brief-tools.cjs align run/commit dispatcher + status.cjs formatGate override extension + state-override round-trip test (Wave 3)
+- [ ] 04-05-PLAN.md — Canary wiring into /brief-define Mode A wrap-up Step 3.5 + E2E canary test (Korea + non-Korea + override paths) (Wave 4)
+- [ ] 04-06-PLAN.md — Vocabulary-lock test + TEXT_MODE parity test + structural no-hook test + coverage snapshot (Wave 5)
 
 **Pitfall coverage**: #3 OBJECTIVES.md anchor drift (three-output design forces user to choose, not just acknowledge), #4 Compliance checkbox theater (findings-not-checks vocabulary established here so it propagates to COMPLIANCE later), Anti-pattern #2 (gate-as-orchestrator-step, NOT hook-spawned).
 
@@ -183,7 +189,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 1. Foundation — Fork Hygiene, Removal, Rename | 10/10 | HALT-ACCEPTED 2026-04-18 — 288 tests recovered (83.5%) across 4 gap-closure cycles (Plans 07/08/09/10); 63 residual source/doc drift deferred to Phase 9 HRD-05; functional fork-rename goal fully achieved | 2026-04-18 |
 | 2. Stable Seam — Anchor Schema, Caps, Workstream-as-Config | 6/6 | Complete   | 2026-04-19 |
 | 3. DEFINE Canary — Phase 0 End-to-End | 0/TBD | Not started | - |
-| 4. First Gate — ALIGN Pattern Established | 0/TBD | Not started | - |
+| 4. First Gate — ALIGN Pattern Established | 0/6 | Planned | - |
 | 5. DISCOVER — Parallel Research with Provenance | 0/TBD | Not started | - |
 | 6. Bidirectional Foundation — Phase 1↔2 Return Stack | 0/TBD | Not started | - |
 | 7. DESIGN — Workstream Orchestration + COMPLIANCE Checker | 0/TBD | Not started | - |
