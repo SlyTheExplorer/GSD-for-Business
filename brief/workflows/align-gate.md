@@ -36,7 +36,7 @@ Read these invocation parameters:
 Verify both {{CANDIDATE_PATH}} and {{BASELINE_PATH}} exist. If either is missing,
 emit a user-facing error and exit without writing ALIGN-00.md or STATE.md.
 Korean error text when `brief.region: kr`:
-  "ALIGN 실행 실패: CANDIDATE 또는 BASELINE 파일이 존재하지 않습니다."
+  "ALIGN 실행 중단: CANDIDATE 또는 BASELINE 파일이 존재하지 않습니다."
 English error text otherwise:
   "ALIGN aborted: CANDIDATE or BASELINE file not found."
 
@@ -286,15 +286,16 @@ The `align commit --override` path (Plan 04-04):
 
 After the commit completes, display to the user:
 
-> "✓ 승인 사유가 기록되었습니다. /brief-status 에서 이 override가 계속
+> "승인 사유가 기록되었습니다. /brief-status 에서 이 override가 계속
 >  표시됩니다. 필요 시 /brief-define --amend 로 언제든 OBJECTIVES.md를
 >  다시 다듬을 수 있습니다."
 
-(Note: the "✓" symbol here is in a USER-FACING success message, NOT in
- ALIGN-00.md content. The ban-list test applies to ALIGN-00.md, not to
- this resume hint. This is a deliberate scope boundary — the ban-list
- protects the GATE OUTPUT from compliance-theater vocabulary, not every
- string the framework ever speaks.)
+(Note: this resume hint is the USER-FACING success message, NOT ALIGN-00.md
+ content. Even here the ban-list discipline applies — the workflow markdown
+ is orchestration prose and the Plan 04-06 vocabulary-lock test enforces
+ zero ban-list tokens anywhere in this file. If a symbol or verdict token
+ feels natural here, substitute a non-banned synonym — the discipline is
+ load-bearing, not decorative.)
 
 ## Step 7: Exit
 
@@ -322,7 +323,7 @@ Load-bearing citations:
     orchestrator markdown (Pattern 4 visibility) — NOT from hooks."
   - 04-RESEARCH.md Anti-pattern #2: "PostToolUse/SubagentStop hook to
     auto-invoke ALIGN. Hooks cannot spawn subagents into the parent flow;
-    invocation must be in the orchestrator markdown. A failed Phase 4
+    invocation must be in the orchestrator markdown. A broken Phase 4
     here ripples into Phase 5 and Phase 7."
   - .planning/research/ARCHITECTURE.md Anti-pattern #2 forbids
     hook-based gate invocation at the architecture-pattern level.
