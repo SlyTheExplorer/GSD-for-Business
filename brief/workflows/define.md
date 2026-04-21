@@ -369,6 +369,54 @@ prompt. Fixture-driven test runs invoke
 into `objectives.writeObjectivesMd` (only OBJECTIVES.md is written; the
 config.json and STATE.md legs are Plan 04 scope).
 
+## Step 3.5: ALIGN gate on OBJECTIVES.md self-coherence (Phase 4 D-08 canary)
+
+After Step 3's atomic commit of OBJECTIVES.md + config.json + STATE.md, the
+OBJECTIVES.md anchor exists on disk and Phase 3 DEFINE is structurally
+complete. The ALIGN gate now runs as an orchestrator-visible Phase 4 step to
+check self-coherence between OBJECTIVES.md's Immutable Intent and Mutable
+Hypotheses layers (per Phase 4 D-08).
+
+Skip this step when Mode B `--amend` is active. Phase 4 D-08 wires the
+canary into Mode A only (Open Question #4 deferred to Phase 5).
+
+Invocation — follow `brief/workflows/align-gate.md` with these parameters:
+  - CANDIDATE_PATH   = .planning/OBJECTIVES.md
+  - BASELINE_PATH    = .planning/OBJECTIVES.md   (self-coherence mode)
+  - VERDICT_OUT_PATH = .planning/.align-verdict.tmp.json   (default)
+
+The align-gate workflow handles its own routing:
+  - ALIGNED → second atomic commit of ALIGN-00.md + STATE.md update. No
+    interrupt. `/brief-define` proceeds to Step 4 next-step hint.
+  - DRIFTED-objective-needs-update → 3-path interrupt (D-06). User chooses
+    `objective 수정하기` / `output 다시 쓰기` / force-accept. See
+    align-gate.md Steps 5A/6 for the prompts.
+  - DRIFTED-output-needs-revision → 3-path interrupt (D-06). User chooses
+    `output 다시 쓰기` / `수동 편집` / force-accept.
+
+When the user picks `objective 수정하기`, `/brief-define` exits with a
+resume hint pointing to `/brief-define --amend`. When the user picks
+`output 다시 쓰기`, `/brief-define` exits with a resume hint pointing back
+to `/brief-define` (Mode A can re-run to iterate on OBJECTIVES.md). When
+the user picks force-accept (override), align-gate.md Step 6 captures the
+user-typed override reason, the second atomic commit lands with
+`override: true, override_reason: <sanitized>` in
+`state.brief.last_gate_results.align`, and `/brief-define` proceeds to
+Step 4.
+
+After this step completes successfully:
+  - `.planning/ALIGN-00.md` exists with Korean body (Korea-first fixture
+    path) OR English body (non-Korea).
+  - `.planning/STATE.md` frontmatter `brief.last_gate_results.align` is
+    populated with `{decision, severity, findings_count, at, override?,
+    override_reason?}`.
+  - A second git commit on the branch with message starting
+    `feat(04): ALIGN gate — <decision>`.
+  - `/brief-status` now renders the `Last ALIGN` line.
+
+Pattern 4 visibility: This step is invoked explicitly. There is NO hook
+that silently runs ALIGN. See Phase 4 04-RESEARCH.md Anti-pattern #2.
+
 ## Step 4: Next-Step Hint
 
 Print:
