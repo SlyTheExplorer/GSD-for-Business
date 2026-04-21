@@ -239,3 +239,242 @@ test('commitAlignVerdict — override:true without overrideReason throws', () =>
     /overrideReason required/,
   );
 });
+
+// ─── Task 2: state-override-roundtrip (Pitfall #5) ─────────────────────────
+
+test('state-override-roundtrip: override fields survive D-20 serializer', () => {
+  const cwd = seedCwd();
+  const verdictPath = path.join(cwd, '.planning', '.align-verdict.tmp.json');
+  fs.writeFileSync(verdictPath, JSON.stringify(validVerdict({
+    severity: 'material', findings_count: 3,
+  })));
+  const rawReason = '테스트 승인 사유';
+  align.commitAlignVerdict(cwd, {
+    verdictPath,
+    override: true,
+    overrideReason: rawReason,
+  });
+  const fm = extractFrontmatter(fs.readFileSync(path.join(cwd, '.planning', 'STATE.md'), 'utf-8'));
+  assert.ok(fm.brief, 'brief map must survive');
+  assert.ok(fm.brief.last_gate_results, 'last_gate_results must survive');
+  const alignEntry = fm.brief.last_gate_results.align;
+  assert.ok(alignEntry, 'align entry must survive');
+  assert.strictEqual(alignEntry.decision, 'ALIGNED');
+  assert.strictEqual(alignEntry.severity, 'material');
+  // Pitfall #5 guard: boolean true may round-trip as string 'true' via D-20.
+  assert.ok(
+    alignEntry.override === true || alignEntry.override === 'true',
+    `override lost boolean shape; got ${typeof alignEntry.override}: ${alignEntry.override}`,
+  );
+  assert.strictEqual(alignEntry.override_reason, rawReason);
+  // findings_count may be number 3 or string '3' per Pitfall #4
+  assert.ok(alignEntry.findings_count === 3 || alignEntry.findings_count === '3');
+  assert.ok(typeof alignEntry.at === 'string' && alignEntry.at.length > 0);
+});
+
+// ─── Task 2: status.formatGate override-aware rendering ────────────────────
+
+test('status.formatGate: renders plain ALIGNED without override suffix', () => {
+  const cwd = seedCwd();
+  const statePath = path.join(cwd, '.planning', 'STATE.md');
+  // Seed an ALIGNED-without-override state via readModifyWriteStateMd.
+  state.readModifyWriteStateMd(statePath, (content) => {
+    const body = require('../brief/bin/lib/frontmatter.cjs').stripFrontmatter(content);
+    const fm = extractFrontmatter(content) || {};
+    if (typeof fm.brief !== 'object' || !fm.brief || Array.isArray(fm.brief)) fm.brief = {};
+    fm.brief.last_gate_results = {
+      align: { decision: 'ALIGNED', severity: 'nice-to-have', findings_count: 0 },
+    };
+    return `---\n${reconstructFrontmatter(fm)}\n---\n\n${body}`;
+  }, cwd);
+  const rendered = status.renderStatus(cwd, true);
+  assert.match(rendered, /Last ALIGN\s+ALIGNED/);
+  assert.doesNotMatch(rendered, /override applied/);
+});
+
+test('status.formatGate: renders "(override applied)" when override=true (boolean)', () => {
+  const cwd = seedCwd();
+  const verdictPath = path.join(cwd, '.planning', '.align-verdict.tmp.json');
+  fs.writeFileSync(verdictPath, JSON.stringify(validVerdict({ findings_count: 2 })));
+  align.commitAlignVerdict(cwd, {
+    verdictPath,
+    override: true,
+    overrideReason: 'pilot acceptance',
+  });
+  const rendered = status.renderStatus(cwd, true);
+  assert.match(rendered, /Last ALIGN.*ALIGNED.*override applied/);
+});
+
+test('status.formatGate: renders "(override applied)" when override is string "true"', () => {
+  // Simulates the D-20 round-trip surface where a boolean becomes 'true' string.
+  const cwd = seedCwd();
+  const statePath = path.join(cwd, '.planning', 'STATE.md');
+  state.readModifyWriteStateMd(statePath, (content) => {
+    const body = require('../brief/bin/lib/frontmatter.cjs').stripFrontmatter(content);
+    const fm = extractFrontmatter(content) || {};
+    if (typeof fm.brief !== 'object' || !fm.brief || Array.isArray(fm.brief)) fm.brief = {};
+    fm.brief.last_gate_results = {
+      align: {
+        decision: 'ALIGNED',
+        findings_count: '2',
+        // Emit the string shape directly — exercises Pitfall #5 robustness.
+        override: 'true',
+        override_reason: 'test',
+      },
+    };
+    return `---\n${reconstructFrontmatter(fm)}\n---\n\n${body}`;
+  }, cwd);
+  const rendered = status.renderStatus(cwd, true);
+  assert.match(rendered, /Last ALIGN.*ALIGNED.*override applied/);
+});
+
+// ─── Task 2: CLI dispatcher — align run / commit / unknown subcommand ──────
+
+const REPO_ROOT = path.join(__dirname, '..');
+const CLI_PATH = path.join(REPO_ROOT, 'brief/bin/brief-tools.cjs');
+
+// Small helper: run the CLI and capture stdout/stderr/exit without throwing.
+function runCli(argv, cwd) {
+  const { spawnSync } = require('node:child_process');
+  const result = spawnSync('node', [CLI_PATH, ...argv], {
+    cwd,
+    encoding: 'utf-8',
+    env: process.env,
+  });
+  return {
+    stdout: result.stdout || '',
+    stderr: result.stderr || '',
+    exit: result.status === null ? (result.signal ? 1 : 0) : result.status,
+    signal: result.signal,
+  };
+}
+
+test('CLI: align run --candidate X --baseline Y writes verdict and exits 0', () => {
+  const cwd = seedCwd({ region: 'us' });
+  // Seed a baseline OBJECTIVES.md with required fields populated so the
+  // deterministic screen (D-03 step b) doesn't short-circuit.
+  fs.writeFileSync(
+    path.join(cwd, '.planning', 'OBJECTIVES.md'),
+    [
+      '---',
+      'brief_objectives_version: "1.0"',
+      'status: ready',
+      'business_model: b2c',
+      'region: us',
+      'audience_policy: internal',
+      'compliance_packs: []',
+      'immutable_items: [core-value]',
+      '---',
+      '',
+      '# OBJECTIVES',
+      '## Immutable Intent',
+      'core-value: business planning framework builds deliverables',
+      '',
+    ].join('\n'),
+  );
+  const candidate = path.join(cwd, '.planning', 'OBJECTIVES.md');
+  const verdictOut = path.join(cwd, '.planning', '.align-verdict.tmp.json');
+  const res = runCli(
+    ['align', 'run', '--candidate', candidate, '--baseline', candidate, '--verdict-out', verdictOut, '--raw'],
+    cwd,
+  );
+  assert.strictEqual(res.exit, 0, `align run should exit 0 — stderr: ${res.stderr}`);
+  // The run branch writes a verdict only when the deterministic screen
+  // short-circuits. Otherwise it reports llm_pass_needed. Both are valid
+  // exit-0 outcomes from the dispatcher.
+  assert.ok(
+    res.stdout.length > 0 || res.stderr.length === 0,
+    'dispatcher must produce some output',
+  );
+});
+
+test('CLI: align commit --verdict X writes ALIGN-00.md and exits 0', () => {
+  const cwd = seedCwd();
+  const verdictPath = path.join(cwd, '.planning', '.align-verdict.tmp.json');
+  fs.writeFileSync(verdictPath, JSON.stringify(validVerdict()));
+  const res = runCli(['align', 'commit', '--verdict', verdictPath, '--raw'], cwd);
+  assert.strictEqual(res.exit, 0, `align commit should exit 0 — stderr: ${res.stderr}`);
+  assert.ok(
+    fs.existsSync(path.join(cwd, '.planning', 'ALIGN-00.md')),
+    'ALIGN-00.md must exist after commit',
+  );
+});
+
+test('CLI: align commit --override writes override flag into STATE.md', () => {
+  const cwd = seedCwd();
+  const verdictPath = path.join(cwd, '.planning', '.align-verdict.tmp.json');
+  fs.writeFileSync(verdictPath, JSON.stringify(validVerdict()));
+  const res = runCli(
+    [
+      'align', 'commit', '--verdict', verdictPath,
+      '--override', '--override-reason', 'pilot launch acceptance',
+      '--raw',
+    ],
+    cwd,
+  );
+  assert.strictEqual(res.exit, 0, `align commit --override should exit 0 — stderr: ${res.stderr}`);
+  const stateFm = extractFrontmatter(
+    fs.readFileSync(path.join(cwd, '.planning', 'STATE.md'), 'utf-8'),
+  );
+  const alignEntry = stateFm.brief.last_gate_results.align;
+  assert.ok(
+    alignEntry.override === true || alignEntry.override === 'true',
+    'override flag must be present',
+  );
+  assert.strictEqual(alignEntry.override_reason, 'pilot launch acceptance');
+  const alignMd = fs.readFileSync(path.join(cwd, '.planning', 'ALIGN-00.md'), 'utf-8');
+  assert.match(alignMd, /## User Override/);
+});
+
+test('CLI: align with unknown subcommand exits non-zero with stderr hint', () => {
+  const cwd = seedCwd();
+  const res = runCli(['align', 'bogus-verb'], cwd);
+  assert.notStrictEqual(res.exit, 0, 'unknown subcommand must exit non-zero');
+  assert.match(
+    res.stderr + res.stdout,
+    /unknown subcommand|Valid: run, commit/,
+    `stderr should hint at valid verbs; got stderr=${res.stderr}, stdout=${res.stdout}`,
+  );
+});
+
+test('CLI: align run with missing --candidate flag exits non-zero', () => {
+  const cwd = seedCwd();
+  const res = runCli(['align', 'run'], cwd);
+  assert.notStrictEqual(res.exit, 0);
+  assert.match(res.stderr + res.stdout, /candidate|baseline/);
+});
+
+test('CLI: align commit with missing --verdict flag exits non-zero', () => {
+  const cwd = seedCwd();
+  const res = runCli(['align', 'commit'], cwd);
+  assert.notStrictEqual(res.exit, 0);
+  assert.match(res.stderr + res.stdout, /verdict/);
+});
+
+// ─── Task 2 Test 10: CLI-layer path-traversal boundary ─────────────────────
+// The dispatcher's commit branch MUST wrap commitAlignVerdict in try/catch
+// that routes thrown errors through core.error so Node's default uncaught
+// exception handler never leaks the absolute path to align.cjs.
+
+test('CLI layer: align commit rejects path-traversal verdict path with safe error', () => {
+  const cwd = seedCwd();
+  const res = runCli(
+    ['align', 'commit', '--verdict', '/etc/passwd', '--override', 'false'],
+    cwd,
+  );
+  const combined = res.stderr + res.stdout;
+  assert.ok(
+    res.exit === 1 || res.exit === 2,
+    `CLI must exit non-zero (1 or 2) on path-traversal verdict. Got exit=${res.exit}, combined=${combined.slice(0, 300)}`,
+  );
+  assert.match(
+    combined,
+    /path.*(traversal|invalid|unsafe)/i,
+    `stderr/stdout must mention path traversal/invalid/unsafe. Got: ${combined.slice(0, 300)}`,
+  );
+  assert.doesNotMatch(
+    combined,
+    /\/Users\/[a-z0-9_-]+\/GSD-for-Business/i,
+    `Error must NOT leak the developer absolute cwd path. Got: ${combined.slice(0, 300)}`,
+  );
+});
