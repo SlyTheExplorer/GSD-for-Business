@@ -114,5 +114,13 @@ This document evolves at phase transitions and milestone boundaries.
 3. Audit Out of Scope — reasons still valid?
 4. Update Context with current state
 
+## Current State
+
+- Phase 1 (Foundation — Fork Hygiene, Removal, Rename) — **Complete**
+- Phase 2 (Stable Seam — Anchor Schema, Caps, Workstream-as-Config) — **Complete**
+- Phase 3 (DEFINE Canary — Phase 0 End-to-End) — **Complete**
+- Phase 4 (First Gate — ALIGN Pattern Established) — **Complete** (2026-04-21; DSG-12 delivered; canonical evaluator-optimizer pattern locked for Phase 5/7 replication)
+- Next: Phase 5 (DISCOVER — Parallel Research with Provenance + AUDIENCE + Context Injection)
+
 ---
-*Last updated: 2026-04-18 after initialization*
+*Last updated: 2026-04-21 after Phase 4 completion*
