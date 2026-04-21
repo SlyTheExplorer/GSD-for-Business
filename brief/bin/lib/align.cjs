@@ -10,9 +10,17 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { atomicWriteFileSync, planningDir } = require('./core.cjs');
+const { atomicWriteFileSync, planningDir, planningPaths } = require('./core.cjs');
 const objectives = require('./objectives.cjs');
 const { detectKoreaSignals } = require('./define.cjs');
+const { sanitizeForPrompt } = require('./security.cjs');
+const {
+  extractFrontmatter,
+  stripFrontmatter,
+  reconstructFrontmatter,
+} = require('./frontmatter.cjs');
+const { readModifyWriteStateMd } = require('./state.cjs');
+const { renderAlignReport } = require('./align-report.cjs');
 
 // ─── Enum constants (exported for test fixture use) ────────────────────────
 const VALID_DECISIONS = new Set([
@@ -292,6 +300,84 @@ function runAlign(cwd, opts) {
   return merged;
 }
 
+// ─── _resolveSafePath (T-04-01) ────────────────────────────────────────────
+// Path-traversal guard: resolves a path and ensures it lives within
+// <cwd>/.planning/. Throws with a sanitized message (no absolute paths) on
+// violation so the CLI-layer try/catch can safely forward err.message.
+function _resolveSafePath(cwd, candidatePath) {
+  const absolute = path.resolve(cwd, candidatePath);
+  const planningRoot = path.resolve(cwd, '.planning');
+  if (absolute !== planningRoot && !absolute.startsWith(planningRoot + path.sep)) {
+    throw new Error(`path traversal refused: ${candidatePath} resolves outside .planning/`);
+  }
+  return absolute;
+}
+
+// ─── commitAlignVerdict (D-07, T-04-01, T-04-02, T-04-03) ──────────────────
+// Renders ALIGN-00.md, updates state.brief.last_gate_results.align atomically,
+// and deletes the tmp verdict file. Caller (brief-tools align commit) issues
+// the multi-file git commit via brief-tools commit --files for Pattern 4
+// visibility.
+//
+// opts:
+//   verdictPath     — path to verdict .tmp.json (path-traversal guarded)
+//   override        — boolean
+//   overrideReason  — raw user text (sanitized here before state write)
+function commitAlignVerdict(cwd, opts) {
+  const verdictPath = _resolveSafePath(cwd, opts.verdictPath);
+  const override = !!opts.override;
+  const rawReason = override ? String(opts.overrideReason || '').trim() : '';
+  if (override && !rawReason) {
+    throw new Error('overrideReason required when override=true');
+  }
+  const sanitizedReason = override ? sanitizeForPrompt(rawReason) : '';
+
+  try {
+    const raw = fs.readFileSync(verdictPath, 'utf-8');
+    const verdict = JSON.parse(raw);
+    const err = validateVerdict(verdict);
+    if (err) throw new Error(`ALIGN verdict invalid: ${err}`);
+
+    const korea = detectKoreaSignalFromConfig(cwd);
+    const alignMd = renderAlignReport(verdict, {
+      korea,
+      override,
+      overrideReason: sanitizedReason,
+    });
+    const alignPath = path.join(planningPaths(cwd).planning, 'ALIGN-00.md');
+    atomicWriteFileSync(alignPath, alignMd, 'utf-8');
+
+    const statePath = planningPaths(cwd).state;
+    const at = new Date().toISOString();
+    readModifyWriteStateMd(statePath, (content) => {
+      const body = stripFrontmatter(content);
+      const fm = extractFrontmatter(content) || {};
+      // Coerce non-object brief (extractFrontmatter returns '{}' as a string
+      // when YAML holds the inline-empty-object literal) into a real object.
+      if (!fm.brief || typeof fm.brief !== 'object' || Array.isArray(fm.brief)) {
+        fm.brief = {};
+      }
+      if (!fm.brief.last_gate_results || typeof fm.brief.last_gate_results !== 'object') {
+        fm.brief.last_gate_results = {};
+      }
+      fm.brief.last_gate_results.align = {
+        decision: override ? 'ALIGNED' : verdict.decision,
+        severity: verdict.severity,
+        findings_count: verdict.findings_count,
+        at,
+        ...(override ? { override: true, override_reason: sanitizedReason } : {}),
+      };
+      const yaml = reconstructFrontmatter(fm);
+      return `---\n${yaml}\n---\n\n${body}`;
+    }, cwd);
+
+    return { alignPath, stateUpdated: true };
+  } finally {
+    // T-04-03 defensive leak prevention — unlink tmp verdict even on throw.
+    try { fs.unlinkSync(verdictPath); } catch { /* already deleted */ }
+  }
+}
+
 // ─── Exports ───────────────────────────────────────────────────────────────
 module.exports = {
   VALID_DECISIONS,
@@ -307,4 +393,6 @@ module.exports = {
   writeVerdict,
   mergeVerdicts,
   runAlign,
+  renderAlignReport,
+  commitAlignVerdict,
 };

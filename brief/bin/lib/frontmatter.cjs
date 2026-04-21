@@ -40,6 +40,21 @@ function splitInlineArray(body) {
   return items;
 }
 
+// Strip all frontmatter blocks from the start of a document. Re-exported so
+// downstream libs (align.cjs Plan 04-04) can compose read-modify-write patterns
+// without depending on state.cjs internals. Matches state.cjs stripFrontmatter
+// byte-for-byte (greedy, CRLF-aware, tolerates multiple stacked blocks).
+function stripFrontmatter(content) {
+  let result = content;
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const stripped = result.replace(/^\s*---\r?\n[\s\S]*?\r?\n---\s*/, '');
+    if (stripped === result) break;
+    result = stripped;
+  }
+  return result;
+}
+
 function extractFrontmatter(content) {
   const frontmatter = {};
   // Match frontmatter only at byte 0 — a `---` block later in the document
@@ -408,6 +423,7 @@ function cmdFrontmatterValidate(cwd, filePath, schemaName, raw) {
 
 module.exports = {
   extractFrontmatter,
+  stripFrontmatter,
   reconstructFrontmatter,
   spliceFrontmatter,
   splitInlineArray,
