@@ -104,7 +104,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 04-03-PLAN.md — 4 decision-path fixtures + combined decision-path test suite with MUST-PASS canary (Pitfall #6 B2B-enterprise + App-Store-consumer contradiction) + runAlign + mergeVerdicts extension (Wave 2)
 - [x] 04-04-PLAN.md — commitAlignVerdict + renderAlignReport + brief-tools.cjs align run/commit dispatcher + status.cjs formatGate override extension + state-override round-trip test (Wave 3)
 - [x] 04-05-PLAN.md — Canary wiring into /brief-define Mode A wrap-up Step 3.5 + E2E canary test (Korea + non-Korea + override paths) (Wave 4)
-- [ ] 04-06-PLAN.md — Vocabulary-lock test + TEXT_MODE parity test + structural no-hook test + coverage snapshot (Wave 5)
+- [x] 04-06-PLAN.md — Vocabulary-lock test + TEXT_MODE parity test + structural no-hook test + coverage snapshot (Wave 5)
 
 **Pitfall coverage**: #3 OBJECTIVES.md anchor drift (three-output design forces user to choose, not just acknowledge), #4 Compliance checkbox theater (findings-not-checks vocabulary established here so it propagates to COMPLIANCE later), Anti-pattern #2 (gate-as-orchestrator-step, NOT hook-spawned).
 
