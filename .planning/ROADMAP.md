@@ -99,8 +99,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can verify by reading the orchestrator command markdown file that the gate is invoked as a visible, mandatory orchestrator step — there is no PostToolUse or SubagentStop hook that does the invocation invisibly
   4. User can see in STATE.md `state.brief.last_gate_results` that the most recent ALIGN gate result is recorded with severity, findings count, and decision (proceed / amend objectives / revise output)
 **Plans**: 6 plans
-- [ ] 04-01-PLAN.md — Foundational lib primitives: deterministic screen + ban-list grepper + verdict validator + writer + Korea-signal detector + vocabulary reference file + .gitignore entry (Wave 1)
-- [ ] 04-02-PLAN.md — Subagent markdown (agents/brief-align-gate.md) + orchestrator workflow markdown (brief/workflows/align-gate.md) with templated candidate/baseline/verdict paths and D-06 3-path interrupt Korean prompts (Wave 1, parallel to 04-01)
+- [x] 04-01-PLAN.md — Foundational lib primitives: deterministic screen + ban-list grepper + verdict validator + writer + Korea-signal detector + vocabulary reference file + .gitignore entry (Wave 1)
+- [x] 04-02-PLAN.md — Subagent markdown (agents/brief-align-gate.md) + orchestrator workflow markdown (brief/workflows/align-gate.md) with templated candidate/baseline/verdict paths and D-06 3-path interrupt Korean prompts (Wave 1, parallel to 04-01)
 - [ ] 04-03-PLAN.md — 4 decision-path fixtures + combined decision-path test suite with MUST-PASS canary (Pitfall #6 B2B-enterprise + App-Store-consumer contradiction) + runAlign + mergeVerdicts extension (Wave 2)
 - [ ] 04-04-PLAN.md — commitAlignVerdict + renderAlignReport + brief-tools.cjs align run/commit dispatcher + status.cjs formatGate override extension + state-override round-trip test (Wave 3)
 - [ ] 04-05-PLAN.md — Canary wiring into /brief-define Mode A wrap-up Step 3.5 + E2E canary test (Korea + non-Korea + override paths) (Wave 4)
