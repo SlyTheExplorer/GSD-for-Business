@@ -66,3 +66,6 @@ vendor/
 .cache/
 tmp/
 .worktrees
+
+# Phase 4 — transient ALIGN verdict file (never commit)
+.planning/.align-verdict.tmp.json
