@@ -198,6 +198,100 @@ function writeVerdict(verdictPath, verdictObject) {
   atomicWriteFileSync(verdictPath, serialized, 'utf-8');
 }
 
+// ─── mergeVerdicts (D-03 merge rule) ───────────────────────────────────────
+// severity = max across det+llm findings; decision = blocking+OBJECTIVES.md
+// location → DRIFTED-objective, other blocking → DRIFTED-output, else ALIGNED.
+// llmVerdict may be null.
+const SEVERITY_ORDER = { blocking: 3, material: 2, 'nice-to-have': 1 };
+
+function mergeVerdicts(detFindings, llmVerdict) {
+  const llm = llmVerdict || {
+    decision: 'ALIGNED',
+    severity: 'nice-to-have',
+    findings: [],
+    rationale: 'no semantic findings (llm pass skipped or returned null)',
+  };
+  const det = Array.isArray(detFindings) ? detFindings : [];
+  const llmFindings = Array.isArray(llm.findings) ? llm.findings : [];
+  const combinedFindings = det.concat(llmFindings);
+
+  // Severity max scan.
+  let maxSev = 'nice-to-have';
+  for (const f of combinedFindings) {
+    if ((SEVERITY_ORDER[f.severity] || 0) > (SEVERITY_ORDER[maxSev] || 0)) {
+      maxSev = f.severity;
+    }
+  }
+
+  // Decision derivation.
+  let decision;
+  if (maxSev === 'blocking') {
+    const blocking = combinedFindings.find((f) => f.severity === 'blocking');
+    const loc = (blocking && blocking.location) || '';
+    if (/OBJECTIVES\.md/i.test(loc) || /frontmatter/i.test(loc)) {
+      decision = 'DRIFTED-objective-needs-update';
+    } else {
+      decision = 'DRIFTED-output-needs-revision';
+    }
+  } else {
+    decision = 'ALIGNED';
+  }
+
+  const rationale =
+    typeof llm.rationale === 'string' && llm.rationale.length > 0
+      ? llm.rationale
+      : `merged verdict from ${combinedFindings.length} finding(s)`;
+
+  return {
+    decision,
+    severity: maxSev,
+    findings_count: combinedFindings.length,
+    findings: combinedFindings,
+    rationale,
+  };
+}
+
+// ─── runAlign (entry point for workflow + tests) ───────────────────────────
+// Drives deterministic short-circuit + LLM merge pipeline in one call.
+// llmPass is injected (tests stub it; production workflow spawns Task
+// directly rather than funneling through runAlign).
+//
+// opts: { candidate, baseline, verdictOutPath?, llmPass? }
+// Returns merged verdict; writes atomically to verdictOutPath.
+// Read-only contract: candidate/baseline MUST NOT be mutated (Pitfall #2,
+// Test 6 in tests/brief-align.test.cjs enforces).
+function runAlign(cwd, opts) {
+  const candidate = opts.candidate;
+  const baseline = opts.baseline;
+  const verdictOutPath =
+    opts.verdictOutPath ||
+    path.join(planningPaths(cwd).planning, '.align-verdict.tmp.json');
+  const llmPass = opts.llmPass;
+
+  const screen = runDeterministicScreen(cwd, { candidate, baseline });
+  if (screen.verdict) {
+    // Short-circuit: deterministic fired blocking or material; no LLM pass
+    // (D-03 precedence + Pitfall #4 avoid unnecessary LLM spend).
+    writeVerdict(verdictOutPath, screen.verdict);
+    return screen.verdict;
+  }
+
+  let llmVerdict = null;
+  if (typeof llmPass === 'function') {
+    llmVerdict = llmPass({
+      candidate,
+      baseline,
+      verdictOutPath,
+      cwd,
+      alreadyKnownFindings: screen.findings,
+    });
+  }
+
+  const merged = mergeVerdicts(screen.findings, llmVerdict);
+  writeVerdict(verdictOutPath, merged);
+  return merged;
+}
+
 // ─── Exports ───────────────────────────────────────────────────────────────
 module.exports = {
   VALID_DECISIONS,
@@ -211,4 +305,6 @@ module.exports = {
   detectKoreaSignalFromConfig,
   runDeterministicScreen,
   writeVerdict,
+  mergeVerdicts,
+  runAlign,
 };

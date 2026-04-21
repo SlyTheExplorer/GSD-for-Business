@@ -1,8 +1,8 @@
-# Unrelated artifact
+# Unrelated hobby notes
 
-This document describes a hobby garden irrigation schedule for summer 2026.
+Weekly chores for my garden irrigation timetable during summer 2026.
 
-Weekly tasks: water roses Monday, trim hedges Wednesday, fertilize lawn Sunday.
+Weekly work: water roses Monday, prune hedges Wednesday, feed lawn Sunday.
 
-Tools used: hose, spade, pruning shears. No overlap with any known baseline
-content — intentionally selected unrelated domain vocabulary.
+Kit used: hose, spade, secateurs. Zero overlap with any earlier sample —
+deliberately chosen unrelated hobby words.
