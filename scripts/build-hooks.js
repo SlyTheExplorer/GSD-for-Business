@@ -26,6 +26,7 @@ const HOOKS_TO_COPY = [
   // Community hooks (bash, opt-in via .planning/config.json hooks.community)
   'brief-session-state.sh',
   'brief-validate-commit.sh',
+  'brief-validate-provenance.sh',
   'brief-phase-boundary.sh'
 ];
 

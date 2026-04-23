@@ -4759,7 +4759,7 @@ function uninstall(isGlobal, runtime = 'claude') {
   // 4. Remove GSD hooks
   const hooksDir = path.join(targetDir, 'hooks');
   if (fs.existsSync(hooksDir)) {
-    const briefHooks = ['brief-statusline.js', 'brief-check-update.js', 'brief-check-update-worker.js', 'brief-context-monitor.js', 'brief-prompt-guard.js', 'brief-read-guard.js', 'brief-read-injection-scanner.js', 'brief-workflow-guard.js', 'brief-session-state.sh', 'brief-validate-commit.sh', 'brief-phase-boundary.sh'];
+    const briefHooks = ['brief-statusline.js', 'brief-check-update.js', 'brief-check-update-worker.js', 'brief-context-monitor.js', 'brief-prompt-guard.js', 'brief-read-guard.js', 'brief-read-injection-scanner.js', 'brief-workflow-guard.js', 'brief-session-state.sh', 'brief-validate-commit.sh', 'brief-validate-provenance.sh', 'brief-phase-boundary.sh'];
     let hookCount = 0;
     for (const hook of briefHooks) {
       const hookPath = path.join(hooksDir, hook);
@@ -4815,7 +4815,7 @@ function uninstall(isGlobal, runtime = 'claude') {
         cmd.includes('brief-session-state') || cmd.includes('gsd-session-state') || cmd.includes('brief-context-monitor') || cmd.includes('gsd-context-monitor') ||
         cmd.includes('brief-phase-boundary') || cmd.includes('gsd-phase-boundary') || cmd.includes('brief-prompt-guard') || cmd.includes('gsd-prompt-guard') ||
         cmd.includes('brief-read-guard') || cmd.includes('gsd-read-guard') || cmd.includes('brief-read-injection-scanner') || cmd.includes('gsd-read-injection-scanner') ||
-        cmd.includes('brief-validate-commit') || cmd.includes('gsd-validate-commit') || cmd.includes('brief-workflow-guard') || cmd.includes('gsd-workflow-guard'));
+        cmd.includes('brief-validate-commit') || cmd.includes('gsd-validate-commit') || cmd.includes('brief-validate-provenance') || cmd.includes('gsd-validate-provenance') || cmd.includes('brief-workflow-guard') || cmd.includes('gsd-workflow-guard'));
 
     for (const eventName of ['SessionStart', 'PostToolUse', 'AfterTool', 'PreToolUse', 'BeforeTool']) {
       if (settings.hooks && settings.hooks[eventName]) {
@@ -5846,7 +5846,7 @@ function install(isGlobal, runtime = 'claude') {
       if (verifyInstalled(hooksDest, 'hooks')) {
         console.log(`  ${green}✓${reset} Installed hooks (bundled)`);
         // Warn if expected community .sh hooks are missing (non-fatal)
-        const expectedShHooks = ['brief-session-state.sh', 'brief-validate-commit.sh', 'brief-phase-boundary.sh'];
+        const expectedShHooks = ['brief-session-state.sh', 'brief-validate-commit.sh', 'brief-validate-provenance.sh', 'brief-phase-boundary.sh'];
         for (const sh of expectedShHooks) {
           if (!fs.existsSync(path.join(hooksDest, sh))) {
             console.warn(`  ${yellow}⚠${reset}  Missing expected hook: ${sh}`);
@@ -6302,6 +6302,30 @@ function install(isGlobal, runtime = 'claude') {
       console.log(`  ${green}✓${reset} Configured commit validation hook (opt-in via config)`);
     } else if (!hasValidateCommitHook && !fs.existsSync(validateCommitFile)) {
       console.warn(`  ${yellow}⚠${reset}  Skipped commit validation hook — brief-validate-commit.sh not found at target`);
+    }
+
+    // Configure provenance validation hook (DSC-04 / CC-04 — blocks untagged quantitative claims, opt-in)
+    const validateProvenanceCommand = isGlobal
+      ? buildHookCommand(targetDir, 'brief-validate-provenance.sh', hookOpts)
+      : 'bash ' + localPrefix + '/hooks/brief-validate-provenance.sh';
+    const hasValidateProvenanceHook = settings.hooks[preToolEvent].some(entry =>
+      entry.hooks && entry.hooks.some(h => h.command && (h.command.includes('brief-validate-provenance') || h.command.includes('gsd-validate-provenance')))
+    );
+    const validateProvenanceFile = path.join(targetDir, 'hooks', 'brief-validate-provenance.sh');
+    if (!hasValidateProvenanceHook && fs.existsSync(validateProvenanceFile)) {
+      settings.hooks[preToolEvent].push({
+        matcher: 'Bash',
+        hooks: [
+          {
+            type: 'command',
+            command: validateProvenanceCommand,
+            timeout: 5
+          }
+        ]
+      });
+      console.log(`  ${green}✓${reset} Configured provenance validation hook (opt-in via config)`);
+    } else if (!hasValidateProvenanceHook && !fs.existsSync(validateProvenanceFile)) {
+      console.warn(`  ${yellow}⚠${reset}  Skipped provenance validation hook — brief-validate-provenance.sh not found at target`);
     }
 
     // Configure session state orientation hook (opt-in)
