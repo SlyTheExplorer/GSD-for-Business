@@ -1,0 +1,8 @@
+{
+  "brief": {
+    "business_model": "b2c",
+    "region": "us",
+    "audience_policy": {"default": "internal", "permitted": ["internal", "external", "public"]},
+    "compliance_packs": []
+  }
+}

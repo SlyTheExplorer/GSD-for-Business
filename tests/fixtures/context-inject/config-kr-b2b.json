@@ -1,0 +1,8 @@
+{
+  "brief": {
+    "business_model": "b2b",
+    "region": "kr",
+    "audience_policy": {"default": "internal", "permitted": ["internal", "partner", "external"]},
+    "compliance_packs": ["PIPA", "ISMS-P"]
+  }
+}
