@@ -719,32 +719,34 @@ lines.push(`  Round-trips     ${roundTripLine}`);
 
 **Notes on assumption confidence:** Most assumptions are LOW-risk because Phase 6 inherits infrastructure that Phases 2, 4, and 5 have already stress-tested. The two MEDIUM-risk items (A4, A5) are LLM-behavior assumptions — both have documented mitigation strategies. None of the assumptions are HIGH-risk.
 
-## Open Questions
+## Open Questions (RESOLVED)
+
+> All 5 questions carry a **RESOLVED** marker with the adopted recommendation. Plan-checker Dimension 11 clearance: each question's recommendation is implemented in the referenced plan.
 
 1. **Frame field: should `requested_researcher` be added as 8th field?**
    - What we know: D-05 locks 7 fields. D-10 resume flow needs to spawn "ONLY the researcher for `top_frame.triggering_topic`" but triggering_topic is human-readable, not a category slug.
    - What's unclear: Whether to (a) add `requested_researcher` at push time (gap-detector emits it), (b) route at resume time via user picker, (c) LLM-judge at respawn.
-   - Recommendation: Ship v1 with user-picker (c=simplest, zero new field); gather pilot feedback; consider (a) in v1.x. This keeps D-05 locked at 7 fields.
+   - **RESOLVED:** Ship v1 with user-picker (b=simplest, zero new field); gather pilot feedback; consider (a) in v1.x. This keeps D-05 locked at 7 fields. Implemented in Plan 06-07 Step 0.5 (AskUserQuestion route picks researcher via `triggering_topic` + category list).
 
 2. **Should `countIterations` consider `triggering_topic` case-insensitively?**
    - What we know: D-09 locks kebab-case lowercase. Fingerprints should already be normalized.
    - What's unclear: If agent ever emits uppercase by mistake, byte-compare misses the match.
-   - Recommendation: Byte-compare (case-sensitive). Rely on Pattern 4 slug validator to reject non-lowercase at push time. Fast-fail beats silent iteration miscount.
+   - **RESOLVED:** Byte-compare (case-sensitive). Rely on Pattern 4 slug validator to reject non-lowercase at push time. Fast-fail beats silent iteration miscount. Implemented in Plan 06-03 (`validateFingerprint` throws on non-lowercase; `countIterations` uses `===` byte-compare).
 
 3. **What if a single artifact generates BOTH BLOCKING gap and GAPS-MATERIAL gaps in one gap-detect run?**
    - What we know: D-03 says "BLOCKING-only pushes; MATERIAL documented inline; NICE-TO-HAVE deferred." Singular verdict per run.
    - What's unclear: If gap-detector returns `findings: [{severity: blocking}, {severity: material}]`, which decision maps?
-   - Recommendation: Any blocking → `GAPS-BLOCKING` decision; push ONE frame for the blocking finding; other material findings still written to `{artifact}.gaps.md` + `state.brief.gap_queue[]` as sibling records. Planner decision; no D-conflict.
+   - **RESOLVED:** Any blocking → `GAPS-BLOCKING` decision; push ONE frame for the blocking finding; other material findings still written to `{artifact}.gaps.md` + `state.brief.gap_queue[]` as sibling records. Implemented in Plan 06-01 mixed-severity fixture + Plan 06-04 commit routing (`pushFrame: true` + queue append both run).
 
 4. **Integration with the `/brief-status --json` mode (Phase 2 deferred)?**
    - What we know: Phase 2 D-19 deferred `--json` structured output to Phase 9 HRD-03.
    - What's unclear: Phase 6 rendering is plain text (Pattern 9). If Phase 9 later adds `--json`, will it need to re-parse?
-   - Recommendation: Out of scope for Phase 6. Phase 6 ships text render; Phase 9 can extract from `state.brief.return_stack` + `return_stack_history` directly when --json lands.
+   - **RESOLVED:** Out of scope for Phase 6. Phase 6 ships text render only; Phase 9 can extract from `state.brief.return_stack` + `return_stack_history` directly via `state.cjs` when `--json` lands (both fields already round-trip cleanly per Phase 2 D-20/D-21). No Phase 6 work required.
 
 5. **Concurrent state writes during iteration-2 meta-arbiter interrupt: can the user start a second workflow mid-prompt?**
    - What we know: STATE.md file-lock protects against concurrent mutations.
    - What's unclear: If user is answering the meta-arbiter interrupt AND separately runs `/brief-status` in another shell, the read-only status command doesn't hold the lock but observes a consistent snapshot.
-   - Recommendation: No action needed. STATE.md lock discipline already handles this. Document as expected behavior.
+   - **RESOLVED:** No action needed. STATE.md lock discipline (inherited from Phase 1/2) already handles this — `/brief-status` reads the last committed state; meta-arbiter write acquires lock on the decision path. Documented as expected behavior; no Phase 6 code change.
 
 ## Environment Availability
 
