@@ -18,6 +18,132 @@ JSON is true. When TEXT_MODE is active, replace every AskUserQuestion call (Step
 and the downstream AUDIENCE 3-path interrupts invoked from Step 6) with a plain-text
 numbered list and ask the user to type their choice number.
 
+## Step 0.5: Return-stack resume auto-detection (DSG-11, D-10 — Phase 6 addition)
+
+Before running the block-gate or stale-anchor checks, check whether a paused
+frame exists on `state.brief.return_stack`. If so, the user is resuming from
+a prior BLOCKING gap that pushed a frame via brief/workflows/align-gate.md
+Step 8. Offer a 3-option menu: resume the paused topic, start a new
+discover session (leaving the frame on stack), or show the full stack.
+
+Rationale for position: Step 0.5 runs AFTER Step 0 (TEXT_MODE detection) so
+the resume menu uses the correct rendering (AskUserQuestion vs numbered
+list). It runs BEFORE Step 1 (block-gate) because the paused frame's topic
+was already well-defined at push time — block-gate coverage on the current
+OBJECTIVES.md is not required to resume an already-started research topic.
+
+### Step 0.5.1: Read return_stack state
+
+Invoke the state reader:
+
+```bash
+node brief/bin/brief-tools.cjs state json
+```
+
+Parse the JSON output. Extract `brief.return_stack` as an array. If
+`return_stack.length === 0` OR `return_stack` is missing/malformed, SKIP
+the rest of Step 0.5 and proceed to Step 1.
+
+If `return_stack.length > 0`, extract the top frame:
+
+```
+TOP_FRAME = return_stack[return_stack.length - 1]
+```
+
+Required fields (D-05): `triggering_topic`, `topic_fingerprint`,
+`paused_artifact`, `paused_workstream`, `paused_phase`, `gap_text`,
+`pushed_at`.
+
+### Step 0.5.2: Render resume AskUserQuestion (or TEXT_MODE numbered list)
+
+<askuserquestion>
+  <header>Resume</header>
+  <question>Return-stack has {return_stack.length} pending gap(s). Resume research on '{TOP_FRAME.triggering_topic}', start a new discover session, or show full stack?</question>
+  <options>
+    <option>Resume {TOP_FRAME.triggering_topic}</option>
+    <option>Start new session</option>
+    <option>Show stack</option>
+  </options>
+</askuserquestion>
+
+**Korean variant (when brief.region: kr):**
+
+<askuserquestion>
+  <header>재개</header>
+  <question>Return-stack에 {return_stack.length}개의 대기 중인 공백이 있습니다. '{TOP_FRAME.triggering_topic}' 연구를 재개하시겠어요, 새 discover 세션을 시작하시겠어요, 아니면 전체 stack을 확인하시겠어요?</question>
+  <options>
+    <option>'{TOP_FRAME.triggering_topic}' 재개</option>
+    <option>새 세션 시작</option>
+    <option>Stack 확인</option>
+  </options>
+</askuserquestion>
+
+**TEXT_MODE fallback (FND-06 multi-runtime parity):**
+
+```
+Resume / 재개
+
+Return-stack에 {N}개의 대기 중인 공백이 있습니다.
+Return-stack has {N} pending gap(s).
+
+  1. Resume {TOP_FRAME.triggering_topic} / '{TOP_FRAME.triggering_topic}' 재개
+  2. Start new session / 새 세션 시작
+  3. Show stack / Stack 확인
+
+선택 >
+```
+
+### Step 0.5.3: Action per selection
+
+**1. Resume {triggering_topic}** — skip Step 3 category multi-select and
+route directly to Step 5 with a single-element SELECTED_SLUGS:
+
+- Build `SELECTED_SLUGS = ['<resolved-category-slug>']`.
+- **Category mapping (Pitfall 5 mitigation):** TOP_FRAME.triggering_topic is
+  a human-readable label (e.g., "Korea fintech TAM"). Map it to one of the
+  9 default DISCOVER category slugs via an inline case-match on keywords:
+  - Contains "TAM" | "SAM" | "SOM" | "market siz" → `market-sizing`
+  - Contains "competitor" → `competitor-landscape`
+  - Contains "customer" → `customer-research`
+  - Contains "regulat" | "compliance" | "PIPA" | "ISMS" | "MyData" → `regulation-and-compliance`
+  - Contains "technology" | "feasib" → `technology-and-feasibility`
+  - Contains "channel" | "distribut" → `distribution-channels`
+  - Contains "pricing" | "price" → `pricing-benchmarks`
+  - Contains "case stud" → `case-studies`
+  - Contains "trend" | "forecast" → `trends-and-forecasts`
+  - Otherwise → ask the user "Which researcher covers '{triggering_topic}'?" with the 9-category picker (Pitfall 5 recommendation (c): v1 simplest).
+- Proceed to Step 4 (Build business_context) with the single slug.
+- Step 1 (Block-gate) and Step 2 (Stale-anchor) are SKIPPED on resume —
+  the paused frame pre-dates any amendment. If the user wants a fresh
+  gate run, they should choose "Start new session" instead.
+
+**2. Start new session** — the frame stays on the stack. Proceed to Step 1
+(Block-gate) as normal. The frame remains eligible for future resume; the
+user can run /brief-discover later and see the resume option again.
+
+**3. Show stack** — render a text dump:
+
+```
+Return stack (depth {N}/3):
+  Frame 1 (top): {topic} | workstream={ws} | pushed_at={iso} | gap={text}
+  Frame 2:       {topic} | workstream={ws} | pushed_at={iso} | gap={text}
+  ...
+```
+
+Korean variant uses Korean labels (`깊이`, `워크스트림`, `푸시 시점`, `공백`). Then
+re-render the Step 0.5.2 AskUserQuestion (recursive — user can read the stack
+and still pick Resume or Start new).
+
+### Step 0.5.4: Record the resume event (telemetry, optional)
+
+No state mutation on resume selection — the frame stays on stack until the
+align-gate.md Step 4.5 maybePopTopFrame call after the new research is
+evaluated (D-11 dual condition). Resume is a READ from state, not a mutation.
+
+If /brief-discover later completes successfully AND the paused_artifact has
+been re-written AND ALIGN re-passes on the new content, Plan 06's Step 4.5
+pops the frame automatically. No user action required.
+
 ## Step 1: Block-gate (DEF-05, D-12)
 
 Invoke `brief-tools objectives validate` as a child process or via direct lib import.
@@ -299,5 +425,5 @@ Structural test (Plan 08 canary):
 Phase 3 Plan 05; Phase 5 replaces the body. NET user-facing command additions in Phase 5 = 0.
 
 Structural test (Plan 08):
-  [ ! -f commands/brief/audience.md ] && [ ! -f commands/brief/audience-check.md ] && [ ! -f commands/brief/reaudit.md ] && [ ! -f commands/brief/realign.md ] && [ ! -f commands/brief/discover-audit.md ]
+  [ ! -f commands/brief/audience.md ] && [ ! -f commands/brief/audience-check.md ] && [ ! -f commands/brief/reaudit.md ] && [ ! -f commands/brief/realign.md ] && [ ! -f commands/brief/discover-audit.md ] && [ ! -f commands/brief/resume.md ] && [ ! -f commands/brief/gap-detect.md ] && [ ! -f commands/brief/return-stack.md ]
 </command_surface_assertion>
