@@ -147,6 +147,214 @@ function pushReturnFrame(cwd, frame) {
   }, cwd);
 }
 
+// ─── _resolveSafePath (T-06-03-02 mitigation — copy-verbatim from audience) ──
+// Path-traversal guard. Realpaths both sides (tolerating missing files by
+// walking parents) so startsWith compares canonical paths.
+function _canonicalize(p) {
+  let cur = p;
+  while (cur && cur !== path.dirname(cur)) {
+    try { return path.join(fs.realpathSync(cur), path.relative(cur, p)); }
+    catch { cur = path.dirname(cur); }
+  }
+  return p;
+}
+function _resolveSafePath(cwd, candidatePath) {
+  const absolute = _canonicalize(path.resolve(cwd, candidatePath));
+  const planningRoot = _canonicalize(path.resolve(cwd, '.planning'));
+  if (absolute !== planningRoot && !absolute.startsWith(planningRoot + path.sep)) {
+    throw new Error(`path traversal refused: ${candidatePath} resolves outside .planning/`);
+  }
+  return absolute;
+}
+
+// ─── popReturnFrame (D-06 + T-06-03-04 mitigation) ────────────────────────
+// Removes the top (last) entry from state.brief.return_stack via immutable
+// .slice(0, -1) — NEVER mutates state.brief.return_stack_history. Returns the
+// popped frame or null if stack empty. Structural guard enforced by
+// brief-gap-detect-history-immutable.test.cjs grep-audit.
+function popReturnFrame(cwd) {
+  const statePath = planningPaths(cwd).state;
+  let popped = null;
+  readModifyWriteStateMd(statePath, (content) => {
+    const body = stripFrontmatter(content);
+    const fm = extractFrontmatter(content) || {};
+    const brief = (fm && fm.brief) || {};
+    const stack = Array.isArray(brief.return_stack) ? brief.return_stack : [];
+    if (stack.length === 0) return content;  // no-op
+    popped = stack[stack.length - 1];
+    // Immutable slice — history is NOT touched per D-06 append-only lock.
+    const newStack = stack.slice(0, -1);
+    if (!fm.brief || typeof fm.brief !== 'object' || Array.isArray(fm.brief)) fm.brief = {};
+    fm.brief.return_stack = newStack;
+    return `---\n${reconstructFrontmatter(fm)}\n---\n\n${body}`;
+  }, cwd);
+  return popped;
+}
+
+// ─── maybePopTopFrame (Pattern 8 — D-11 dual-condition pop) ───────────────
+// Pops top frame iff BOTH:
+//   1. Artifact at frame.paused_artifact has mtime > frame.pushed_at
+//   2. state.brief.last_gate_results.align.decision === 'ALIGNED'
+//      AND align.at > frame.pushed_at
+// T-06-03-02: frame.paused_artifact wrapped in _resolveSafePath before
+// fs.statSync. Never touches return_stack_history.
+function maybePopTopFrame(cwd) {
+  const statePath = planningPaths(cwd).state;
+  let popped = null;
+  readModifyWriteStateMd(statePath, (content) => {
+    const body = stripFrontmatter(content);
+    const fm = extractFrontmatter(content) || {};
+    const brief = (fm && fm.brief) || {};
+    const stack = Array.isArray(brief.return_stack) ? brief.return_stack : [];
+    if (stack.length === 0) return content;
+    const top = stack[stack.length - 1];
+    if (!top || typeof top !== 'object') return content;
+
+    // Condition 1: artifact modified after push. Path-traversal guarded.
+    let artifactWritten = false;
+    try {
+      const safePath = _resolveSafePath(cwd, top.paused_artifact);
+      const st = fs.statSync(safePath);
+      artifactWritten = st.mtimeMs > Date.parse(top.pushed_at);
+    } catch { artifactWritten = false; }
+    if (!artifactWritten) return content;
+
+    // Condition 2: ALIGN re-ran since push AND returned ALIGNED.
+    const align = brief.last_gate_results && brief.last_gate_results.align;
+    const alignAligned = align
+      && align.decision === 'ALIGNED'
+      && typeof align.at === 'string'
+      && Date.parse(align.at) > Date.parse(top.pushed_at);
+    if (!alignAligned) return content;
+
+    // Both conditions hold — pop. Immutable slice preserves history invariant.
+    popped = stack[stack.length - 1];
+    const newStack = stack.slice(0, -1);
+    if (!fm.brief || typeof fm.brief !== 'object' || Array.isArray(fm.brief)) fm.brief = {};
+    fm.brief.return_stack = newStack;
+    return `---\n${reconstructFrontmatter(fm)}\n---\n\n${body}`;
+  }, cwd);
+  return popped;
+}
+
+// ─── clearReturnStackFor (D-08 meta-arbiter "Cancel workstream" action) ───
+// Removes ALL frames matching paused_workstream from return_stack; marks
+// workstream_status[workstream] = 'cancelled-after-loop'. History NEVER
+// mutated. Accepts a workstream string; no-op if return_stack empty.
+function clearReturnStackFor(cwd, workstream) {
+  if (typeof workstream !== 'string' || workstream.length === 0) {
+    throw new Error('clearReturnStackFor: workstream must be a non-empty string');
+  }
+  const statePath = planningPaths(cwd).state;
+  readModifyWriteStateMd(statePath, (content) => {
+    const body = stripFrontmatter(content);
+    const fm = extractFrontmatter(content) || {};
+    if (!fm.brief || typeof fm.brief !== 'object' || Array.isArray(fm.brief)) fm.brief = {};
+    const stack = Array.isArray(fm.brief.return_stack) ? fm.brief.return_stack : [];
+    // Pure filter — does not mutate either array.
+    fm.brief.return_stack = stack.filter((f) => f && f.paused_workstream !== workstream);
+    if (!fm.brief.workstream_status || typeof fm.brief.workstream_status !== 'object' || Array.isArray(fm.brief.workstream_status)) {
+      fm.brief.workstream_status = {};
+    }
+    fm.brief.workstream_status[workstream] = 'cancelled-after-loop';
+    return `---\n${reconstructFrontmatter(fm)}\n---\n\n${body}`;
+  }, cwd);
+}
+
+// ─── appendGapQueue (D-03 MATERIAL severity routing) ──────────────────────
+// Appends a MATERIAL gap entry to state.brief.gap_queue[] with auto-filled
+// detected_at. Required fields: workstream, artifact, gap_text,
+// topic_fingerprint.
+function appendGapQueue(cwd, entry) {
+  if (!entry || typeof entry !== 'object') {
+    throw new Error('appendGapQueue: entry must be an object');
+  }
+  const required = ['workstream', 'artifact', 'gap_text', 'topic_fingerprint'];
+  for (const k of required) {
+    if (typeof entry[k] !== 'string' || entry[k].length === 0) {
+      throw new Error(`appendGapQueue: entry.${k} missing or not a non-empty string`);
+    }
+  }
+  const statePath = planningPaths(cwd).state;
+  readModifyWriteStateMd(statePath, (content) => {
+    const body = stripFrontmatter(content);
+    const fm = extractFrontmatter(content) || {};
+    if (!fm.brief || typeof fm.brief !== 'object' || Array.isArray(fm.brief)) fm.brief = {};
+    if (!Array.isArray(fm.brief.gap_queue)) fm.brief.gap_queue = [];
+    fm.brief.gap_queue.push({
+      workstream: entry.workstream,
+      artifact: entry.artifact,
+      gap_text: entry.gap_text,
+      topic_fingerprint: entry.topic_fingerprint,
+      detected_at: new Date().toISOString(),
+    });
+    return `---\n${reconstructFrontmatter(fm)}\n---\n\n${body}`;
+  }, cwd);
+}
+
+// ─── writeAssumption (D-08 "Proceed with assumption" path) ────────────────
+// T-06-03-03 mitigation: sanitizes user-typed justification via
+// sanitizeForPrompt BEFORE writing to OBJECTIVES.md#Assumptions. Also
+// appends to state.brief.last_gate_results.gap_detect.assumption_log[].
+// D-08 meta-arbiter validator: >=20 non-whitespace chars required.
+function writeAssumption(cwd, { justification, topic_fingerprint, workstream }) {
+  if (typeof justification !== 'string') {
+    throw new Error('writeAssumption: justification must be a string');
+  }
+  const nonWs = justification.replace(/\s+/g, '');
+  if (nonWs.length < 20) {
+    throw new Error('writeAssumption: justification needs >=20 non-whitespace chars (D-08 meta-arbiter floor)');
+  }
+  if (typeof topic_fingerprint !== 'string' || topic_fingerprint.length === 0) {
+    throw new Error('writeAssumption: topic_fingerprint required');
+  }
+  if (typeof workstream !== 'string' || workstream.length === 0) {
+    throw new Error('writeAssumption: workstream required');
+  }
+
+  const sanitized = sanitizeForPrompt(justification);
+  const at = new Date().toISOString();
+
+  // Append to OBJECTIVES.md#Assumptions (creates section if missing).
+  const objPath = path.join(planningDir(cwd), 'OBJECTIVES.md');
+  if (fs.existsSync(objPath)) {
+    let content = fs.readFileSync(objPath, 'utf-8');
+    const bulletText = `- [${at}] workstream=${workstream} | fingerprint=${topic_fingerprint}\n  > ${sanitized}`;
+    if (/^## Assumptions\b/m.test(content)) {
+      content = content.replace(/^(## Assumptions\b[^\n]*\n)/m, `$1\n${bulletText}\n`);
+    } else {
+      content = content.trimEnd() + `\n\n## Assumptions\n\n${bulletText}\n`;
+    }
+    atomicWriteFileSync(objPath, content, 'utf-8');
+  }
+
+  // Append to state.brief.last_gate_results.gap_detect.assumption_log[].
+  const statePath = planningPaths(cwd).state;
+  readModifyWriteStateMd(statePath, (content) => {
+    const body = stripFrontmatter(content);
+    const fm = extractFrontmatter(content) || {};
+    if (!fm.brief || typeof fm.brief !== 'object' || Array.isArray(fm.brief)) fm.brief = {};
+    if (!fm.brief.last_gate_results || typeof fm.brief.last_gate_results !== 'object' || Array.isArray(fm.brief.last_gate_results)) {
+      fm.brief.last_gate_results = {};
+    }
+    if (!fm.brief.last_gate_results.gap_detect || typeof fm.brief.last_gate_results.gap_detect !== 'object' || Array.isArray(fm.brief.last_gate_results.gap_detect)) {
+      fm.brief.last_gate_results.gap_detect = {};
+    }
+    if (!Array.isArray(fm.brief.last_gate_results.gap_detect.assumption_log)) {
+      fm.brief.last_gate_results.gap_detect.assumption_log = [];
+    }
+    fm.brief.last_gate_results.gap_detect.assumption_log.push({
+      workstream,
+      topic_fingerprint,
+      justification: sanitized,
+      at,
+    });
+    return `---\n${reconstructFrontmatter(fm)}\n---\n\n${body}`;
+  }, cwd);
+
+  return { at, sanitized };
+}
+
 // ─── writeVerdict ──────────────────────────────────────────────────────────
 // Validates and atomically writes a verdict JSON to disk.
 function writeVerdict(verdictPath, verdictObject) {
@@ -157,9 +365,7 @@ function writeVerdict(verdictPath, verdictObject) {
 }
 
 // ─── Exports ───────────────────────────────────────────────────────────────
-// popReturnFrame + maybePopTopFrame + clearReturnStackFor + appendGapQueue +
-// writeAssumption are added in Task 2. runGapDetect + commitGapDetectVerdict
-// added in Plan 04.
+// runGapDetect + commitGapDetectVerdict added in Plan 04.
 module.exports = {
   VALID_DECISIONS,
   VALID_SEVERITIES,
@@ -172,6 +378,11 @@ module.exports = {
   validateFingerprint,
   countIterations,
   pushReturnFrame,
+  popReturnFrame,
+  maybePopTopFrame,
+  clearReturnStackFor,
+  appendGapQueue,
+  writeAssumption,
   writeVerdict,
   siblingReportPath,
   renderGapDetectReport,
