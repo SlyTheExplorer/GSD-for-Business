@@ -1,0 +1,24 @@
+{
+  "return_stack": [
+    {
+      "paused_phase": "07",
+      "paused_workstream": "go-to-market",
+      "paused_artifact": ".planning/workstreams/go-to-market/market-sizing.md",
+      "gap_text": "TAM citation missing",
+      "triggering_topic": "Korea fintech TAM",
+      "topic_fingerprint": "market-sizing-korea-fintech-tam",
+      "pushed_at": "2026-04-24T10:00:00.000Z"
+    }
+  ],
+  "return_stack_history": [
+    {
+      "paused_phase": "07",
+      "paused_workstream": "go-to-market",
+      "paused_artifact": ".planning/workstreams/go-to-market/market-sizing.md",
+      "gap_text": "TAM citation missing",
+      "triggering_topic": "Korea fintech TAM",
+      "topic_fingerprint": "market-sizing-korea-fintech-tam",
+      "pushed_at": "2026-04-24T10:00:00.000Z"
+    }
+  ]
+}

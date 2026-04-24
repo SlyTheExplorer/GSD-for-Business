@@ -1,0 +1,60 @@
+{
+  "return_stack": [
+    {
+      "paused_phase": "07",
+      "paused_workstream": "go-to-market",
+      "paused_artifact": ".planning/workstreams/go-to-market/market-sizing.md",
+      "gap_text": "TAM citation missing",
+      "triggering_topic": "Korea fintech TAM",
+      "topic_fingerprint": "market-sizing-korea-fintech-tam",
+      "pushed_at": "2026-04-22T10:00:00.000Z"
+    },
+    {
+      "paused_phase": "07",
+      "paused_workstream": "go-to-market",
+      "paused_artifact": ".planning/workstreams/go-to-market/market-sizing.md",
+      "gap_text": "Competitor pricing axis missing",
+      "triggering_topic": "Competitor pricing",
+      "topic_fingerprint": "competitor-pricing-axis-missing",
+      "pushed_at": "2026-04-23T11:00:00.000Z"
+    },
+    {
+      "paused_phase": "07",
+      "paused_workstream": "financial",
+      "paused_artifact": ".planning/workstreams/financial/driver-model.md",
+      "gap_text": "Cost driver unsourced",
+      "triggering_topic": "Cost drivers",
+      "topic_fingerprint": "financial-cost-drivers-unsourced",
+      "pushed_at": "2026-04-24T12:00:00.000Z"
+    }
+  ],
+  "return_stack_history": [
+    {
+      "paused_phase": "07",
+      "paused_workstream": "go-to-market",
+      "paused_artifact": ".planning/workstreams/go-to-market/market-sizing.md",
+      "gap_text": "TAM citation missing",
+      "triggering_topic": "Korea fintech TAM",
+      "topic_fingerprint": "market-sizing-korea-fintech-tam",
+      "pushed_at": "2026-04-22T10:00:00.000Z"
+    },
+    {
+      "paused_phase": "07",
+      "paused_workstream": "go-to-market",
+      "paused_artifact": ".planning/workstreams/go-to-market/market-sizing.md",
+      "gap_text": "Competitor pricing axis missing",
+      "triggering_topic": "Competitor pricing",
+      "topic_fingerprint": "competitor-pricing-axis-missing",
+      "pushed_at": "2026-04-23T11:00:00.000Z"
+    },
+    {
+      "paused_phase": "07",
+      "paused_workstream": "financial",
+      "paused_artifact": ".planning/workstreams/financial/driver-model.md",
+      "gap_text": "Cost driver unsourced",
+      "triggering_topic": "Cost drivers",
+      "topic_fingerprint": "financial-cost-drivers-unsourced",
+      "pushed_at": "2026-04-24T12:00:00.000Z"
+    }
+  ]
+}
