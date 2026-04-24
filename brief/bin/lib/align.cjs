@@ -322,8 +322,9 @@ function _resolveSafePath(cwd, candidatePath) {
   return absolute;
 }
 
-// ─── commitAlignVerdict (D-07, T-04-01/02/03) ──────────────────────────────
-// Renders ALIGN-00.md, updates state.brief.last_gate_results.align atomically
+// ─── commitAlignVerdict (D-07, D-12, T-04-01/02/03) ────────────────────────
+// Renders OBJECTIVES.align.md (paired-sibling of OBJECTIVES.md per D-12 Plan
+// 05-05 migration), updates state.brief.last_gate_results.align atomically
 // via readModifyWriteStateMd, and deletes the tmp verdict file in finally.
 // sanitizeForPrompt runs BEFORE state write (T-04-02). Caller issues the
 // multi-file git commit for Pattern 4 visibility.
@@ -341,7 +342,7 @@ function commitAlignVerdict(cwd, opts) {
 
     const korea = detectKoreaSignalFromConfig(cwd);
     const alignMd = renderAlignReport(verdict, { korea, override, overrideReason: sanitizedReason });
-    const alignPath = path.join(planningPaths(cwd).planning, 'ALIGN-00.md');
+    const alignPath = path.join(planningPaths(cwd).planning, 'OBJECTIVES.align.md');
     atomicWriteFileSync(alignPath, alignMd, 'utf-8');
 
     const statePath = planningPaths(cwd).state;

@@ -1,5 +1,6 @@
 /**
- * Align Report — ALIGN-00.md content rendering (Plan 04-04).
+ * Align Report — OBJECTIVES.align.md content rendering (Plan 04-04 /
+ * D-12 migrated Plan 05-05).
  *
  * Extracted from align.cjs to keep align.cjs under the 400-line discipline
  * (Phase 2 D-18). renderAlignReport produces the full markdown document

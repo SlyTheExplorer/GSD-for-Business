@@ -152,13 +152,13 @@ test('renderAlignReport — override path writes decision:ALIGNED + override:tru
 
 // ─── Task 1: commitAlignVerdict — happy path ───────────────────────────────
 
-test('commitAlignVerdict — writes ALIGN-00.md and updates STATE.md brief map', () => {
+test('commitAlignVerdict — writes OBJECTIVES.align.md and updates STATE.md brief map', () => {
   const cwd = seedCwd();
   const verdictPath = path.join(cwd, '.planning', '.align-verdict.tmp.json');
   fs.writeFileSync(verdictPath, JSON.stringify(validVerdict()));
   const result = align.commitAlignVerdict(cwd, { verdictPath });
   assert.strictEqual(result.stateUpdated, true);
-  assert.ok(result.alignPath.endsWith('ALIGN-00.md'));
+  assert.ok(result.alignPath.endsWith('OBJECTIVES.align.md'));
   const alignContent = fs.readFileSync(result.alignPath, 'utf-8');
   const alignFm = extractFrontmatter(alignContent);
   assert.ok(alignFm.decision);
@@ -388,15 +388,15 @@ test('CLI: align run --candidate X --baseline Y writes verdict and exits 0', () 
   );
 });
 
-test('CLI: align commit --verdict X writes ALIGN-00.md and exits 0', () => {
+test('CLI: align commit --verdict X writes OBJECTIVES.align.md and exits 0', () => {
   const cwd = seedCwd();
   const verdictPath = path.join(cwd, '.planning', '.align-verdict.tmp.json');
   fs.writeFileSync(verdictPath, JSON.stringify(validVerdict()));
   const res = runCli(['align', 'commit', '--verdict', verdictPath, '--raw'], cwd);
   assert.strictEqual(res.exit, 0, `align commit should exit 0 — stderr: ${res.stderr}`);
   assert.ok(
-    fs.existsSync(path.join(cwd, '.planning', 'ALIGN-00.md')),
-    'ALIGN-00.md must exist after commit',
+    fs.existsSync(path.join(cwd, '.planning', 'OBJECTIVES.align.md')),
+    'OBJECTIVES.align.md must exist after commit',
   );
 });
 
@@ -422,7 +422,7 @@ test('CLI: align commit --override writes override flag into STATE.md', () => {
     'override flag must be present',
   );
   assert.strictEqual(alignEntry.override_reason, 'pilot launch acceptance');
-  const alignMd = fs.readFileSync(path.join(cwd, '.planning', 'ALIGN-00.md'), 'utf-8');
+  const alignMd = fs.readFileSync(path.join(cwd, '.planning', 'OBJECTIVES.align.md'), 'utf-8');
   assert.match(alignMd, /## User Override/);
 });
 

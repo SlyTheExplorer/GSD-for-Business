@@ -95,7 +95,7 @@ function seedTmp(region) {
   return tmp;
 }
 
-test('emitted .audience-report.tmp.md Korean AUDIENCE-OK path — no ban-list tokens', () => {
+test('emitted {artifact}.audience.md Korean AUDIENCE-OK path — no ban-list tokens', () => {
   const tmp = seedTmp('kr');
   const verdictPath = path.join(tmp, '.planning', '.audience-verdict.tmp.json');
   // Seed a KO AUDIENCE-OK verdict with preferred-vocabulary finding description.
@@ -111,12 +111,12 @@ test('emitted .audience-report.tmp.md Korean AUDIENCE-OK path — no ban-list to
       rationale: '모든 레이어가 일관된 상태입니다.',
     }),
   );
-  const result = audience.commitAudienceVerdict(tmp, { verdictPath, artifactPath: path.join(tmp, 'x.md') });
+  const result = audience.commitAudienceVerdict(tmp, { verdictPath, artifactPath: path.join(tmp, '.planning', 'x.md') });
   const body = fs.readFileSync(result.audiencePath, 'utf-8');
-  assertNoBanListInText(body, 'emitted .audience-report.tmp.md (Korean AUDIENCE-OK)');
+  assertNoBanListInText(body, 'emitted {artifact}.audience.md (Korean AUDIENCE-OK)');
 });
 
-test('emitted .audience-report.tmp.md English AUDIENCE-OK path — no ban-list tokens', () => {
+test('emitted {artifact}.audience.md English AUDIENCE-OK path — no ban-list tokens', () => {
   const tmp = seedTmp('us');
   const verdictPath = path.join(tmp, '.planning', '.audience-verdict.tmp.json');
   fs.writeFileSync(
@@ -131,12 +131,12 @@ test('emitted .audience-report.tmp.md English AUDIENCE-OK path — no ban-list t
       rationale: 'All layers coherent.',
     }),
   );
-  const result = audience.commitAudienceVerdict(tmp, { verdictPath, artifactPath: path.join(tmp, 'x.md') });
+  const result = audience.commitAudienceVerdict(tmp, { verdictPath, artifactPath: path.join(tmp, '.planning', 'x.md') });
   const body = fs.readFileSync(result.audiencePath, 'utf-8');
-  assertNoBanListInText(body, 'emitted .audience-report.tmp.md (English AUDIENCE-OK)');
+  assertNoBanListInText(body, 'emitted {artifact}.audience.md (English AUDIENCE-OK)');
 });
 
-test('emitted .audience-report.tmp.md override path — no ban-list tokens', () => {
+test('emitted {artifact}.audience.md override path — no ban-list tokens', () => {
   const tmp = seedTmp('kr');
   const verdictPath = path.join(tmp, '.planning', '.audience-verdict.tmp.json');
   fs.writeFileSync(
@@ -151,14 +151,14 @@ test('emitted .audience-report.tmp.md override path — no ban-list tokens', () 
       rationale: '청중 구체화 부족',
     }),
   );
-  audience.commitAudienceVerdict(tmp, {
+  const overrideResult = audience.commitAudienceVerdict(tmp, {
     verdictPath,
-    artifactPath: path.join(tmp, 'x.md'),
+    artifactPath: path.join(tmp, '.planning', 'x.md'),
     override: true,
     overrideReason: '사용자가 의도적으로 현재 상태 승인',
   });
-  const body = fs.readFileSync(path.join(tmp, '.planning', '.audience-report.tmp.md'), 'utf-8');
-  assertNoBanListInText(body, 'emitted .audience-report.tmp.md (override path)');
+  const body = fs.readFileSync(overrideResult.audiencePath, 'utf-8');
+  assertNoBanListInText(body, 'emitted {artifact}.audience.md (override path)');
 });
 
 test('static file brief/references/audience-vocabulary.md — ban-list tokens only in Ban-list sections', () => {

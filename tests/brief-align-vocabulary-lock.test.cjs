@@ -2,7 +2,7 @@
  * brief-align-vocabulary-lock.test.cjs — Phase 4 Plan 04-06 Task 1.
  *
  * Pitfall #4 (PITFALLS.md Common Pitfall #4 — Compliance Checkbox Theater)
- * mitigation: post-hoc vocabulary discipline. Greps every ALIGN-00.md
+ * mitigation: post-hoc vocabulary discipline. Greps every OBJECTIVES.align.md
  * emitted by runAlign + commitAlignVerdict for ban-list tokens across
  * three fixture runs (Korean ALIGNED, English ALIGNED, override) AND
  * asserts the same discipline holds in the three static source-of-truth
@@ -169,9 +169,9 @@ function seedNonKorea() {
   return tmp;
 }
 
-// ─── Test 1: Emitted ALIGN-00.md — Korean ALIGNED path ────────────────────
+// ─── Test 1: Emitted OBJECTIVES.align.md — Korean ALIGNED path ────────────────────
 
-test('emitted ALIGN-00.md Korean ALIGNED path — no ban-list tokens (Pitfall #4)', () => {
+test('emitted OBJECTIVES.align.md Korean ALIGNED path — no ban-list tokens (Pitfall #4)', () => {
   const cwd = seedKorea();
   const objPath = path.join(cwd, '.planning', 'OBJECTIVES.md');
   const verdictPath = path.join(cwd, '.planning', '.align-verdict.tmp.json');
@@ -194,13 +194,13 @@ test('emitted ALIGN-00.md Korean ALIGNED path — no ban-list tokens (Pitfall #4
     }),
   });
   align.commitAlignVerdict(cwd, { verdictPath });
-  const body = fs.readFileSync(path.join(cwd, '.planning', 'ALIGN-00.md'), 'utf-8');
-  assertNoBanListInText(body, 'emitted ALIGN-00.md (Korean ALIGNED)');
+  const body = fs.readFileSync(path.join(cwd, '.planning', 'OBJECTIVES.align.md'), 'utf-8');
+  assertNoBanListInText(body, 'emitted OBJECTIVES.align.md (Korean ALIGNED)');
 });
 
-// ─── Test 2: Emitted ALIGN-00.md — English ALIGNED path ───────────────────
+// ─── Test 2: Emitted OBJECTIVES.align.md — English ALIGNED path ───────────────────
 
-test('emitted ALIGN-00.md English ALIGNED path — no ban-list tokens (Pitfall #4)', () => {
+test('emitted OBJECTIVES.align.md English ALIGNED path — no ban-list tokens (Pitfall #4)', () => {
   const cwd = seedNonKorea();
   const objPath = path.join(cwd, '.planning', 'OBJECTIVES.md');
   const verdictPath = path.join(cwd, '.planning', '.align-verdict.tmp.json');
@@ -223,13 +223,13 @@ test('emitted ALIGN-00.md English ALIGNED path — no ban-list tokens (Pitfall #
     }),
   });
   align.commitAlignVerdict(cwd, { verdictPath });
-  const body = fs.readFileSync(path.join(cwd, '.planning', 'ALIGN-00.md'), 'utf-8');
-  assertNoBanListInText(body, 'emitted ALIGN-00.md (English ALIGNED)');
+  const body = fs.readFileSync(path.join(cwd, '.planning', 'OBJECTIVES.align.md'), 'utf-8');
+  assertNoBanListInText(body, 'emitted OBJECTIVES.align.md (English ALIGNED)');
 });
 
-// ─── Test 3: Emitted ALIGN-00.md — override path ──────────────────────────
+// ─── Test 3: Emitted OBJECTIVES.align.md — override path ──────────────────────────
 
-test('emitted ALIGN-00.md override path — no ban-list tokens (Pitfall #4)', () => {
+test('emitted OBJECTIVES.align.md override path — no ban-list tokens (Pitfall #4)', () => {
   const cwd = seedKorea();
   const verdictPath = path.join(cwd, '.planning', '.align-verdict.tmp.json');
   // Seed a DRIFTED verdict directly — simulates the user force-accepting
@@ -255,8 +255,8 @@ test('emitted ALIGN-00.md override path — no ban-list tokens (Pitfall #4)', ()
     override: true,
     overrideReason: '사용자가 의도적으로 현재 상태 승인',
   });
-  const body = fs.readFileSync(path.join(cwd, '.planning', 'ALIGN-00.md'), 'utf-8');
-  assertNoBanListInText(body, 'emitted ALIGN-00.md (override path)');
+  const body = fs.readFileSync(path.join(cwd, '.planning', 'OBJECTIVES.align.md'), 'utf-8');
+  assertNoBanListInText(body, 'emitted OBJECTIVES.align.md (override path)');
 });
 
 // ─── Test 4: Static file — align-vocabulary.md section containment ─────────

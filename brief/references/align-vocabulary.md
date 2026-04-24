@@ -29,7 +29,7 @@ Use these phrasings when no Korea signal is detected:
 
 ## Ban-list (EN)
 
-These tokens MUST NOT appear in any ALIGN-00.md output. Rewrite with findings vocabulary above.
+These tokens MUST NOT appear in any OBJECTIVES.align.md (or {artifact}.align.md) output. Rewrite with findings vocabulary above.
 
 - `compliant`
 - `passed`

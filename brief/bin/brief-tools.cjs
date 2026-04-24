@@ -544,7 +544,7 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
             override,
             overrideReason,
           });
-          core.output(result, raw, `ALIGN-00.md written at ${result.alignPath}`);
+          core.output(result, raw, `OBJECTIVES.align.md written at ${result.alignPath}`);
         } catch (err) {
           error(err.message);
         }

@@ -386,7 +386,7 @@ Invocation — follow `brief/workflows/align-gate.md` with these parameters:
   - VERDICT_OUT_PATH = .planning/.align-verdict.tmp.json   (default)
 
 The align-gate workflow handles its own routing:
-  - ALIGNED → second atomic commit of ALIGN-00.md + STATE.md update. No
+  - ALIGNED → second atomic commit of OBJECTIVES.align.md + STATE.md update. No
     interrupt. `/brief-define` proceeds to Step 4 next-step hint.
   - DRIFTED-objective-needs-update → 3-path interrupt (D-06). User chooses
     `objective 수정하기` / `output 다시 쓰기` / force-accept. See
@@ -405,7 +405,7 @@ user-typed override reason, the second atomic commit lands with
 Step 4.
 
 After this step completes successfully:
-  - `.planning/ALIGN-00.md` exists with Korean body (Korea-first fixture
+  - `.planning/OBJECTIVES.align.md` exists with Korean body (Korea-first fixture
     path) OR English body (non-Korea).
   - `.planning/STATE.md` frontmatter `brief.last_gate_results.align` is
     populated with `{decision, severity, findings_count, at, override?,

@@ -95,8 +95,8 @@ Severity enum: blocking | material | nice-to-have.
       - Baseline (OBJECTIVES.md) has the structural/semantic gap → DRIFTED-objective
       - Candidate has the gap and baseline is coherent        → DRIFTED-output
   - All findings `material` or lower → decision is ALIGNED
-    (ships; findings appear in the ALIGN-00.md report for transparency but
-     do not block the workflow).
+    (ships; findings appear in the OBJECTIVES.align.md report for transparency
+     but do not block the workflow).
 
 Self-coherence mode (Phase 4 canary — candidate == baseline == OBJECTIVES.md):
   You are checking the RELATIONSHIP between OBJECTIVES.md's two layers:

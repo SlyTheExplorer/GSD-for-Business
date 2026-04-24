@@ -2,7 +2,7 @@
 Invoke the BRIEF ALIGN gate as an explicit orchestrator step (NOT a hook).
 
 Reads: {{CANDIDATE_PATH}} + {{BASELINE_PATH}} (both absolute or cwd-relative).
-Produces: .planning/ALIGN-00.md + state.brief.last_gate_results.align + atomic
+Produces: .planning/OBJECTIVES.align.md + state.brief.last_gate_results.align + atomic
 git commit (ALIGNED path) OR a 3-path user interrupt (DRIFTED path).
 
 Invoked by:
@@ -34,7 +34,7 @@ Read these invocation parameters:
   - VERDICT_OUT_PATH (optional) — defaults to .planning/.align-verdict.tmp.json
 
 Verify both {{CANDIDATE_PATH}} and {{BASELINE_PATH}} exist. If either is missing,
-emit a user-facing error and exit without writing ALIGN-00.md or STATE.md.
+emit a user-facing error and exit without writing OBJECTIVES.align.md or STATE.md.
 Korean error text when `brief.region: kr`:
   "ALIGN 실행 중단: CANDIDATE 또는 BASELINE 파일이 존재하지 않습니다."
 English error text otherwise:
@@ -152,7 +152,7 @@ node brief/bin/brief-tools.cjs align commit \
 
 The `align commit` subcommand (Plan 04-04 implements the dispatcher):
   1. Re-reads + re-validates the verdict file.
-  2. Renders .planning/ALIGN-00.md with frontmatter
+  2. Renders .planning/OBJECTIVES.align.md with frontmatter
      (decision/severity/findings_count/at/override?) and body containing
      findings list + rationale (Korean or English per config.json
      brief.region, D-11 language rule).
@@ -160,14 +160,14 @@ The `align commit` subcommand (Plan 04-04 implements the dispatcher):
      (atomic STATE.md file-lock).
   4. Unlinks the verdict tmp file in a `finally` block (defensive leak
      prevention, T-04 Information Disclosure threat).
-  5. Stages OBJECTIVES.md + ALIGN-00.md + STATE.md via a single
+  5. Stages OBJECTIVES.md + OBJECTIVES.align.md + STATE.md via a single
      `brief-tools commit --files` call (existing cmdCommit primitive —
      Pattern 4 atomic 3-file commit).
   6. Emits a one-line success message; orchestrator-visible.
 
 ## Step 5A: 3-path interrupt (DRIFTED-objective-needs-update)
 
-Display the rendered ALIGN-00.md findings to the user. Then ask:
+Display the rendered OBJECTIVES.align.md findings to the user. Then ask:
 
 <askuserquestion>
   <question>
@@ -176,7 +176,7 @@ Display the rendered ALIGN-00.md findings to the user. Then ask:
 OBJECTIVES.md과 지금 작성된 artifact 사이에 정렬되지 않은 부분이
 발견되었습니다. 어떻게 진행하시겠어요?
 
-(세부 findings는 .planning/ALIGN-00.md 참고)
+(세부 findings는 .planning/OBJECTIVES.align.md 참고)
   </question>
   <options>
     <option>objective 수정하기 (/brief-define --amend)</option>
@@ -200,7 +200,7 @@ Action per selection:
      with a resume hint: "다음: /brief-define --amend 로 OBJECTIVES.md를
      다듬어 주세요. 다듬으신 후 이 흐름에 돌아와 /brief-define 또는
      상위 orchestrator를 다시 실행하시면 ALIGN이 재실행됩니다."
-     Do NOT write ALIGN-00.md or update STATE.md — the verdict stands as
+     Do NOT write OBJECTIVES.align.md or update STATE.md — the verdict stands as
      "pending user action". Subsequent ALIGN runs will overwrite.
 
   2. **이 output이 틀렸다, 다시 쓰기** — Treat as DRIFTED-output. Route to
@@ -211,7 +211,7 @@ Action per selection:
 
 ## Step 5B: 3-path interrupt (DRIFTED-output-needs-revision)
 
-Display the rendered ALIGN-00.md findings. Then ask:
+Display the rendered OBJECTIVES.align.md findings. Then ask:
 
 <askuserquestion>
   <question>
@@ -220,7 +220,7 @@ Display the rendered ALIGN-00.md findings. Then ask:
 지금 작성된 artifact가 OBJECTIVES.md의 의도와 맞지 않는 부분이
 발견되었습니다. 어떻게 진행하시겠어요?
 
-(세부 findings는 .planning/ALIGN-00.md 참고)
+(세부 findings는 .planning/OBJECTIVES.align.md 참고)
   </question>
   <options>
     <option>output 다시 쓰기 (re-spawn worker)</option>
@@ -243,12 +243,12 @@ Action per selection:
      resume hint pointing the user to the original orchestrator command
      (e.g., "/brief-define" for Phase 4 canary; Phase 5+ will pass through
      the orchestrator context via a caller-supplied resume-hint parameter).
-     No ALIGN-00.md update — verdict is user-deferred.
+     No OBJECTIVES.align.md update — verdict is user-deferred.
 
   2. **output을 수동으로 편집** — Exit with the hint:
      "파일을 편집하신 뒤 이 흐름이 호출된 orchestrator를 다시 실행하시면
       ALIGN이 재실행됩니다."
-     No ALIGN-00.md update.
+     No OBJECTIVES.align.md update.
 
   3. **현재 상태 승인, 계속 진행 (force-accept)** — Route to Step 6.
 
@@ -258,7 +258,7 @@ Prompt the user for the override reason (free text, MANDATORY — not
 optional):
 
 > "승인 사유를 한 문장으로 입력해 주세요. 사유는 STATE.md와
->  .planning/ALIGN-00.md에 기록되며, 추후 /brief-status에서
+>  .planning/OBJECTIVES.align.md에 기록되며, 추후 /brief-status에서
 >  '(override applied)'로 표시됩니다."
 
 Accept only non-empty, non-whitespace input. On empty input, re-prompt once;
@@ -280,7 +280,7 @@ The `align commit --override` path (Plan 04-04):
   - Records decision:"ALIGNED", override:true,
     override_reason:<verbatim-but-sanitized>, at:<ISO> in
     state.brief.last_gate_results.align (D-07 audit trail).
-  - Renders ALIGN-00.md with a dedicated `## User Override` section
+  - Renders OBJECTIVES.align.md with a dedicated `## User Override` section
     containing the reason.
   - Emits the same atomic 3-file commit as Step 4.
 
@@ -290,7 +290,7 @@ After the commit completes, display to the user:
 >  표시됩니다. 필요 시 /brief-define --amend 로 언제든 OBJECTIVES.md를
 >  다시 다듬을 수 있습니다."
 
-(Note: this resume hint is the USER-FACING success message, NOT ALIGN-00.md
+(Note: this resume hint is the USER-FACING success message, NOT OBJECTIVES.align.md
  content. Even here the ban-list discipline applies — the workflow markdown
  is orchestration prose and the Plan 04-06 vocabulary-lock test enforces
  zero ban-list tokens anywhere in this file. If a symbol or verdict token

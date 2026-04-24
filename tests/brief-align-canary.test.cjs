@@ -4,10 +4,10 @@
  * Exercises the full Mode A wrap-up canary end-to-end in-process (no subprocess
  * spawn, no Task subagent — stub llmPass mirrors the shape the real subagent
  * emits). The tests lock the D-08/D-09 exit criteria:
- *   - Test 1: Korea fixture → ALIGN-00.md contains Korean body + populated
+ *   - Test 1: Korea fixture → OBJECTIVES.align.md contains Korean body + populated
  *             state.brief.last_gate_results.align (D-09, D-11).
  *   - Test 2: renderStatus surfaces `Last ALIGN   ALIGNED` after canary run.
- *   - Test 3: Non-Korea fixture → English ALIGN-00.md body, no Korean text.
+ *   - Test 3: Non-Korea fixture → English OBJECTIVES.align.md body, no Korean text.
  *   - Test 4: Force-accept override writes override:true + override_reason +
  *             renderStatus shows "(override applied)".
  *   - Test 5: Structural — `## Step 3.5` positioned strictly between Step 3
@@ -20,7 +20,7 @@
  *     keeps runtime <5s and sidesteps child_process overhead.
  *   - The ban-list fires on the `✓`/`✅` symbols — the real workflow's
  *     user-facing success messages with these symbols live in the workflow
- *     markdown, not in ALIGN-00.md content. Ban-list scope is ALIGN-00.md.
+ *     markdown, not in OBJECTIVES.align.md content. Ban-list scope is OBJECTIVES.align.md.
  *   - Test 5 uses `/^## Step 3[:\- ]/` (NOT `/^## Step 3$/`) because the
  *     existing heading is `## Step 3: Atomic Write + Commit`.
  *
@@ -142,7 +142,7 @@ function seedNonKoreaCwd() {
 
 // ─── Test 1: D-08 canary ALIGNED-path E2E (Korea fixture) ─────────────────
 
-test('canary ALIGNED path E2E — Korea fixture produces Korean ALIGN-00.md + populated STATE.md', () => {
+test('canary ALIGNED path E2E — Korea fixture produces Korean OBJECTIVES.align.md + populated STATE.md', () => {
   const cwd = seedKoreaFirstCwd();
   const objPath = path.join(cwd, '.planning', 'OBJECTIVES.md');
   const verdictPath = path.join(cwd, '.planning', '.align-verdict.tmp.json');
@@ -177,9 +177,9 @@ test('canary ALIGNED path E2E — Korea fixture produces Korean ALIGN-00.md + po
   const result = align.commitAlignVerdict(cwd, { verdictPath });
   assert.ok(result.alignPath, 'commitAlignVerdict must return alignPath');
 
-  // Assert ALIGN-00.md exists.
-  const alignMdPath = path.join(cwd, '.planning', 'ALIGN-00.md');
-  assert.ok(fs.existsSync(alignMdPath), 'ALIGN-00.md must exist');
+  // Assert OBJECTIVES.align.md exists.
+  const alignMdPath = path.join(cwd, '.planning', 'OBJECTIVES.align.md');
+  assert.ok(fs.existsSync(alignMdPath), 'OBJECTIVES.align.md must exist');
   const alignBody = fs.readFileSync(alignMdPath, 'utf-8');
 
   // D-11 Korean-first rule: body contains the bilingual header `/ 발견사항`
@@ -188,7 +188,7 @@ test('canary ALIGNED path E2E — Korea fixture produces Korean ALIGN-00.md + po
   // Korea branch fired.
   assert.ok(
     alignBody.includes('발견사항') || alignBody.includes('문서화된 의도 중 반영된 것'),
-    `Korean fixture must produce Korean ALIGN-00.md body. Got: ${alignBody.slice(0, 500)}`,
+    `Korean fixture must produce Korean OBJECTIVES.align.md body. Got: ${alignBody.slice(0, 500)}`,
   );
 
   // Assert STATE.md frontmatter populated (D-09 exit criterion).
@@ -232,9 +232,9 @@ test('canary status render includes Last ALIGN line after canary run', () => {
   assert.match(rendered, /ALIGNED/);
 });
 
-// ─── Test 3: D-11 non-Korea path → English ALIGN-00.md body ───────────────
+// ─── Test 3: D-11 non-Korea path → English OBJECTIVES.align.md body ───────────────
 
-test('canary non-Korea path produces English ALIGN-00.md body', () => {
+test('canary non-Korea path produces English OBJECTIVES.align.md body', () => {
   const cwd = seedNonKoreaCwd();
   const objPath = path.join(cwd, '.planning', 'OBJECTIVES.md');
   const verdictPath = path.join(cwd, '.planning', '.align-verdict.tmp.json');
@@ -257,7 +257,7 @@ test('canary non-Korea path produces English ALIGN-00.md body', () => {
     }),
   });
   align.commitAlignVerdict(cwd, { verdictPath });
-  const alignBody = fs.readFileSync(path.join(cwd, '.planning', 'ALIGN-00.md'), 'utf-8');
+  const alignBody = fs.readFileSync(path.join(cwd, '.planning', 'OBJECTIVES.align.md'), 'utf-8');
   // English vocabulary present.
   assert.match(alignBody, /Documented obligations addressed|Findings/);
   // Korean vocabulary absent — bilingual header should NOT fire under korea=false.
@@ -310,8 +310,8 @@ test('canary override path — force-accept writes override flag + renderStatus 
     `override_reason must contain user-typed rationale; got ${a.override_reason}`,
   );
 
-  // ALIGN-00.md body has the ## User Override section (D-07 audit trail).
-  const alignBody = fs.readFileSync(path.join(cwd, '.planning', 'ALIGN-00.md'), 'utf-8');
+  // OBJECTIVES.align.md body has the ## User Override section (D-07 audit trail).
+  const alignBody = fs.readFileSync(path.join(cwd, '.planning', 'OBJECTIVES.align.md'), 'utf-8');
   assert.match(alignBody, /User Override/);
 
   // /brief-status renders the override suffix distinctly.

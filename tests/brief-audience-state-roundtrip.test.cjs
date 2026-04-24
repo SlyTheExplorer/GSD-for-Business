@@ -75,7 +75,7 @@ test('commitAudienceVerdict writes state.brief.last_gate_results.audience (happy
   );
   const result = audience.commitAudienceVerdict(tmp, {
     verdictPath,
-    artifactPath: path.join(tmp, 'some-artifact.md'),
+    artifactPath: path.join(tmp, '.planning', 'some-artifact.md'),
   });
   assert.equal(result.stateUpdated, true);
   assert.ok(result.audiencePath);
@@ -111,7 +111,7 @@ test('commitAudienceVerdict override path records override flag + sanitized reas
   );
   const result = audience.commitAudienceVerdict(tmp, {
     verdictPath,
-    artifactPath: path.join(tmp, 'some-artifact.md'),
+    artifactPath: path.join(tmp, '.planning', 'some-artifact.md'),
     override: true,
     overrideReason: '사용자가 의도적으로 현재 상태 승인',
   });
@@ -138,6 +138,6 @@ test('commitAudienceVerdict unlinks the verdict tmp file in finally', () => {
       rationale: 'n/a',
     }),
   );
-  audience.commitAudienceVerdict(tmp, { verdictPath, artifactPath: 'x.md' });
+  audience.commitAudienceVerdict(tmp, { verdictPath, artifactPath: '.planning/x.md' });
   assert.equal(fs.existsSync(verdictPath), false, 'verdict tmp file must be unlinked');
 });
