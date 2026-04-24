@@ -120,7 +120,8 @@ This document evolves at phase transitions and milestone boundaries.
 - Phase 2 (Stable Seam — Anchor Schema, Caps, Workstream-as-Config) — **Complete**
 - Phase 3 (DEFINE Canary — Phase 0 End-to-End) — **Complete**
 - Phase 4 (First Gate — ALIGN Pattern Established) — **Complete** (2026-04-21; DSG-12 delivered; canonical evaluator-optimizer pattern locked for Phase 5/7 replication)
-- Next: Phase 5 (DISCOVER — Parallel Research with Provenance + AUDIENCE + Context Injection)
+- Phase 5 (DISCOVER — Parallel Research with Provenance + AUDIENCE + Context Injection) — **Complete** (2026-04-24; DSC-01..07 + DSG-13 + CC-02 + CC-04 delivered; AUDIENCE gate stack replicated from ALIGN canonical pattern; Korea compliance primers PIPA/ISMS-P/MyData shipped; provenance pre-commit hook live; 152/152 Phase 5 tests pass)
+- Next: Phase 6 (Bidirectional Foundation — Phase 1↔2 Return Stack)
 
 ---
-*Last updated: 2026-04-21 after Phase 4 completion*
+*Last updated: 2026-04-24 after Phase 5 completion*
