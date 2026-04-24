@@ -127,7 +127,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 05-04-PLAN.md — AUDIENCE gate stack (agent + workflow + lib + audience-report + vocabulary) duplicate-renamed from ALIGN (DSG-13) (Wave 3)
 - [x] 05-05-PLAN.md — Paired-sibling filename scheme + ALIGN-00.md → OBJECTIVES.align.md atomic migration (DSG-13) (Wave 4)
 - [x] 05-06-PLAN.md — Korea compliance primers (PIPA / ISMS-P / MyData) skeleton (DSC-06) (Wave 1)
-- [ ] 05-07-PLAN.md — /brief-discover body replacement + multi-select + wave spawn + per-artifact AUDIENCE (DSC-01, DSC-02, DSC-03, CC-02, DSG-13) (Wave 4)
+- [x] 05-07-PLAN.md — /brief-discover body replacement + multi-select + wave spawn + per-artifact AUDIENCE (DSC-01, DSC-02, DSC-03, CC-02, DSG-13) (Wave 4)
 - [ ] 05-08-PLAN.md — Canary E2E + Anti-pattern #2 structural test + Surface Cap audit (ALL) (Wave 4)
 
 **Pitfall coverage**: #6 Hallucinated market data (DSC-04 + DSC-07 source-mandatory mode for every quantitative claim + CC-04 pre-commit enforcement), #11 Korean cultural gotchas (DSC-06 Korea-first reference library + DSC-05 context injection ensures researchers receive region from day one), #4 Compliance checkbox theater (DSC-06 reference library is the substrate the checker uses in Phase 7), #5 Audience leakage (DSG-13 first wires AUDIENCE guard so subsequent phases inherit working enforcement).
