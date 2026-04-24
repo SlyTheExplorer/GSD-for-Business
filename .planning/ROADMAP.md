@@ -144,7 +144,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 8 plans
 - [x] 06-01-PLAN.md — Ship 10 Wave 0 fixtures (6 gap-detect + 4 return-stack) per VALIDATION §Wave 0 (DSG-11, DSG-14)
 - [x] 06-02-PLAN.md — Ship gap-detect-vocabulary.md + gap-detect-report.cjs + agents/brief-gap-detector.md + workflows/gap-detect.md content files (DSG-11)
-- [ ] 06-03-PLAN.md — gap-detect.cjs core primitives: validateVerdict, countIterations, validateFingerprint, pushReturnFrame, popReturnFrame, maybePopTopFrame, clearReturnStackFor, appendGapQueue, writeAssumption (DSG-11)
+- [x] 06-03-PLAN.md — gap-detect.cjs core primitives: validateVerdict, countIterations, validateFingerprint, pushReturnFrame, popReturnFrame, maybePopTopFrame, clearReturnStackFor, appendGapQueue, writeAssumption (DSG-11)
 - [ ] 06-04-PLAN.md — runGapDetect + commitGapDetectVerdict + brief-tools.cjs case gap-detect dispatcher (7 subcommands) (DSG-11)
 - [ ] 06-05-PLAN.md — status.cjs extension with Gap loop + Round-trips rows (D-06 derived-at-read-time) (DSG-14)
 - [ ] 06-06-PLAN.md — align-gate.md Step 4.5 (maybePopTopFrame post-commit) + Step 8 (gap-detect post-verdict spawn) (DSG-11)
