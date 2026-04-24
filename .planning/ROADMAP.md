@@ -125,7 +125,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 05-02-PLAN.md — brief-domain-researcher.md agent + wave partition + 2-task smoke + B2B/B2C differentiated fixtures (DSC-01, DSC-02, DSC-03, DSC-04, DSC-05, DSC-07, CC-02) (Wave 2)
 - [x] 05-03-PLAN.md — brief-validate-provenance.sh hook + 13 regex fixtures + opt-in gate + manifest wiring (DSC-04, DSC-07, CC-04) (Wave 1)
 - [x] 05-04-PLAN.md — AUDIENCE gate stack (agent + workflow + lib + audience-report + vocabulary) duplicate-renamed from ALIGN (DSG-13) (Wave 3)
-- [ ] 05-05-PLAN.md — Paired-sibling filename scheme + ALIGN-00.md → OBJECTIVES.align.md atomic migration (DSG-13) (Wave 4)
+- [x] 05-05-PLAN.md — Paired-sibling filename scheme + ALIGN-00.md → OBJECTIVES.align.md atomic migration (DSG-13) (Wave 4)
 - [x] 05-06-PLAN.md — Korea compliance primers (PIPA / ISMS-P / MyData) skeleton (DSC-06) (Wave 1)
 - [ ] 05-07-PLAN.md — /brief-discover body replacement + multi-select + wave spawn + per-artifact AUDIENCE (DSC-01, DSC-02, DSC-03, CC-02, DSG-13) (Wave 4)
 - [ ] 05-08-PLAN.md — Canary E2E + Anti-pattern #2 structural test + Surface Cap audit (ALL) (Wave 4)
