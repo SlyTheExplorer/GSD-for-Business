@@ -1,25 +1,15 @@
 /**
- * Gap-Detect — Phase 6 gap-detector gate primitives (Plan 06-03). Copy-rename
- * of brief/bin/lib/audience.cjs with Phase-6-specific extensions:
- *   - D-01 decision enum {GAPS-NONE, GAPS-MATERIAL-ONLY, GAPS-BLOCKING}
- *   - D-03 severity enum inherited from Phase 4
- *   - D-05 return_stack frame shape (7 fields) + LIFO append via pushReturnFrame
- *   - D-06 append-only return_stack_history (NEVER popped — structural guard)
- *   - D-09 topic_fingerprint slug contract (kebab-case regex + stopword ban)
+ * Gap-Detect — Phase 6 gap-detector gate primitives. Copy-rename of
+ * brief/bin/lib/audience.cjs with Phase-6 extensions: D-01 decisions,
+ * D-03 severity routing, D-05 frame shape, D-06 append-only history,
+ * D-09 topic_fingerprint contract, D-11 dual-condition pop. Plan 06-04 adds
+ * runGapDetect + commitGapDetectVerdict (workflow + dispatcher entry).
  *
- * Task 1 scope: validateVerdict + countIterations + validateFingerprint +
- * pushReturnFrame. Task 2 extends with popReturnFrame + maybePopTopFrame +
- * clearReturnStackFor + appendGapQueue + writeAssumption.
- *
- * countIterations + validateFingerprint + validateVerdict are pure functions.
- * pushReturnFrame transacts on state.cjs via readModifyWriteStateMd.
- *
- * STRIDE threat register mitigations (06-03):
- *   T-06-03-01: validateVerdict calls validateFingerprint at ingest
- *   T-06-03-05: countIterations null-checks every entry
- *   T-06-03-06: error messages path-agnostic
- *
- * Zero external runtime deps (A1). Refs: 06-CONTEXT.md D-05/D-06/D-09/D-11.
+ * STRIDE mitigations: T-06-03-01 fingerprint-at-ingest; T-06-03-02 path
+ * traversal (_resolveSafePath); T-06-03-03 prompt injection (sanitizeForPrompt);
+ * T-06-03-04 history append-only (immutable .slice(0,-1) — grep-audit enforced);
+ * T-06-03-05 null-safe countIterations; T-06-03-06 path-agnostic errors. Zero
+ * runtime deps (A1). Refs: 06-CONTEXT.md D-05/D-06/D-09/D-11.
  */
 const fs = require('fs');
 const path = require('path');
@@ -35,37 +25,37 @@ const { detectKoreaSignalFromConfig } = require('./align.cjs');
 const { siblingReportPath } = require('./audience.cjs');
 const { renderGapDetectReport } = require('./gap-detect-report.cjs');
 
-// ─── Enum constants (exported for test fixture use) ────────────────────────
-// D-01: decision enum for gap-detect verdicts.
+// Vocabulary-lock constants (source: brief/references/gap-detect-vocabulary.md).
 const VALID_DECISIONS = new Set(['GAPS-NONE', 'GAPS-MATERIAL-ONLY', 'GAPS-BLOCKING']);
-// D-03: severity enum inherited verbatim from Phase 4.
 const VALID_SEVERITIES = new Set(['blocking', 'material', 'nice-to-have']);
-
-// D-09: topic fingerprint contract — kebab-case 3-8 alpha tokens.
-const FINGERPRINT_RE = /^[a-z]+(-[a-z]+){2,7}$/;
+// D-09 fingerprint regex — first char alpha, then alphanumeric kebab tokens
+// (3-8 total). Plan 06-04 broadens Plan 06-03's alpha-only regex (deviation
+// option a) so canonical example regulatory-citation-pipa-article-28 validates.
+const FINGERPRINT_RE = /^[a-z][a-z0-9]*(-[a-z0-9]+){2,7}$/;
 const STOPWORDS = new Set(['the', 'a', 'an', 'of', 'in', 'for', 'with', 'and', 'or']);
-
-// Ban-list (inherited verbatim from audience.cjs — same vocabulary-lock).
 const BAN_EN = /\b(compliant|passed|violation|failed)\b/gi;
 const BAN_KO = /(준수|통과|위반|실패)/g;
 const BAN_SYMBOL = /[✅✓✗]/g;
 
-// ─── validateFingerprint (D-09 pure function) ─────────────────────────────
-// Returns null if valid; error string otherwise. No I/O, no side effects.
+// _ensureMap — bind-and-return guard. Replaces 12+ identical 4-line blocks.
+function _ensureMap(parent, key) {
+  if (!parent[key] || typeof parent[key] !== 'object' || Array.isArray(parent[key])) {
+    parent[key] = {};
+  }
+  return parent[key];
+}
+
+// validateFingerprint — pure (D-09). null=valid; string=error.
 function validateFingerprint(slug) {
   if (typeof slug !== 'string') return 'not a string';
   if (slug.length === 0) return 'empty string';
   if (!FINGERPRINT_RE.test(slug)) return 'fails kebab-case 3-8 token regex';
-  const tokens = slug.split('-');
-  const stop = tokens.filter((t) => STOPWORDS.has(t));
+  const stop = slug.split('-').filter((t) => STOPWORDS.has(t));
   if (stop.length > 0) return `contains stopword (${stop.join(',')})`;
   return null;
 }
 
-// ─── validateVerdict (T-06-03-01 mitigation) ──────────────────────────────
-// Extends audience.cjs's shape-check to REQUIRE topic_fingerprint in every
-// finding — rejects agent verdicts that try to inject a fingerprint that
-// bypasses countIterations string-equality match.
+// validateVerdict — REQUIRES topic_fingerprint per finding (T-06-03-01).
 function validateVerdict(v) {
   if (!v || typeof v !== 'object') return 'verdict not object';
   if (!VALID_DECISIONS.has(v.decision)) return `bad decision: ${v.decision}`;
@@ -88,11 +78,8 @@ function validateVerdict(v) {
   return null;
 }
 
-// ─── countIterations (Pattern 3 — D-06 pure function, T-06-03-05 mitigation) ──
-// Returns the count of history entries matching BOTH workstream AND
-// topic_fingerprint — string-equality compare. Null-safe against malformed
-// history entries per T-06-03-05 (null, missing workstream, missing
-// fingerprint, non-object). Never throws.
+// countIterations — pure null-safe (D-06, T-06-03-05). String-equality match
+// against (workstream, topic_fingerprint).
 function countIterations(history, workstream, topicFingerprint) {
   if (!Array.isArray(history)) return 0;
   return history.filter((f) =>
@@ -102,23 +89,15 @@ function countIterations(history, workstream, topicFingerprint) {
   ).length;
 }
 
-// ─── pushReturnFrame (Pattern 1 — atomic dual-array write) ────────────────
-// Writes frame to BOTH state.brief.return_stack (LIFO append) AND
-// state.brief.return_stack_history (append-only) inside ONE
-// readModifyWriteStateMd transaction. Defensive deep-copy prevents caller
-// mutation from altering state after push.
+// pushReturnFrame — atomic dual-array write (Pattern 1). Defensive deep-copy
+// prevents post-push caller mutation from corrupting state.
 function pushReturnFrame(cwd, frame) {
   if (!frame || typeof frame !== 'object') {
     throw new Error('pushReturnFrame: frame must be an object');
   }
   const required = [
-    'paused_phase',
-    'paused_workstream',
-    'paused_artifact',
-    'gap_text',
-    'triggering_topic',
-    'topic_fingerprint',
-    'pushed_at',
+    'paused_phase', 'paused_workstream', 'paused_artifact',
+    'gap_text', 'triggering_topic', 'topic_fingerprint', 'pushed_at',
   ];
   for (const k of required) {
     if (typeof frame[k] !== 'string' || frame[k].length === 0) {
@@ -128,28 +107,21 @@ function pushReturnFrame(cwd, frame) {
   const fpErr = validateFingerprint(frame.topic_fingerprint);
   if (fpErr) throw new Error(`pushReturnFrame: invalid topic_fingerprint: ${fpErr}`);
 
-  const statePath = planningPaths(cwd).state;
-  readModifyWriteStateMd(statePath, (content) => {
+  readModifyWriteStateMd(planningPaths(cwd).state, (content) => {
     const body = stripFrontmatter(content);
     const fm = extractFrontmatter(content) || {};
-    if (!fm.brief || typeof fm.brief !== 'object' || Array.isArray(fm.brief)) fm.brief = {};
-    if (!Array.isArray(fm.brief.return_stack)) fm.brief.return_stack = [];
-    if (!Array.isArray(fm.brief.return_stack_history)) fm.brief.return_stack_history = [];
-
-    // Defensive deep-copy — never share references between caller, return_stack,
-    // and return_stack_history. JSON round-trip guarantees isolation.
-    const frameCopy = JSON.parse(JSON.stringify(frame));
-    const historyCopy = JSON.parse(JSON.stringify(frame));
-
-    fm.brief.return_stack.push(frameCopy);
-    fm.brief.return_stack_history.push(historyCopy);
+    const brief = _ensureMap(fm, 'brief');
+    if (!Array.isArray(brief.return_stack)) brief.return_stack = [];
+    if (!Array.isArray(brief.return_stack_history)) brief.return_stack_history = [];
+    brief.return_stack.push(JSON.parse(JSON.stringify(frame)));
+    brief.return_stack_history.push(JSON.parse(JSON.stringify(frame)));
     return `---\n${reconstructFrontmatter(fm)}\n---\n\n${body}`;
   }, cwd);
 }
 
-// ─── _resolveSafePath (T-06-03-02 mitigation — copy-verbatim from audience) ──
-// Path-traversal guard. Realpaths both sides (tolerating missing files by
-// walking parents) so startsWith compares canonical paths.
+// _resolveSafePath — path-traversal guard (T-06-03-02). Copy-verbatim from
+// audience.cjs. Realpaths both sides via _canonicalize so startsWith compares
+// canonical paths (handles /var → /private/var on macOS).
 function _canonicalize(p) {
   let cur = p;
   while (cur && cur !== path.dirname(cur)) {
@@ -167,41 +139,28 @@ function _resolveSafePath(cwd, candidatePath) {
   return absolute;
 }
 
-// ─── popReturnFrame (D-06 + T-06-03-04 mitigation) ────────────────────────
-// Removes the top (last) entry from state.brief.return_stack via immutable
-// .slice(0, -1) — NEVER mutates state.brief.return_stack_history. Returns the
-// popped frame or null if stack empty. Structural guard enforced by
-// brief-gap-detect-history-immutable.test.cjs grep-audit.
+// popReturnFrame — immutable .slice(0,-1) (D-06, T-06-03-04). Never touches
+// return_stack_history. Returns popped frame or null on empty stack.
 function popReturnFrame(cwd) {
-  const statePath = planningPaths(cwd).state;
   let popped = null;
-  readModifyWriteStateMd(statePath, (content) => {
+  readModifyWriteStateMd(planningPaths(cwd).state, (content) => {
     const body = stripFrontmatter(content);
     const fm = extractFrontmatter(content) || {};
-    const brief = (fm && fm.brief) || {};
-    const stack = Array.isArray(brief.return_stack) ? brief.return_stack : [];
-    if (stack.length === 0) return content;  // no-op
+    const stack = Array.isArray(fm.brief && fm.brief.return_stack) ? fm.brief.return_stack : [];
+    if (stack.length === 0) return content;
     popped = stack[stack.length - 1];
-    // Immutable slice — history is NOT touched per D-06 append-only lock.
-    const newStack = stack.slice(0, -1);
-    if (!fm.brief || typeof fm.brief !== 'object' || Array.isArray(fm.brief)) fm.brief = {};
-    fm.brief.return_stack = newStack;
+    _ensureMap(fm, 'brief').return_stack = stack.slice(0, -1);
     return `---\n${reconstructFrontmatter(fm)}\n---\n\n${body}`;
   }, cwd);
   return popped;
 }
 
-// ─── maybePopTopFrame (Pattern 8 — D-11 dual-condition pop) ───────────────
-// Pops top frame iff BOTH:
-//   1. Artifact at frame.paused_artifact has mtime > frame.pushed_at
-//   2. state.brief.last_gate_results.align.decision === 'ALIGNED'
-//      AND align.at > frame.pushed_at
-// T-06-03-02: frame.paused_artifact wrapped in _resolveSafePath before
-// fs.statSync. Never touches return_stack_history.
+// maybePopTopFrame — D-11 dual condition: (1) artifact mtime > pushed_at AND
+// (2) last_gate_results.align.decision === 'ALIGNED' with align.at >
+// pushed_at. T-06-03-02 wraps fs.statSync via _resolveSafePath.
 function maybePopTopFrame(cwd) {
-  const statePath = planningPaths(cwd).state;
   let popped = null;
-  readModifyWriteStateMd(statePath, (content) => {
+  readModifyWriteStateMd(planningPaths(cwd).state, (content) => {
     const body = stripFrontmatter(content);
     const fm = extractFrontmatter(content) || {};
     const brief = (fm && fm.brief) || {};
@@ -210,78 +169,59 @@ function maybePopTopFrame(cwd) {
     const top = stack[stack.length - 1];
     if (!top || typeof top !== 'object') return content;
 
-    // Condition 1: artifact modified after push. Path-traversal guarded.
     let artifactWritten = false;
     try {
-      const safePath = _resolveSafePath(cwd, top.paused_artifact);
-      const st = fs.statSync(safePath);
+      const st = fs.statSync(_resolveSafePath(cwd, top.paused_artifact));
       artifactWritten = st.mtimeMs > Date.parse(top.pushed_at);
     } catch { artifactWritten = false; }
     if (!artifactWritten) return content;
 
-    // Condition 2: ALIGN re-ran since push AND returned ALIGNED.
     const align = brief.last_gate_results && brief.last_gate_results.align;
-    const alignAligned = align
-      && align.decision === 'ALIGNED'
-      && typeof align.at === 'string'
-      && Date.parse(align.at) > Date.parse(top.pushed_at);
-    if (!alignAligned) return content;
+    if (!align || align.decision !== 'ALIGNED'
+      || typeof align.at !== 'string'
+      || Date.parse(align.at) <= Date.parse(top.pushed_at)) {
+      return content;
+    }
 
-    // Both conditions hold — pop. Immutable slice preserves history invariant.
-    popped = stack[stack.length - 1];
-    const newStack = stack.slice(0, -1);
-    if (!fm.brief || typeof fm.brief !== 'object' || Array.isArray(fm.brief)) fm.brief = {};
-    fm.brief.return_stack = newStack;
+    popped = top;
+    _ensureMap(fm, 'brief').return_stack = stack.slice(0, -1);
     return `---\n${reconstructFrontmatter(fm)}\n---\n\n${body}`;
   }, cwd);
   return popped;
 }
 
-// ─── clearReturnStackFor (D-08 meta-arbiter "Cancel workstream" action) ───
-// Removes ALL frames matching paused_workstream from return_stack; marks
-// workstream_status[workstream] = 'cancelled-after-loop'. History NEVER
-// mutated. Accepts a workstream string; no-op if return_stack empty.
+// clearReturnStackFor — D-08 "Cancel workstream". History NEVER mutated.
 function clearReturnStackFor(cwd, workstream) {
   if (typeof workstream !== 'string' || workstream.length === 0) {
     throw new Error('clearReturnStackFor: workstream must be a non-empty string');
   }
-  const statePath = planningPaths(cwd).state;
-  readModifyWriteStateMd(statePath, (content) => {
+  readModifyWriteStateMd(planningPaths(cwd).state, (content) => {
     const body = stripFrontmatter(content);
     const fm = extractFrontmatter(content) || {};
-    if (!fm.brief || typeof fm.brief !== 'object' || Array.isArray(fm.brief)) fm.brief = {};
-    const stack = Array.isArray(fm.brief.return_stack) ? fm.brief.return_stack : [];
-    // Pure filter — does not mutate either array.
-    fm.brief.return_stack = stack.filter((f) => f && f.paused_workstream !== workstream);
-    if (!fm.brief.workstream_status || typeof fm.brief.workstream_status !== 'object' || Array.isArray(fm.brief.workstream_status)) {
-      fm.brief.workstream_status = {};
-    }
-    fm.brief.workstream_status[workstream] = 'cancelled-after-loop';
+    const brief = _ensureMap(fm, 'brief');
+    const stack = Array.isArray(brief.return_stack) ? brief.return_stack : [];
+    brief.return_stack = stack.filter((f) => f && f.paused_workstream !== workstream);
+    _ensureMap(brief, 'workstream_status')[workstream] = 'cancelled-after-loop';
     return `---\n${reconstructFrontmatter(fm)}\n---\n\n${body}`;
   }, cwd);
 }
 
-// ─── appendGapQueue (D-03 MATERIAL severity routing) ──────────────────────
-// Appends a MATERIAL gap entry to state.brief.gap_queue[] with auto-filled
-// detected_at. Required fields: workstream, artifact, gap_text,
-// topic_fingerprint.
+// appendGapQueue — D-03 MATERIAL routing. Auto-fills detected_at.
 function appendGapQueue(cwd, entry) {
   if (!entry || typeof entry !== 'object') {
     throw new Error('appendGapQueue: entry must be an object');
   }
-  const required = ['workstream', 'artifact', 'gap_text', 'topic_fingerprint'];
-  for (const k of required) {
+  for (const k of ['workstream', 'artifact', 'gap_text', 'topic_fingerprint']) {
     if (typeof entry[k] !== 'string' || entry[k].length === 0) {
       throw new Error(`appendGapQueue: entry.${k} missing or not a non-empty string`);
     }
   }
-  const statePath = planningPaths(cwd).state;
-  readModifyWriteStateMd(statePath, (content) => {
+  readModifyWriteStateMd(planningPaths(cwd).state, (content) => {
     const body = stripFrontmatter(content);
     const fm = extractFrontmatter(content) || {};
-    if (!fm.brief || typeof fm.brief !== 'object' || Array.isArray(fm.brief)) fm.brief = {};
-    if (!Array.isArray(fm.brief.gap_queue)) fm.brief.gap_queue = [];
-    fm.brief.gap_queue.push({
+    const brief = _ensureMap(fm, 'brief');
+    if (!Array.isArray(brief.gap_queue)) brief.gap_queue = [];
+    brief.gap_queue.push({
       workstream: entry.workstream,
       artifact: entry.artifact,
       gap_text: entry.gap_text,
@@ -292,17 +232,13 @@ function appendGapQueue(cwd, entry) {
   }, cwd);
 }
 
-// ─── writeAssumption (D-08 "Proceed with assumption" path) ────────────────
-// T-06-03-03 mitigation: sanitizes user-typed justification via
-// sanitizeForPrompt BEFORE writing to OBJECTIVES.md#Assumptions. Also
-// appends to state.brief.last_gate_results.gap_detect.assumption_log[].
-// D-08 meta-arbiter validator: >=20 non-whitespace chars required.
+// writeAssumption — D-08 "Proceed with assumption" (T-06-03-03 sanitize +
+// >=20 non-whitespace floor). Appends to OBJECTIVES.md#Assumptions + state log.
 function writeAssumption(cwd, { justification, topic_fingerprint, workstream }) {
   if (typeof justification !== 'string') {
     throw new Error('writeAssumption: justification must be a string');
   }
-  const nonWs = justification.replace(/\s+/g, '');
-  if (nonWs.length < 20) {
+  if (justification.replace(/\s+/g, '').length < 20) {
     throw new Error('writeAssumption: justification needs >=20 non-whitespace chars (D-08 meta-arbiter floor)');
   }
   if (typeof topic_fingerprint !== 'string' || topic_fingerprint.length === 0) {
@@ -315,76 +251,154 @@ function writeAssumption(cwd, { justification, topic_fingerprint, workstream }) 
   const sanitized = sanitizeForPrompt(justification);
   const at = new Date().toISOString();
 
-  // Append to OBJECTIVES.md#Assumptions (creates section if missing).
+  // OBJECTIVES.md#Assumptions append (creates section if missing).
   const objPath = path.join(planningDir(cwd), 'OBJECTIVES.md');
   if (fs.existsSync(objPath)) {
     let content = fs.readFileSync(objPath, 'utf-8');
-    const bulletText = `- [${at}] workstream=${workstream} | fingerprint=${topic_fingerprint}\n  > ${sanitized}`;
+    const bullet = `- [${at}] workstream=${workstream} | fingerprint=${topic_fingerprint}\n  > ${sanitized}`;
     if (/^## Assumptions\b/m.test(content)) {
-      content = content.replace(/^(## Assumptions\b[^\n]*\n)/m, `$1\n${bulletText}\n`);
+      content = content.replace(/^(## Assumptions\b[^\n]*\n)/m, `$1\n${bullet}\n`);
     } else {
-      content = content.trimEnd() + `\n\n## Assumptions\n\n${bulletText}\n`;
+      content = content.trimEnd() + `\n\n## Assumptions\n\n${bullet}\n`;
     }
     atomicWriteFileSync(objPath, content, 'utf-8');
   }
 
-  // Append to state.brief.last_gate_results.gap_detect.assumption_log[].
-  const statePath = planningPaths(cwd).state;
-  readModifyWriteStateMd(statePath, (content) => {
+  // state.brief.last_gate_results.gap_detect.assumption_log[] append.
+  readModifyWriteStateMd(planningPaths(cwd).state, (content) => {
     const body = stripFrontmatter(content);
     const fm = extractFrontmatter(content) || {};
-    if (!fm.brief || typeof fm.brief !== 'object' || Array.isArray(fm.brief)) fm.brief = {};
-    if (!fm.brief.last_gate_results || typeof fm.brief.last_gate_results !== 'object' || Array.isArray(fm.brief.last_gate_results)) {
-      fm.brief.last_gate_results = {};
-    }
-    if (!fm.brief.last_gate_results.gap_detect || typeof fm.brief.last_gate_results.gap_detect !== 'object' || Array.isArray(fm.brief.last_gate_results.gap_detect)) {
-      fm.brief.last_gate_results.gap_detect = {};
-    }
-    if (!Array.isArray(fm.brief.last_gate_results.gap_detect.assumption_log)) {
-      fm.brief.last_gate_results.gap_detect.assumption_log = [];
-    }
-    fm.brief.last_gate_results.gap_detect.assumption_log.push({
-      workstream,
-      topic_fingerprint,
-      justification: sanitized,
-      at,
-    });
+    const gd = _ensureMap(_ensureMap(_ensureMap(fm, 'brief'), 'last_gate_results'), 'gap_detect');
+    if (!Array.isArray(gd.assumption_log)) gd.assumption_log = [];
+    gd.assumption_log.push({ workstream, topic_fingerprint, justification: sanitized, at });
     return `---\n${reconstructFrontmatter(fm)}\n---\n\n${body}`;
   }, cwd);
 
   return { at, sanitized };
 }
 
-// ─── writeVerdict ──────────────────────────────────────────────────────────
-// Validates and atomically writes a verdict JSON to disk.
+// writeVerdict — validate + atomic JSON write.
 function writeVerdict(verdictPath, verdictObject) {
   const err = validateVerdict(verdictObject);
   if (err) throw new Error(`GAP-DETECT verdict invalid: ${err}`);
-  const serialized = JSON.stringify(verdictObject, null, 2);
-  atomicWriteFileSync(verdictPath, serialized, 'utf-8');
+  atomicWriteFileSync(verdictPath, JSON.stringify(verdictObject, null, 2), 'utf-8');
 }
 
-// ─── Exports ───────────────────────────────────────────────────────────────
-// runGapDetect + commitGapDetectVerdict added in Plan 04.
+// runGapDetect — Plan 06-04 entry. Phase 6 has NO deterministic screen (gap
+// detection is inherently semantic). Without an llmPass, emits a GAPS-NONE
+// fallback (non-blocking default — matches Phase 4/5 "no evaluator → no-op").
+function runGapDetect(cwd, opts) {
+  const { artifact, baseline, llmPass } = opts;
+  const verdictOutPath = opts.verdictOutPath
+    || path.join(planningPaths(cwd).planning, '.gap-detect-verdict.tmp.json');
+
+  if (!fs.existsSync(artifact)) throw new Error(`runGapDetect: artifact not found at ${artifact}`);
+  if (!fs.existsSync(baseline)) throw new Error(`runGapDetect: baseline not found at ${baseline}`);
+
+  const llmVerdict = typeof llmPass === 'function'
+    ? llmPass({ artifact, baseline, verdictOutPath, cwd })
+    : null;
+  const verdict = llmVerdict || {
+    decision: 'GAPS-NONE',
+    severity: 'nice-to-have',
+    findings_count: 0,
+    findings: [],
+    rationale: 'No llmPass supplied; gap-detect skipped (non-blocking default).',
+  };
+  const err = validateVerdict(verdict);
+  if (err) throw new Error(`runGapDetect verdict invalid: ${err}`);
+  writeVerdict(verdictOutPath, verdict);
+  return verdict;
+}
+
+// commitGapDetectVerdict — Plan 06-04 paired-sibling write + D-03 routing +
+// state update. Override (D-07/D-08) suppresses push, flips decision to
+// GAPS-NONE, records sanitized reason. Tmp verdict deleted in finally.
+// STRIDE: T-06-04-01 re-validate after JSON.parse; T-06-04-02 sanitizeForPrompt
+// before STATE.md write; T-06-04-03 _resolveSafePath wraps both paths;
+// T-06-04-05 empty overrideReason throws synchronously. Returns:
+//   { gapsPath, stateUpdated, framePushed, queueAppended, niceToHaveDropped }
+function commitGapDetectVerdict(cwd, opts) {
+  const verdictPath = _resolveSafePath(cwd, opts.verdictPath);
+  if (!opts.artifactPath) throw new Error('commitGapDetectVerdict requires opts.artifactPath');
+  const artifactPath = _resolveSafePath(cwd, opts.artifactPath);
+  const workstream = opts.workstream || 'unknown';
+  const pausedPhase = opts.pausedPhase || '07';
+  const pushFrame = !!opts.pushFrame;
+  const override = !!opts.override;
+  const rawReason = override ? String(opts.overrideReason || '').trim() : '';
+  if (override && !rawReason) throw new Error('overrideReason required when override=true');
+  const sanitizedReason = override ? sanitizeForPrompt(rawReason) : '';
+
+  try {
+    const verdict = JSON.parse(fs.readFileSync(verdictPath, 'utf-8'));
+    const err = validateVerdict(verdict);
+    if (err) throw new Error(`gap-detect verdict invalid: ${err}`);
+
+    const korea = detectKoreaSignalFromConfig(cwd);
+    const gapsMd = renderGapDetectReport(verdict, { korea, artifact: opts.artifactPath });
+    const gapsPath = siblingReportPath(artifactPath, 'gaps');
+    atomicWriteFileSync(gapsPath, gapsMd, 'utf-8');
+
+    // D-03 severity routing.
+    const findings = Array.isArray(verdict.findings) ? verdict.findings : [];
+    const blockingFindings = findings.filter((f) => f.severity === 'blocking');
+    const materialFindings = findings.filter((f) => f.severity === 'material');
+    const niceToHaveDropped = findings.filter((f) => f.severity === 'nice-to-have').length;
+
+    let framePushed = false;
+    if (verdict.decision === 'GAPS-BLOCKING' && pushFrame && blockingFindings.length > 0 && !override) {
+      const first = blockingFindings[0];
+      pushReturnFrame(cwd, {
+        paused_phase: pausedPhase,
+        paused_workstream: workstream,
+        paused_artifact: opts.artifactPath,
+        gap_text: first.description,
+        triggering_topic: first.description.slice(0, 60),
+        topic_fingerprint: first.topic_fingerprint,
+        pushed_at: new Date().toISOString(),
+      });
+      framePushed = true;
+    }
+
+    let queueAppended = 0;
+    for (const mf of materialFindings) {
+      appendGapQueue(cwd, {
+        workstream,
+        artifact: opts.artifactPath,
+        gap_text: mf.description,
+        topic_fingerprint: mf.topic_fingerprint,
+      });
+      queueAppended += 1;
+    }
+
+    // state.brief.last_gate_results.gap_detect (parallels audience D-10).
+    const at = new Date().toISOString();
+    readModifyWriteStateMd(planningPaths(cwd).state, (content) => {
+      const body = stripFrontmatter(content);
+      const fm = extractFrontmatter(content) || {};
+      _ensureMap(_ensureMap(fm, 'brief'), 'last_gate_results').gap_detect = {
+        decision: override ? 'GAPS-NONE' : verdict.decision,
+        severity: verdict.severity,
+        findings_count: verdict.findings_count,
+        at,
+        ...(override ? { override: true, override_reason: sanitizedReason } : {}),
+      };
+      return `---\n${reconstructFrontmatter(fm)}\n---\n\n${body}`;
+    }, cwd);
+
+    return { gapsPath, stateUpdated: true, framePushed, queueAppended, niceToHaveDropped };
+  } finally {
+    try { fs.unlinkSync(verdictPath); } catch { /* already deleted */ }
+  }
+}
+
 module.exports = {
-  VALID_DECISIONS,
-  VALID_SEVERITIES,
-  FINGERPRINT_RE,
-  STOPWORDS,
-  BAN_EN,
-  BAN_KO,
-  BAN_SYMBOL,
-  validateVerdict,
-  validateFingerprint,
-  countIterations,
-  pushReturnFrame,
-  popReturnFrame,
-  maybePopTopFrame,
-  clearReturnStackFor,
-  appendGapQueue,
-  writeAssumption,
-  writeVerdict,
-  siblingReportPath,
-  renderGapDetectReport,
-  detectKoreaSignalFromConfig,
+  VALID_DECISIONS, VALID_SEVERITIES, FINGERPRINT_RE, STOPWORDS,
+  BAN_EN, BAN_KO, BAN_SYMBOL,
+  validateVerdict, validateFingerprint, countIterations,
+  pushReturnFrame, popReturnFrame, maybePopTopFrame, clearReturnStackFor,
+  appendGapQueue, writeAssumption, writeVerdict,
+  runGapDetect, commitGapDetectVerdict,
+  siblingReportPath, renderGapDetectReport, detectKoreaSignalFromConfig,
 };

@@ -37,13 +37,14 @@ test('validateFingerprint: canonical example competitor-pricing-axis-missing is 
   assert.equal(validateFingerprint('competitor-pricing-axis-missing'), null);
 });
 
-test('validateFingerprint: canonical example regulatory-citation-pipa-article-28 — number-containing token rejected by pure-alpha regex', () => {
-  // FINGERPRINT_RE requires alpha-only tokens: /^[a-z]+(-[a-z]+){2,7}$/
-  // "28" contains digits → will fail regex. This is intentional per D-09 —
-  // the planner's canonical example needs rewording if strict alpha-only is
-  // enforced. This test locks the regex behavior so callers know.
-  const err = validateFingerprint('regulatory-citation-pipa-article-28');
-  assert.match(err, /kebab-case/);
+test('validateFingerprint: canonical example regulatory-citation-pipa-article-28 is valid (alphanumeric tokens allowed)', () => {
+  // Plan 06-04 deviation: Plan 06-03 originally had FINGERPRINT_RE alpha-only
+  // (/^[a-z]+(-[a-z]+){2,7}$/) which rejected this canonical D-09 example
+  // because of the trailing "28" numeric token. Plan 06-04 broadens the regex
+  // to /^[a-z][a-z0-9]*(-[a-z0-9]+){2,7}$/ so the canonical example, the
+  // vocabulary file, the agent prompt, and Plan 08's grep-audit all stay
+  // consistent. See brief/bin/lib/gap-detect.cjs FINGERPRINT_RE comment.
+  assert.equal(validateFingerprint('regulatory-citation-pipa-article-28'), null);
 });
 
 test('validateFingerprint: rejects uppercase letters (Market-Sizing-Korea-Fintech-TAM)', () => {
