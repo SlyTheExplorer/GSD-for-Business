@@ -142,6 +142,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User runs `/brief-status` and sees the bidirectional return-stack state: current depth, max depth = 3, what triggered the return (text from gap-detector), what's pending on resume (paused phase + paused wave + paused artifact); convergence telemetry visible (round-trip count per workstream) (DSG-14)
   4. User reads `state.brief.gap_queue` and sees gaps not yet acted on, each tagged with criticality (BLOCKING / MATERIAL / NICE-TO-HAVE) — only BLOCKING gaps trigger return-to-Phase-1; MATERIAL is documented and proceeded; NICE-TO-HAVE is deferred to v2
 **Plans**: 8 plans
+- [ ] 06-01-PLAN.md — Ship 10 Wave 0 fixtures (6 gap-detect + 4 return-stack) per VALIDATION §Wave 0 (DSG-11, DSG-14)
+- [ ] 06-02-PLAN.md — Ship gap-detect-vocabulary.md + gap-detect-report.cjs + agents/brief-gap-detector.md + workflows/gap-detect.md content files (DSG-11)
+- [ ] 06-03-PLAN.md — gap-detect.cjs core primitives: validateVerdict, countIterations, validateFingerprint, pushReturnFrame, popReturnFrame, maybePopTopFrame, clearReturnStackFor, appendGapQueue, writeAssumption (DSG-11)
+- [ ] 06-04-PLAN.md — runGapDetect + commitGapDetectVerdict + brief-tools.cjs case gap-detect dispatcher (7 subcommands) (DSG-11)
+- [ ] 06-05-PLAN.md — status.cjs extension with Gap loop + Round-trips rows (D-06 derived-at-read-time) (DSG-14)
+- [ ] 06-06-PLAN.md — align-gate.md Step 4.5 (maybePopTopFrame post-commit) + Step 8 (gap-detect post-verdict spawn) (DSG-11)
+- [ ] 06-07-PLAN.md — discover.md Step 0.5 (D-10 resume-on-invocation auto-detect) (DSG-11)
+- [ ] 06-08-PLAN.md — Canary E2E + no-hook + no-new-command + vocabulary-lock + TEXT_MODE audits (DSG-11, DSG-14)
 
 **Pitfall coverage**: #7 Phase 1↔2 infinite loop (hard 3-round-trip cap + gap criticality classification + meta-arbiter at iteration 2 + convergence telemetry — all designed in BEFORE the designers that will use this exist).
 
