@@ -1,0 +1,14 @@
+{
+  "decision": "GAPS-BLOCKING",
+  "severity": "blocking",
+  "findings_count": 1,
+  "findings": [
+    {
+      "severity": "blocking",
+      "location": "market-sizing.md:3",
+      "description": "TAM quantitative claim lacks [VERIFIED:url|YYYY-MM-DD] provenance tag — artifact cites $18.3B without source or access date",
+      "topic_fingerprint": "market-sizing-korea-fintech-tam"
+    }
+  ],
+  "rationale": "Artifact OBJECTIVES.md implies market-sizing workstream requires provenance-tagged TAM; deterministic claim without tag routes to BLOCKING gap"
+}

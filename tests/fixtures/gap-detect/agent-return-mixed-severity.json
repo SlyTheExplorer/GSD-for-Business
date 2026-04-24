@@ -1,0 +1,32 @@
+{
+  "decision": "GAPS-BLOCKING",
+  "severity": "blocking",
+  "findings_count": 4,
+  "findings": [
+    {
+      "severity": "blocking",
+      "location": "market-sizing.md:3",
+      "description": "TAM citation missing",
+      "topic_fingerprint": "market-sizing-korea-fintech-tam"
+    },
+    {
+      "severity": "material",
+      "location": "market-sizing.md:7",
+      "description": "Competitor pricing axis absent from table",
+      "topic_fingerprint": "competitor-pricing-axis-missing"
+    },
+    {
+      "severity": "material",
+      "location": "market-sizing.md:12",
+      "description": "SAM calculation assumption unexplained",
+      "topic_fingerprint": "sam-calculation-method-unexplained"
+    },
+    {
+      "severity": "nice-to-have",
+      "location": "market-sizing.md:15",
+      "description": "Markdown table alignment inconsistent",
+      "topic_fingerprint": "table-formatting-alignment-inconsistent"
+    }
+  ],
+  "rationale": "1 BLOCKING + 2 MATERIAL + 1 NICE-TO-HAVE — decision routed to GAPS-BLOCKING (any blocking present)"
+}

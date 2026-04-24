@@ -1,0 +1,26 @@
+{
+  "decision": "GAPS-MATERIAL-ONLY",
+  "severity": "material",
+  "findings_count": 3,
+  "findings": [
+    {
+      "severity": "material",
+      "location": "market-sizing.md:7",
+      "description": "Competitor pricing axis absent",
+      "topic_fingerprint": "competitor-pricing-axis-missing"
+    },
+    {
+      "severity": "material",
+      "location": "market-sizing.md:12",
+      "description": "SAM calculation assumption unexplained",
+      "topic_fingerprint": "sam-calculation-method-unexplained"
+    },
+    {
+      "severity": "material",
+      "location": "market-sizing.md:18",
+      "description": "Trend forecast 2027 projection lacks source",
+      "topic_fingerprint": "trend-forecast-projection-unsourced"
+    }
+  ],
+  "rationale": "No blocking findings; 3 material findings documented inline per D-03"
+}
