@@ -165,6 +165,44 @@ The `align commit` subcommand (Plan 04-04 implements the dispatcher):
      Pattern 4 atomic 3-file commit).
   6. Emits a one-line success message; orchestrator-visible.
 
+## Step 4.5: Frame-pop attempt (D-11 dual condition — Phase 6 addition)
+
+After committing the ALIGN verdict (Step 4 ALIGNED path) OR after the user
+force-accepts via Step 6 override, attempt to pop the top return-stack frame
+IF all of the following hold (D-11):
+
+1. `state.brief.return_stack.length > 0`
+2. The top frame's `paused_artifact` file has mtime > `pushed_at` (artifact
+   was rewritten since the frame was pushed — verifies research output
+   landed)
+3. The ALIGN verdict just committed was ALIGNED (not DRIFTED-*) — verifies
+   the new research actually closed the gap
+
+This is the "gap closed" exit from the bidirectional loop. The frame is
+ONLY popped from `return_stack`; `return_stack_history` is NEVER mutated
+(D-06 telemetry preservation).
+
+Implementation — invoke the dispatcher:
+
+```
+node brief/bin/brief-tools.cjs gap-detect maybe-pop
+```
+
+The `maybe-pop` subcommand (Plan 04-04 brief-tools.cjs dispatcher) checks the
+D-11 dual condition atomically and either pops + returns `{popped: <frame>}`
+or returns `{popped: null}` (no-op). No user interaction.
+
+Skip Step 4.5 entirely when the ALIGN decision was DRIFTED-objective or
+DRIFTED-output — Step 5A/5B handle user interrupt first, and the caller
+re-invokes align-gate.md after the user amends; Step 4.5 only runs on the
+happy path where the new research actually passed ALIGN.
+
+This step lives in the workflow markdown (NOT inside align.cjs) because the
+decision to pop is semantically a Phase-6 concern about the return-stack
+lifecycle, not a Phase-4 concern about ALIGN alignment. Preserves
+align.cjs Phase 4 contract unchanged — Plan 04 adds no new function to
+align.cjs; gap-detect.cjs's `maybePopTopFrame` is the owner.
+
 ## Step 5A: 3-path interrupt (DRIFTED-objective-needs-update)
 
 Display the rendered OBJECTIVES.align.md findings to the user. Then ask:
@@ -310,6 +348,72 @@ the exit signal:
     stdout: `{"decision": "DRIFTED-pending-user-action", "resume_hint":
     "..."}`.
 
+## Step 8: Gap-detect post-verdict spawn (D-02 trigger-after-ALIGN-only — Phase 6 addition)
+
+After Step 7 exits the ALIGN decision path (ALIGNED or force-accept override
+— i.e., the caller is proceeding rather than hitting a DRIFTED user-interrupt),
+spawn the gap-detector to answer the complementary question: "ALIGN decided
+the artifact matches OBJECTIVES. What's MISSING from the artifact that
+OBJECTIVES implies?"
+
+This is the Phase 6 D-02 trigger point. Gap-detect does NOT fire on the
+DRIFTED-pending-user-action exits from Step 5A/5B — the user already needs
+to amend OBJECTIVES.md or re-write the artifact; there's no point asking
+"what's missing" on a stale state.
+
+### Step 8.1: Build business_context block
+
+Invoke context-inject.cjs via Node one-liner (same pattern as
+brief/workflows/discover.md Step 4):
+
+```bash
+node -e "const { buildBusinessContext } = require('./brief/bin/lib/context-inject.cjs'); const ctx = buildBusinessContext({cwd: process.cwd()}); process.stdout.write(JSON.stringify(ctx));"
+```
+
+Parse the JSON output and extract `ctx.promptBlock` (XML `<business_context>...</business_context>` block) + `ctx.language` (`ko` or `en`).
+
+### Step 8.2: Resolve current workstream + paused phase
+
+Read `state.brief.current_workstream` from STATE.md frontmatter (the workstream the orchestrator is executing). If unset (e.g., running from /brief-define before any workstream is active), use the literal `'default'` slug.
+
+Read `state.brief.current_phase` (or top-level `current_phase` in STATE.md frontmatter) for the `paused_phase` D-05 frame field. Default `'07'` if unset.
+
+### Step 8.3: Invoke brief/workflows/gap-detect.md
+
+Invoke the workflow inline with these parameters:
+
+```
+Invoke brief/workflows/gap-detect.md with:
+  ARTIFACT_PATH           = {{CANDIDATE_PATH}}
+  OBJECTIVES_BASELINE_PATH = {{BASELINE_PATH}}
+  BUSINESS_CONTEXT_BLOCK  = <ctx.promptBlock verbatim>
+  CURRENT_WORKSTREAM      = <current_workstream>
+  PAUSED_PHASE            = <current_phase>
+  VERDICT_OUT_PATH        = .planning/.gap-detect-verdict.tmp.json
+```
+
+The gap-detect workflow (Plan 02, Steps 0-6):
+  1. Spawns agents/brief-gap-detector.md via Task (Step 1)
+  2. Routes on the verdict decision (Step 2):
+     - GAPS-NONE              → writes empty sibling + proceeds (Step 3)
+     - GAPS-MATERIAL-ONLY     → writes sibling + appends to gap_queue (Step 4)
+     - GAPS-BLOCKING          → count-iterations branch (Step 5)
+  3. For GAPS-BLOCKING, iteration-counts via
+     `brief-tools gap-detect count-iterations --workstream X --fingerprint Y`
+     and branches:
+     - N === 0 → push-frame directly → exit RETURNED-TO-DISCOVER (Step 5.0)
+     - N === 1 → D-08 meta-arbiter 3-choice AskUserQuestion (Step 5.1)
+     - N >= 2 → D-07 hard-cap prompt (no bypass) (Step 5.2)
+
+### Step 8.4: Route on gap-detect exit
+
+Parse the gap-detect workflow's exit JSON. Branch:
+  - `{decision: "GAPS-NONE"}` → align-gate.md proceeds normally (stdout preserved)
+  - `{decision: "GAPS-MATERIAL-ONLY", caveat: true}` → align-gate.md proceeds; caller surfaces caveat in next AUDIENCE frontmatter (Phase 5 audience.frontmatter.caveat_from_gap_detect field — optional; Phase 7 will wire this)
+  - `{decision: "GAPS-BLOCKING", pushed: true}` → align-gate.md exits with RETURNED-TO-DISCOVER (overriding the Step 7 exit — the caller is now in a return-stack state and must re-enter via /brief-discover)
+  - `{decision: "GAPS-BLOCKING", proceed_with_assumption: true}` → align-gate.md proceeds (user accepted D-08 meta-arbiter "Proceed with assumption" path)
+  - `{decision: "GAPS-BLOCKING", workstream_cancelled: true}` → align-gate.md exits; caller is notified workstream cancelled
+
 </process>
 
 <no_hooks_assertion>
@@ -327,12 +431,23 @@ Load-bearing citations:
     here ripples into Phase 5 and Phase 7."
   - .planning/research/ARCHITECTURE.md Anti-pattern #2 forbids
     hook-based gate invocation at the architecture-pattern level.
+  - 06-CONTEXT.md D-02: "Trigger is after ALIGN verdict only. Zero new hook
+    surfaces. Natural semantic: ALIGN already decided the artifact matches
+    OBJECTIVES; gap-detector asks 'but what's MISSING from the artifact that
+    the objectives imply?'" — Step 8 preserves this by invoking gap-detect.md
+    from THIS workflow, not from any hook.
 
 Structural test (Plan 04-06):
   `! grep -r "align-gate\|align-gate.md\|align_gate" hooks/ 2>/dev/null`
   MUST return exit 0 (no hook file references this workflow or its
   subagent). If this grep ever fires, the gate has been re-attached as
   a hook and the entire Phase 5/7 replication story breaks.
+
+Structural test (Plan 06-08 — gap-detect hook-purity):
+  `! grep -rE "gap-detect|brief-gap-detector|gap_detect" hooks/ 2>/dev/null`
+  MUST return exit 0 (no hook file references gap-detect). If this grep
+  ever fires, gap-detect has been re-attached as a hook and the Phase 6
+  Anti-pattern #2 inheritance is broken.
 </no_hooks_assertion>
 
 <command_surface_assertion>
@@ -348,5 +463,13 @@ in Phase 4 = 0.
 
 Structural test (Plan 04-06):
   `[ ! -f commands/brief/align.md ] && [ ! -f commands/brief/align-gate.md ] && [ ! -f commands/brief/realign.md ]`
+  MUST exit 0.
+
+No new file exists under `commands/brief/*.md` for gap-detect either
+(Phase 6 D-10 auto-detect inside /brief-discover; gap-detect is a
+brief-tools.cjs subcommand, NOT a user-facing slash command).
+
+Structural test (Plan 06-08 — gap-detect surface-cap):
+  `[ ! -f commands/brief/gap-detect.md ] && [ ! -f commands/brief/gap.md ] && [ ! -f commands/brief/return-stack.md ] && [ ! -f commands/brief/resume.md ]`
   MUST exit 0.
 </command_surface_assertion>
