@@ -98,6 +98,7 @@ function renderStatus(cwd, raw) {
   const workstream = brief.current_workstream ? String(brief.current_workstream) : '— (none active)';
   const returnStackDepth = Array.isArray(brief.return_stack) ? brief.return_stack.length : 0;
   const alignLine = formatGate(brief.last_gate_results && brief.last_gate_results.align);
+  const audienceLine = formatGate(brief.last_gate_results && brief.last_gate_results.audience);
   const complianceLine = formatGate(brief.last_gate_results && brief.last_gate_results.compliance);
   const nextHint = stateFm.stopped_at ? String(stateFm.stopped_at) : '(unknown)';
 
@@ -108,6 +109,7 @@ function renderStatus(cwd, raw) {
     `  Workstream      ${workstream}`,
     `  Return stack    ${returnStackDepth} / 3`,
     `  Last ALIGN      ${alignLine}`,
+    `  Last AUDIENCE   ${audienceLine}`,
     `  Last COMPLIANCE ${complianceLine}`,
     '-'.repeat(32),
     `  Next: ${nextHint}`,

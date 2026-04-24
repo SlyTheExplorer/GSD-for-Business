@@ -555,6 +555,85 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
       break;
     }
 
+    case 'audience': {
+      // Plan 05-04 Task 5 — AUDIENCE gate dispatcher. Mirrors the `align` case.
+      // Both subcommand branches wrap audience.cjs calls in try/catch that
+      // forwards err.message to core.error (same defensive discipline as
+      // align: no absolute-path stack leakage).
+      const audience = require('./lib/audience.cjs');
+      const audSubcommand = args[1];
+      const audArtIdx = args.indexOf('--artifact');
+      const audBaseIdx = args.indexOf('--baseline');
+      const audOutIdx = args.indexOf('--verdict-out');
+      const audVIdx = args.indexOf('--verdict');
+      const audReasonIdx = args.indexOf('--override-reason');
+      const audOverride = args.includes('--override');
+
+      if (audSubcommand === 'run') {
+        const artifact = audArtIdx !== -1 ? args[audArtIdx + 1] : null;
+        const baseline = audBaseIdx !== -1 ? args[audBaseIdx + 1] : null;
+        const verdictOutPath = audOutIdx !== -1 ? args[audOutIdx + 1] : null;
+        if (!artifact || !baseline) {
+          error('audience run requires --artifact <path> --baseline <path>');
+          break;
+        }
+        try {
+          const screen = audience.runDeterministicScreen(cwd, { artifact, baseline });
+          const outPath = verdictOutPath
+            || path.join(core.planningPaths(cwd).planning, '.audience-verdict.tmp.json');
+          if (screen.verdict) {
+            audience.writeVerdict(outPath, screen.verdict);
+            core.output(
+              { short_circuited: true, verdict: screen.verdict, verdictPath: outPath },
+              raw,
+              'short_circuited',
+            );
+          } else {
+            core.output(
+              { short_circuited: false, deterministic_findings: screen.findings },
+              raw,
+              'llm_pass_needed',
+            );
+          }
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      if (audSubcommand === 'commit') {
+        const verdictPath = audVIdx !== -1 ? args[audVIdx + 1] : null;
+        const artifactPath = audArtIdx !== -1 ? args[audArtIdx + 1] : null;
+        const overrideReason = audReasonIdx !== -1 ? args[audReasonIdx + 1] : null;
+        if (!verdictPath) {
+          error('audience commit requires --verdict <path>');
+          break;
+        }
+        if (!artifactPath) {
+          error('audience commit requires --artifact <path>');
+          break;
+        }
+        // WARNING-05: Plan 04 ships --artifact-aware dispatcher; Plan 05 Task 1
+        // activates the flag inside commitAudienceVerdict (switches from stub
+        // path to paired-sibling). Dispatcher signature is stable across both.
+        try {
+          const result = audience.commitAudienceVerdict(cwd, {
+            verdictPath,
+            artifactPath,
+            override: audOverride,
+            overrideReason,
+          });
+          core.output(result, raw, `audience report written at ${result.audiencePath}`);
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      error(`audience: unknown subcommand '${audSubcommand}'. Valid: run, commit`);
+      break;
+    }
+
     case 'resolve-model': {
       commands.cmdResolveModel(cwd, args[1], raw);
       break;
