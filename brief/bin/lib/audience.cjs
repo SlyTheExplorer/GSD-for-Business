@@ -1,9 +1,10 @@
 /**
- * Audience — AUDIENCE gate primitives (Plan 05-04). Duplicate-renamed from
- * align.cjs per 05-RESEARCH.md §Pattern 2. Phase 7 COMPLIANCE copy-renames
- * this module; preserve literal shape. Zero runtime deps (A1). Plan 04 emits
- * the report at a stub path; Plan 05 Task 1 activates paired-sibling
- * `{artifact}.audience.md` filename scheme. Refs: 05-CONTEXT.md D-09/D-10/D-11.
+ * Audience — AUDIENCE gate primitives (Plan 05-04, paired-sibling activation
+ * Plan 05-05). Duplicate-renamed from align.cjs per 05-RESEARCH.md §Pattern 2.
+ * Phase 7 COMPLIANCE copy-renames this module; preserve literal shape. Zero
+ * runtime deps (A1). Plan 05-05 Task 1 activates the paired-sibling
+ * `{artifact}.audience.md` filename scheme via _siblingReportPath derivation
+ * (D-11). Refs: 05-CONTEXT.md D-09/D-10/D-11.
  */
 const fs = require('fs');
 const path = require('path');
@@ -17,6 +18,16 @@ const {
 const { readModifyWriteStateMd } = require('./state.cjs');
 const { detectKoreaSignalFromConfig } = require('./align.cjs'); // reuse existing helper
 const { renderAudienceReport } = require('./audience-report.cjs');
+
+// ─── _siblingReportPath (D-11 paired-sibling scheme) ───────────────────────
+// Derives {artifact-dir}/{artifact-basename}.{suffix}.md from an artifact path.
+// Phase 7 COMPLIANCE will reuse with suffix='compliance'. Exported as
+// `siblingReportPath` for test fixtures and downstream gate reuse.
+function _siblingReportPath(artifactAbsPath, suffix) {
+  const ext = path.extname(artifactAbsPath);
+  const base = ext === '.md' ? artifactAbsPath.slice(0, -3) : artifactAbsPath;
+  return `${base}.${suffix}.md`;
+}
 
 // Enum constants — sourced from brief/references/audience-vocabulary.md.
 const VALID_DECISIONS = new Set(['AUDIENCE-OK', 'DRIFTED-frontmatter', 'DRIFTED-content']);
@@ -339,20 +350,24 @@ function _resolveSafePath(cwd, candidatePath) {
   return absolute;
 }
 
-// ─── commitAudienceVerdict (D-07, T-5-04-01/02/04/07) ──────────────────────
-// Renders .planning/.audience-report.tmp.md (Plan 04 stub path — Plan 05 Task 1
-// activates the paired-sibling `{artifact}.audience.md` filename), updates
-// state.brief.last_gate_results.audience atomically via readModifyWriteStateMd,
-// and deletes the tmp verdict file in finally.
+// ─── commitAudienceVerdict (D-07, D-11, T-5-04-01/02/04/07) ────────────────
+// Renders {artifact}.audience.md as a paired-sibling in the same directory as
+// the source artifact (D-11), updates state.brief.last_gate_results.audience
+// atomically via readModifyWriteStateMd, and deletes the tmp verdict file in
+// finally.
 //
 // sanitizeForPrompt runs BEFORE state write (T-5-04-02). Caller issues the
 // multi-file git commit for Pattern 4 visibility.
 //
-// Plan 04 note: artifactPath is accepted but NOT used for the report path;
-// Plan 05 Task 1 switches the body to write to `{artifact}.audience.md` via a
-// paired-sibling path. Dispatcher signature is stable across both plans.
+// opts.artifactPath is REQUIRED (Plan 05-05): its path determines the sibling
+// report location via _siblingReportPath. Path-traversal guarded via
+// _resolveSafePath (T-5-05-01 mitigation inherits align.cjs guard verbatim).
 function commitAudienceVerdict(cwd, opts) {
   const verdictPath = _resolveSafePath(cwd, opts.verdictPath);
+  if (!opts.artifactPath) {
+    throw new Error('commitAudienceVerdict requires opts.artifactPath (D-11 paired-sibling)');
+  }
+  const artifactPath = _resolveSafePath(cwd, opts.artifactPath);
   const override = !!opts.override;
   const rawReason = override ? String(opts.overrideReason || '').trim() : '';
   if (override && !rawReason) throw new Error('overrideReason required when override=true');
@@ -369,8 +384,8 @@ function commitAudienceVerdict(cwd, opts) {
       override,
       overrideReason: sanitizedReason,
     });
-    // Plan 04 stub path — Plan 05 Task 1 activates paired-sibling scheme.
-    const audiencePath = path.join(planningPaths(cwd).planning, '.audience-report.tmp.md');
+    // D-11 paired-sibling: {artifact-dir}/{artifact-basename}.audience.md.
+    const audiencePath = _siblingReportPath(artifactPath, 'audience');
     atomicWriteFileSync(audiencePath, audienceMd, 'utf-8');
 
     const statePath = planningPaths(cwd).state;
@@ -422,4 +437,5 @@ module.exports = {
   runAudience,
   renderAudienceReport,
   commitAudienceVerdict,
+  siblingReportPath: _siblingReportPath,
 };

@@ -1,14 +1,12 @@
 /**
- * Audience Report — {artifact}.audience.md content rendering (Plan 05-04).
+ * Audience Report — {artifact}.audience.md content rendering (Plan 05-04,
+ * paired-sibling activated Plan 05-05 D-11).
  *
  * Duplicate-renamed from align-report.cjs (Phase 4). Extracted from audience.cjs
  * to keep audience.cjs under the 400-line discipline (Phase 2 D-18).
  * renderAudienceReport produces the full markdown document (frontmatter + body)
- * that commitAudienceVerdict writes atomically.
- *
- * Plan 04 emits this report at a stub path; Plan 05 Task 1 activates the
- * paired-sibling filename scheme (`{artifact}.audience.md`). The renderer
- * itself is stable across both plans.
+ * that commitAudienceVerdict writes atomically to the paired-sibling path
+ * `{artifact-dir}/{artifact-basename}.audience.md` via _siblingReportPath.
  *
  * D-07 override schema (inherited from Phase 4): override=true → decision forced
  * to 'AUDIENCE-OK' + override flag + sanitized override_reason in frontmatter
