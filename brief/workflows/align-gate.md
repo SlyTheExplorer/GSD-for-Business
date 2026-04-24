@@ -195,7 +195,7 @@ or returns `{popped: null}` (no-op). No user interaction.
 Skip Step 4.5 entirely when the ALIGN decision was DRIFTED-objective or
 DRIFTED-output — Step 5A/5B handle user interrupt first, and the caller
 re-invokes align-gate.md after the user amends; Step 4.5 only runs on the
-happy path where the new research actually passed ALIGN.
+happy path where the new research actually resolved the gap (ALIGNED verdict).
 
 This step lives in the workflow markdown (NOT inside align.cjs) because the
 decision to pop is semantically a Phase-6 concern about the return-stack
