@@ -634,6 +634,182 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
       break;
     }
 
+    case 'gap-detect': {
+      // Phase 6 Plan 06-04 — Gap-detect gate dispatcher. Subcommands:
+      //   run             — validate-only (agent spawn happens in workflow)
+      //   commit          — write {artifact}.gaps.md + STATE.md + route severities
+      //   push-frame      — push frame onto return_stack + return_stack_history
+      //   count-iterations — read-only count from return_stack_history
+      //   cancel-workstream — clear frames for --workstream
+      //   write-assumption — sanitize + append assumption + state log
+      //   maybe-pop       — D-11 dual-condition pop (called from align-gate.md)
+      //
+      // Every branch wraps gap-detect.cjs calls in try/catch forwarding
+      // err.message to core.error — NO uncaught-exception path (prevents
+      // /Users/... absolute-path stack leakage; matches align + audience
+      // dispatcher discipline).
+      const gapDetect = require('./lib/gap-detect.cjs');
+      const sub = args[1];
+      const gdArtIdx = args.indexOf('--artifact');
+      const gdBasIdx = args.indexOf('--baseline');
+      const gdOutIdx = args.indexOf('--verdict-out');
+      const gdVIdx = args.indexOf('--verdict');
+      const gdWsIdx = args.indexOf('--workstream');
+      const gdPpIdx = args.indexOf('--paused-phase');
+      const gdFpIdx = args.indexOf('--fingerprint');
+      const gdJusIdx = args.indexOf('--justification');
+      const gdReasonIdx = args.indexOf('--override-reason');
+      const gdPushFrame = args.includes('--push-frame');
+      const gdOverride = args.includes('--override');
+
+      if (sub === 'run') {
+        const artifact = gdArtIdx !== -1 ? args[gdArtIdx + 1] : null;
+        const baseline = gdBasIdx !== -1 ? args[gdBasIdx + 1] : null;
+        const verdictOutPath = gdOutIdx !== -1 ? args[gdOutIdx + 1] : null;
+        if (!artifact || !baseline) {
+          error('gap-detect run requires --artifact <path> --baseline <path>');
+          break;
+        }
+        try {
+          const verdict = gapDetect.runGapDetect(cwd, { artifact, baseline, verdictOutPath });
+          const outPath = verdictOutPath
+            || path.join(core.planningPaths(cwd).planning, '.gap-detect-verdict.tmp.json');
+          core.output({ verdict, verdictPath: outPath }, raw, 'gap-detect fallback verdict written');
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      if (sub === 'commit') {
+        const verdictPath = gdVIdx !== -1 ? args[gdVIdx + 1] : null;
+        const artifactPath = gdArtIdx !== -1 ? args[gdArtIdx + 1] : null;
+        const workstream = gdWsIdx !== -1 ? args[gdWsIdx + 1] : null;
+        const pausedPhase = gdPpIdx !== -1 ? args[gdPpIdx + 1] : '07';
+        const overrideReason = gdReasonIdx !== -1 ? args[gdReasonIdx + 1] : null;
+        if (!verdictPath) { error('gap-detect commit requires --verdict <path>'); break; }
+        if (!artifactPath) { error('gap-detect commit requires --artifact <path>'); break; }
+        try {
+          const result = gapDetect.commitGapDetectVerdict(cwd, {
+            verdictPath, artifactPath, workstream, pausedPhase,
+            pushFrame: gdPushFrame, override: gdOverride, overrideReason,
+          });
+          core.output(result, raw, `gaps report written at ${result.gapsPath}`);
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      if (sub === 'push-frame') {
+        const verdictPath = gdVIdx !== -1 ? args[gdVIdx + 1] : null;
+        const artifactPath = gdArtIdx !== -1 ? args[gdArtIdx + 1] : null;
+        const workstream = gdWsIdx !== -1 ? args[gdWsIdx + 1] : null;
+        const pausedPhase = gdPpIdx !== -1 ? args[gdPpIdx + 1] : '07';
+        if (!verdictPath || !artifactPath || !workstream) {
+          error('gap-detect push-frame requires --verdict --artifact --workstream');
+          break;
+        }
+        try {
+          const verdict = JSON.parse(require('fs').readFileSync(verdictPath, 'utf-8'));
+          const first = (verdict.findings || []).find((f) => f.severity === 'blocking');
+          if (!first) { error('no blocking finding in verdict — push-frame refused'); break; }
+          const frame = {
+            paused_phase: pausedPhase,
+            paused_workstream: workstream,
+            paused_artifact: artifactPath,
+            gap_text: first.description,
+            triggering_topic: first.description.slice(0, 60),
+            topic_fingerprint: first.topic_fingerprint,
+            pushed_at: new Date().toISOString(),
+          };
+          gapDetect.pushReturnFrame(cwd, frame);
+          core.output(
+            {
+              framePushed: true,
+              topic_fingerprint: frame.topic_fingerprint,
+              triggering_topic: frame.triggering_topic,
+            },
+            raw,
+            `RETURNED-TO-DISCOVER\ntriggering_topic: ${frame.triggering_topic}\nNext: run /brief-discover to resume research on this topic.`,
+          );
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      if (sub === 'count-iterations') {
+        const workstream = gdWsIdx !== -1 ? args[gdWsIdx + 1] : null;
+        const fingerprint = gdFpIdx !== -1 ? args[gdFpIdx + 1] : null;
+        if (!workstream || !fingerprint) {
+          error('gap-detect count-iterations requires --workstream --fingerprint');
+          break;
+        }
+        try {
+          const fs2 = require('fs');
+          const statePath = core.planningPaths(cwd).state;
+          const content = fs2.existsSync(statePath) ? fs2.readFileSync(statePath, 'utf-8') : '';
+          const fm = require('./lib/frontmatter.cjs').extractFrontmatter(content) || {};
+          const history = (fm.brief && Array.isArray(fm.brief.return_stack_history))
+            ? fm.brief.return_stack_history : [];
+          const n = gapDetect.countIterations(history, workstream, fingerprint);
+          core.output({ count: n, workstream, fingerprint }, raw, String(n));
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      if (sub === 'cancel-workstream') {
+        const workstream = gdWsIdx !== -1 ? args[gdWsIdx + 1] : null;
+        if (!workstream) { error('gap-detect cancel-workstream requires --workstream'); break; }
+        try {
+          gapDetect.clearReturnStackFor(cwd, workstream);
+          core.output({ workstream, cleared: true }, raw, `return_stack cleared for ${workstream}`);
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      if (sub === 'write-assumption') {
+        const workstream = gdWsIdx !== -1 ? args[gdWsIdx + 1] : null;
+        const fingerprint = gdFpIdx !== -1 ? args[gdFpIdx + 1] : null;
+        const justification = gdJusIdx !== -1 ? args[gdJusIdx + 1] : null;
+        if (!workstream || !fingerprint || !justification) {
+          error('gap-detect write-assumption requires --workstream --fingerprint --justification');
+          break;
+        }
+        try {
+          const result = gapDetect.writeAssumption(cwd, {
+            justification, topic_fingerprint: fingerprint, workstream,
+          });
+          core.output(result, raw, `assumption recorded at ${result.at}`);
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      if (sub === 'maybe-pop') {
+        try {
+          const popped = gapDetect.maybePopTopFrame(cwd);
+          core.output(
+            { popped },
+            raw,
+            popped ? `popped frame for ${popped.triggering_topic}` : 'no-op (dual condition not met)',
+          );
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      error(`gap-detect: unknown subcommand '${sub}'. Valid: run, commit, push-frame, count-iterations, cancel-workstream, write-assumption, maybe-pop`);
+      break;
+    }
+
     case 'resolve-model': {
       commands.cmdResolveModel(cwd, args[1], raw);
       break;
