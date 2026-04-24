@@ -1,20 +1,30 @@
 /**
  * Status — Read-only compact-dashboard renderer for /brief-status (FND-10).
  *
- * D-15 output format (USER-LOCKED):
+ * D-15 output format (USER-LOCKED, extended by Phase 6 Plan 05 — DSG-14 SC #3):
  *   BRIEF Status
  *   ================================
  *     Phase           2 of 9 (Stable Seam)
  *     Workstream      — (none active)
  *     Return stack    0 / 3
  *     Last ALIGN      — (none yet)
+ *     Last AUDIENCE   — (none yet)
  *     Last COMPLIANCE — (none yet)
+ *     Gap loop        — | <top-frame triggering_topic>          (Phase 6 Plan 05)
+ *     Round-trips     — | <ws>: <count>, <ws2>: <count2>, ...   (Phase 6 Plan 05)
  *   --------------------------------
  *     Next: <stopped_at>
  *
  * D-17 resilience: never throws on missing STATE.md or ROADMAP.md.
  * D-18 read-only: must not mutate any on-disk state; no write-path APIs invoked.
  * D-19 output stream: plain text to stdout via core.output (raw=true path).
+ *
+ * Phase 6 Plan 05 — D-06 derive-at-read-time discipline: Round-trips count is
+ * NEVER stored in any explicit counter field on state.brief.* (anti-pattern,
+ * drift risk). Counts are derived at render time from the append-only
+ * return_stack_history log. The grep-audit in
+ * tests/brief-return-stack-derived-count.test.cjs structurally enforces this
+ * across state.cjs, gap-detect.cjs, and this file.
  */
 
 const fs = require('fs');
@@ -96,11 +106,34 @@ function renderStatus(cwd, raw) {
 
   const phaseLine = `  Phase           ${currentPhase} of ${phase_count}${phase_name_short ? ' (' + phase_name_short + ')' : ''}`;
   const workstream = brief.current_workstream ? String(brief.current_workstream) : '— (none active)';
-  const returnStackDepth = Array.isArray(brief.return_stack) ? brief.return_stack.length : 0;
+  const returnStack = Array.isArray(brief.return_stack) ? brief.return_stack : [];
+  const returnStackDepth = returnStack.length;
   const alignLine = formatGate(brief.last_gate_results && brief.last_gate_results.align);
   const audienceLine = formatGate(brief.last_gate_results && brief.last_gate_results.audience);
   const complianceLine = formatGate(brief.last_gate_results && brief.last_gate_results.compliance);
   const nextHint = stateFm.stopped_at ? String(stateFm.stopped_at) : '(unknown)';
+
+  // Phase 6 Plan 05 (DSG-14 SC #3) — Gap loop + Round-trips derivation.
+  // D-06 discipline: NEVER read a stored counter field; always derive
+  // counts from append-only return_stack_history at render time.
+  const history = Array.isArray(brief.return_stack_history) ? brief.return_stack_history : [];
+  const topFrame = returnStack.length > 0 ? returnStack[returnStack.length - 1] : null;
+  const activeTopic = (topFrame && typeof topFrame.triggering_topic === 'string' && topFrame.triggering_topic.length > 0)
+    ? topFrame.triggering_topic
+    : '—';
+
+  // Group history by paused_workstream — defensive null-checks (T-06-05-01).
+  // STATE.md may be hand-edited or partially corrupted; entries that fail the
+  // shape check are silently filtered rather than thrown on (D-17 resilience).
+  const byWs = new Map();
+  for (const f of history) {
+    if (!f || typeof f !== 'object') continue;
+    if (typeof f.paused_workstream !== 'string' || f.paused_workstream.length === 0) continue;
+    byWs.set(f.paused_workstream, (byWs.get(f.paused_workstream) || 0) + 1);
+  }
+  const roundTripLine = byWs.size === 0
+    ? '—'
+    : Array.from(byWs.entries()).map(([ws, count]) => `${ws}: ${count}`).join(', ');
 
   const lines = [
     'BRIEF Status',
@@ -111,6 +144,8 @@ function renderStatus(cwd, raw) {
     `  Last ALIGN      ${alignLine}`,
     `  Last AUDIENCE   ${audienceLine}`,
     `  Last COMPLIANCE ${complianceLine}`,
+    `  Gap loop        ${activeTopic}`,
+    `  Round-trips     ${roundTripLine}`,
     '-'.repeat(32),
     `  Next: ${nextHint}`,
   ];
