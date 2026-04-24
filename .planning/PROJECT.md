@@ -121,7 +121,8 @@ This document evolves at phase transitions and milestone boundaries.
 - Phase 3 (DEFINE Canary — Phase 0 End-to-End) — **Complete**
 - Phase 4 (First Gate — ALIGN Pattern Established) — **Complete** (2026-04-21; DSG-12 delivered; canonical evaluator-optimizer pattern locked for Phase 5/7 replication)
 - Phase 5 (DISCOVER — Parallel Research with Provenance + AUDIENCE + Context Injection) — **Complete** (2026-04-24; DSC-01..07 + DSG-13 + CC-02 + CC-04 delivered; AUDIENCE gate stack replicated from ALIGN canonical pattern; Korea compliance primers PIPA/ISMS-P/MyData shipped; provenance pre-commit hook live; 152/152 Phase 5 tests pass)
-- Next: Phase 6 (Bidirectional Foundation — Phase 1↔2 Return Stack)
+- Phase 6 (Bidirectional Foundation — Phase 1↔2 Return Stack) — **Complete** (2026-04-24; DSG-11 + DSG-14 delivered; state.brief.return_stack LIFO + return_stack_history append-only; brief-gap-detector agent with BLOCKING/MATERIAL/NICE-TO-HAVE severity routing; meta-arbiter at iter 2 + hard-cap at iter 3 no-bypass; /brief-status convergence telemetry derived from history; /brief-discover Step 0.5 resume auto-detect; paired-sibling {artifact}.gaps.md; 145/145 Phase 6 tests pass; Pitfall #7 structurally mitigated BEFORE Phase 7 designers)
+- Next: Phase 7 (DESIGN — Workstream Orchestration + COMPLIANCE Checker)
 
 ---
-*Last updated: 2026-04-24 after Phase 5 completion*
+*Last updated: 2026-04-24 after Phase 6 completion*
