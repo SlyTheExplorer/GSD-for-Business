@@ -142,17 +142,27 @@ test('static file brief/workflows/compliance.md — no ban-list tokens anywhere 
   assertNoBanListInText(content, 'brief/workflows/compliance.md');
 });
 
-test('static file brief/bin/lib/compliance.cjs — no ban-list tokens in literal strings (regex constants exempt)', { skip: !fs.existsSync(path.join(REPO_ROOT, 'brief/bin/lib/compliance.cjs')) ? 'lib file pending Task 2' : false }, () => {
+test('static file brief/bin/lib/compliance.cjs — no ban-list tokens in literal strings (regex/comment exempt)', { skip: !fs.existsSync(path.join(REPO_ROOT, 'brief/bin/lib/compliance.cjs')) ? 'lib file pending Task 2' : false }, () => {
   const content = fs.readFileSync(path.join(REPO_ROOT, 'brief/bin/lib/compliance.cjs'), 'utf-8');
-  // Strip BAN_EN/BAN_KO/BAN_SYMBOL regex literals (those are intentional ban-list pattern definitions).
+  // Strip BAN_EN/BAN_KO/BAN_SYMBOL regex literals AND their adjacent describing
+  // line-comments (those are intentional ban-list pattern definitions —
+  // mirrors the audience-vocabulary.md `## Ban-list*` section exemption).
   const stripped = content
+    .replace(/^\s*\/\/\s*EN ban-list[^\n]*$/gm, '')
+    .replace(/^\s*\/\/\s*KO ban-list[^\n]*$/gm, '')
     .replace(/const\s+BAN_EN\s*=\s*\/[^\n]+\/[gi]+;/g, '')
     .replace(/const\s+BAN_KO\s*=\s*\/[^\n]+\/[gi]+;/g, '')
     .replace(/const\s+BAN_SYMBOL\s*=\s*\/[^\n]+\/[gi]+;/g, '');
   assertNoBanListInText(stripped, 'brief/bin/lib/compliance.cjs');
 });
 
-test('static file brief/bin/lib/compliance-report.cjs — no ban-list tokens', { skip: !fs.existsSync(path.join(REPO_ROOT, 'brief/bin/lib/compliance-report.cjs')) ? 'report file pending Task 2' : false }, () => {
+test('static file brief/bin/lib/compliance-report.cjs — no ban-list tokens (verbatim PIPA disclaimer exempt)', { skip: !fs.existsSync(path.join(REPO_ROOT, 'brief/bin/lib/compliance-report.cjs')) ? 'report file pending Task 2' : false }, () => {
   const content = fs.readFileSync(path.join(REPO_ROOT, 'brief/bin/lib/compliance-report.cjs'), 'utf-8');
-  assertNoBanListInText(content, 'brief/bin/lib/compliance-report.cjs');
+  // Strip the _disclaimerFooter function body — its content is verbatim
+  // regulatory-citation text from brief/references/compliance/korea/pipa-2026.md,
+  // not gate prose. Mirrors audience-vocabulary.md `## Ban-list*` section exemption:
+  // the citation text quotes regulatory language including '위반' (= violation),
+  // which is required for legal accuracy.
+  const stripped = content.replace(/function\s+_disclaimerFooter\s*\([^)]*\)\s*\{[\s\S]*?\n\}/m, '');
+  assertNoBanListInText(stripped, 'brief/bin/lib/compliance-report.cjs');
 });
