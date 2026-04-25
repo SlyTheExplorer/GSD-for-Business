@@ -50,7 +50,11 @@ const EN_ANCHOR_FRAGMENTS = [
 function _stripBlockquotePrefix(s) {
   // Strip leading "> " markdown blockquote markers and surrounding whitespace
   // so byte-identity compares semantic text, not markdown decoration.
+  // Handles BOTH real newlines (from .md files) AND JS-source escape
+  // sequences (`\n` and `\\n`) that appear when reading the renderer .cjs
+  // source literally.
   return s
+    .replace(/\\n/g, '\n')          // JS source: literal "\n" → real newline
     .split('\n')
     .map((line) => line.replace(/^>\s?/, '').trim())
     .filter((line) => line.length > 0)
