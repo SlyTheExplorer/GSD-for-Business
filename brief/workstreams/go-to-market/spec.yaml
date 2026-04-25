@@ -1,0 +1,11 @@
+name: go-to-market
+description: "Go-to-market plan covering target market & ICP / personas, positioning & value prop, pricing & packaging, sales & distribution motion, channels, demand generation, sales enablement, launch plan, and KPIs. B2B/B2C variant content per design-prompts.md conditional blocks."
+research_prompts:
+  - "What does customer-research tell us about target market segments and buying behavior?"
+  - "What does competitor-landscape tell us about positioning and category placement?"
+  - "What does distribution-channels and pricing-benchmarks research tell us about GTM options?"
+design_prompts:
+  - file:design-prompts.md
+output_artifact_template: templates/artifact.md
+gates_required: [align, audience, compliance]
+depends_on: [business-model-canvas]
