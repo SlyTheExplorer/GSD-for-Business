@@ -218,11 +218,12 @@ Exactly one Task spawn — sibling-fan-out and slug-loop patterns are forbidden:
 </Task>
 ```
 
-### Step 4.5 (FINANCIAL stub — Plan 07-06 fills in)
+### Step 4.5: FINANCIAL Driver Q&A (D-15) — only when WORKSTREAM_SLUG === 'financial'
 
-When WORKSTREAM_SLUG === 'financial', execute Plan 06's 8-12 driver Q&A flow
-BEFORE Step 5. Plan 07-06 wires the Q&A; Plan 07-03 only stubs the marker.
-Other workstreams skip Step 4.5 and proceed directly from Step 4 to Step 5.
+Skip for any other workstream. Otherwise: Step 4.5.A pre-flight → Step 4.5.B 12-question Q&A
+(Q1-Q12 covering Revenue 3 / Customer 2 / Cost 3 / Capital 2 / Time 2; Korean when region:kr)
+→ Step 4.5.C persist drivers.md + set `state.brief.financial_drivers` → Step 4.5.D Step 5
+Task gets `<financial_drivers>` → Step 4.5.E TEXT_MODE batches into ONE consolidated numbered list (FND-06). Output: `.planning/workstreams/financial/drivers.md`. Normative: @~/.claude/brief/workflows/design-financial-qa.md (also at brief/workflows/design-financial-qa.md).
 
 ## Step 5: Sequential 3-gate threading (D-02)
 
