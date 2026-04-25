@@ -8,7 +8,7 @@ and presents the workstream completion handoff. Phase 7 D-05/D-06/D-07/D-08 lock
 Single-workstream-per-session contract (D-05): /brief-design accepts ONE workstream
 slug per invocation. The orchestrator is not a discover-style fan-out and does not
 loop over a category list. Re-running the command for the next workstream is the v1
-path (the Step 7 handoff offers a recursive Skill-tool dispatch on user "Continue").
+path (the final-step handoff offers a recursive Skill-tool dispatch on Continue).
 
 OBJECTIVES insufficiency directive routing (D-06): when Step 2 detects required
 mutable_hypotheses fields are missing for the requested workstream, the workflow
@@ -20,7 +20,7 @@ Sequential 3-gate threading (D-02): inside Step 5 the workflow invokes ALIGN →
 AUDIENCE → COMPLIANCE in series, fail-fast on any BLOCKING verdict (no parallel
 spawn, no skip flag). FINDINGS-MATERIAL on COMPLIANCE proceeds to Step 6 without
 interrupt (Phase 7 D-01 deviation — material findings recorded in the paired-
-sibling .compliance.md; legal-counsel disclaimer footer on every emitted report).
+sibling compliance report; legal-counsel disclaimer footer on every emitted file).
 
 Korean is default voice when state.brief.region == 'kr'; English fallback.
 TEXT_MODE numbered-list rendering replaces every AskUserQuestion when --text
