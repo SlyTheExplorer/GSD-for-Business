@@ -320,7 +320,7 @@ Compute Recommended next via the dispatcher (derive-at-read, no stored field):
 
 ```
 node brief/bin/brief-tools.cjs design recommended-next \
-  --completed "$(node brief/bin/brief-tools.cjs state json --path brief.workstreams_completed)"
+  --completed "$(node brief/bin/brief-tools.cjs state json --pick brief.workstreams_completed --raw)"
 ```
 
 Render AskUserQuestion (or TEXT_MODE numbered list) with 3 options:
