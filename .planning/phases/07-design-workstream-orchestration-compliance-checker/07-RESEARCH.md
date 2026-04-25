@@ -1521,27 +1521,27 @@ compliance: material → FINDINGS-MATERIAL (load-bearing deviation; CC-01 mandat
 | A7 | `state.brief.financial_drivers` allowlist extension is straightforward via Phase 2 D-21 pattern | Inherited Code to Reuse / state | If state.cjs allowlist requires structural changes beyond additive, falls back to writing drivers as `state.brief.financial_drivers_path` (string only) with the inline drivers map living in `drivers.md`. Verify via Phase 2 D-21 frontmatter.cjs round-trip test. |
 | A8 | Workstream-specific design Task spawn doesn't need a new context-inject.cjs API surface | Architectural Responsibility Map | `buildBusinessContext()` already returns everything needed (promptBlock, requiredReading, language). If a workstream needs additional context (e.g., FINANCIAL needs `<financial_drivers>...</financial_drivers>` block), the Task spawn injects it inline alongside `ctx.promptBlock` — no `context-inject.cjs` change. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Workstream-designer agent: ONE parameterized vs 9 separate agents?**
    - What we know: Phase 5 D-01 chose ONE parameterized `brief-domain-researcher.md` for 9 research categories. Phase 7's 9 workstreams are similar in structure (each loads design-prompts.md + writes one artifact).
    - What's unclear: Whether the per-workstream content depth differences (FINANCIAL has driver Q&A; BMC has 9 building blocks; TECH-ARCH has Mermaid diagram) justify per-workstream agents.
-   - Recommendation: ONE parameterized agent — `agents/brief-workstream-designer.md` — that loads `{slug}/design-prompts.md` as its prompt template + writes to `.planning/workstreams/{slug}/{artifact}.md`. The FINANCIAL driver Q&A lives in `brief/workflows/design.md` Step 4 BEFORE the agent spawn (Q&A is orchestrator-side, not agent-side). Reuses parameterized-agent pattern from Phase 5 D-01. Mirror's "favor template-friendly patterns" discipline.
+   - **RESOLVED:** ONE parameterized agent — `agents/brief-workstream-designer.md` — that loads `{slug}/design-prompts.md` as its prompt template + writes to `.planning/workstreams/{slug}/{artifact}.md`. The FINANCIAL driver Q&A lives in `brief/workflows/design.md` Step 4 BEFORE the agent spawn (Q&A is orchestrator-side, not agent-side). Reuses parameterized-agent pattern from Phase 5 D-01. Mirror's "favor template-friendly patterns" discipline.
 
 2. **`/brief-design <workstream>` slug aliases / abbreviations?**
    - What we know: Workstream slugs are kebab-case (`business-model-canvas`, `go-to-market`, `financial`, `tech-arch`).
    - What's unclear: Should `/brief-design BMC` (uppercase abbreviation) work as a shortcut?
-   - Recommendation: Yes for v1 — `/brief-design` accepts case-insensitive match against either the full slug OR a 2-4-char canonical abbreviation. Aliases: BMC → business-model-canvas, GTM → go-to-market, FIN → financial, OPS → operations, COMP → compliance, ROAD → roadmap, BRAND → brand, RISK → risk, TECH → tech-arch. Stored as a const in `workstream-loader.cjs`. Invocation `/brief-design BMC` resolves to `business-model-canvas`. Pitfall #12 (slash command memorability) friendly.
+   - **RESOLVED:** Yes for v1 — `/brief-design` accepts case-insensitive match against either the full slug OR a 2-4-char canonical abbreviation. Aliases: BMC → business-model-canvas, GTM → go-to-market, FIN → financial, OPS → operations, COMP → compliance, ROAD → roadmap, BRAND → brand, RISK → risk, TECH → tech-arch. Stored as a const in `workstream-loader.cjs`. Invocation `/brief-design BMC` resolves to `business-model-canvas`. Pitfall #12 (slash command memorability) friendly.
 
 3. **D-04 v1 Korea-only — what message does COMPLIANCE checker emit on a non-Korean project?**
    - What we know: `state.brief.compliance_packs` empty + region != kr → no primer auto-load → Screen (a) pack-applicability returns COMPLIANCE-OK pass-through.
    - What's unclear: Should the gate emit a nice-to-have finding "no compliance pack declared — consider declaring relevant region"?
-   - Recommendation: Yes — emit a single nice-to-have finding `description: "No compliance pack declared. v1 only ships Korea 3 packs (PIPA / ISMS-P / MyData); for non-Korea projects, run /brief-define --amend to declare compliance_packs (advisory) or proceed without compliance scoping. v2 (CC-V2-01) will expand to GDPR / SOC 2 / HIPAA / CCPA."` — keeps user oriented; doesn't block.
+   - **RESOLVED:** Yes — emit a single nice-to-have finding `description: "No compliance pack declared. v1 only ships Korea 3 packs (PIPA / ISMS-P / MyData); for non-Korea projects, run /brief-define --amend to declare compliance_packs (advisory) or proceed without compliance scoping. v2 (CC-V2-01) will expand to GDPR / SOC 2 / HIPAA / CCPA."` — keeps user oriented; doesn't block.
 
 4. **Soft-recommended ordering display in `/brief-status`: what format?**
    - What we know: D-07 ordering: BMC → GTM → BRAND → OPERATIONS → FINANCIAL → RISK → ROADMAP → TECH-ARCH → COMPLIANCE.
    - What's unclear: The `/brief-status` dashboard format.
-   - Recommendation: Add one new line to the existing compact dashboard (per Phase 2 D-15 format):
+   - **RESOLVED:** Add one new line to the existing compact dashboard (per Phase 2 D-15 format):
      ```
      BRIEF Status
      ================================
@@ -1562,7 +1562,7 @@ compliance: material → FINDINGS-MATERIAL (load-bearing deviation; CC-01 mandat
 5. **Atomic commit granularity for the 9 workstream content folders (CONTEXT D-16 step 5)?**
    - What we know: Each workstream is 3 files (spec.yaml + design-prompts.md + templates/artifact.md). 9 × 3 = 27 files.
    - What's unclear: Per-workstream commits (9 commits) OR single bulk commit (1 commit).
-   - Recommendation: Per-workstream commits (9 atomic commits, each independently buildable). Pre-existing pattern from Phase 5 (Korea compliance primers shipped as 1 commit; but those are READ-ONLY references). Workstream content is more like Phase 5's brief-domain-researcher.md (1 commit per agent). Per-workstream lets git bisect identify which workstream introduced a regression. Each commit's message: `feat(brief-design): <slug> workstream content (DSG-XX)`.
+   - **RESOLVED:** Per-workstream commits (9 atomic commits, each independently buildable). Pre-existing pattern from Phase 5 (Korea compliance primers shipped as 1 commit; but those are READ-ONLY references). Workstream content is more like Phase 5's brief-domain-researcher.md (1 commit per agent). Per-workstream lets git bisect identify which workstream introduced a regression. Each commit's message: `feat(brief-design): <slug> workstream content (DSG-XX)`.
 
 ## Environment Availability
 
