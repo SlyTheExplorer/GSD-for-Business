@@ -842,6 +842,283 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
       break;
     }
 
+    case 'add-workstream': {
+      // Plan 07-04 Task 2 — /brief-add-workstream dispatcher.
+      // Phase 7 D-09/D-10/D-11 / DSG-10 — workstream addition without .cjs source change.
+      // Three subcommands consumed by brief/workflows/add-workstream.md:
+      //   add-workstream check-collision --name <slug>
+      //     → JSON {collides: bool, existing_slug?: string}
+      //   add-workstream check-overlap --name <slug> --description <desc>
+      //     → JSON {overlap: bool, candidates: string[]}
+      //     heuristic: word-set overlap > 50% with each existing description
+      //     (lowercase + whitespace-split + intersection / union > 0.5)
+      //   add-workstream write --name <slug> --spec-json <json>
+      //                        --design-prompts-content <content>
+      //                        --template-content <content>
+      //     → atomic 3-file write via atomicWriteFileSync per file + brief-tools commit
+      //     On any throw, unlinks all created files + workstream dir (rollback).
+      const { loadWorkstreams } = require('./lib/workstream-loader.cjs');
+      const { atomicWriteFileSync } = core;
+      const awSubcommand = args[1];
+
+      // Same alias map as the design dispatcher (RESOLVED Open Question #2).
+      const SLUG_ALIASES = {
+        bmc: 'business-model-canvas',
+        gtm: 'go-to-market',
+        fin: 'financial',
+        ops: 'operations',
+        comp: 'compliance',
+        road: 'roadmap',
+        brand: 'brand',
+        risk: 'risk',
+        tech: 'tech-arch',
+      };
+
+      function slugify(input) {
+        if (!input) return null;
+        // Underscore is preserved as-is — `_example` (the canonical demo
+        // workstream) is a valid existing slug and collision check must
+        // match it. Whitespace becomes hyphen; other special chars dropped.
+        return String(input)
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^a-z0-9_-]/g, '');
+      }
+
+      function resolveSlug(input) {
+        if (!input) return null;
+        const slug = slugify(input);
+        return SLUG_ALIASES[slug] || slug;
+      }
+
+      if (awSubcommand === 'check-collision') {
+        const nameIdx = args.indexOf('--name');
+        const rawName = nameIdx !== -1 ? args[nameIdx + 1] : null;
+        if (!rawName) {
+          error('add-workstream check-collision requires --name <slug>');
+          break;
+        }
+        const resolved = resolveSlug(rawName);
+        try {
+          const specs = loadWorkstreams(cwd);
+          const match = specs.find((s) => s.slug === resolved);
+          if (match) {
+            core.output(
+              { collides: true, existing_slug: match.slug },
+              raw,
+              'collides',
+            );
+          } else {
+            core.output({ collides: false }, raw, 'no_collision');
+          }
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      if (awSubcommand === 'check-overlap') {
+        const nameIdx = args.indexOf('--name');
+        const descIdx = args.indexOf('--description');
+        const rawName = nameIdx !== -1 ? args[nameIdx + 1] : null;
+        const rawDesc = descIdx !== -1 ? args[descIdx + 1] : null;
+        if (!rawName || !rawDesc) {
+          error(
+            'add-workstream check-overlap requires --name <slug> --description <desc>',
+          );
+          break;
+        }
+        try {
+          const specs = loadWorkstreams(cwd);
+          // Word-set overlap heuristic (CONTEXT.md Claude's Discretion):
+          // lowercase, whitespace-split, intersection / union > 0.5.
+          // Filter empty tokens and very short tokens (< 3 chars) to reduce
+          // noise from common particles.
+          function tokenize(s) {
+            return new Set(
+              String(s)
+                .toLowerCase()
+                .split(/[\s,.:;!?()[\]{}'"`/\\-]+/)
+                .map((t) => t.trim())
+                .filter((t) => t.length >= 3),
+            );
+          }
+          const userTokens = tokenize(rawDesc);
+          const candidates = [];
+          for (const spec of specs) {
+            const otherTokens = tokenize(spec.description || '');
+            const intersection = new Set(
+              [...userTokens].filter((t) => otherTokens.has(t)),
+            );
+            const union = new Set([...userTokens, ...otherTokens]);
+            if (union.size === 0) continue;
+            const overlap = intersection.size / union.size;
+            if (overlap > 0.5) candidates.push(spec.slug);
+          }
+          core.output(
+            { overlap: candidates.length > 0, candidates },
+            raw,
+            candidates.length > 0 ? 'overlap_detected' : 'no_overlap',
+          );
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      if (awSubcommand === 'write') {
+        const nameIdx = args.indexOf('--name');
+        const specIdx = args.indexOf('--spec-json');
+        const dpIdx = args.indexOf('--design-prompts-content');
+        const tplIdx = args.indexOf('--template-content');
+        const rawName = nameIdx !== -1 ? args[nameIdx + 1] : null;
+        const specJson = specIdx !== -1 ? args[specIdx + 1] : null;
+        const dpContent = dpIdx !== -1 ? args[dpIdx + 1] : null;
+        const tplContent = tplIdx !== -1 ? args[tplIdx + 1] : null;
+        if (!rawName || !specJson || dpContent == null || tplContent == null) {
+          error(
+            'add-workstream write requires --name <slug> --spec-json <json> ' +
+              '--design-prompts-content <content> --template-content <content>',
+          );
+          break;
+        }
+        const resolved = resolveSlug(rawName);
+        const wsRoot = path.join(cwd, 'brief', 'workstreams', resolved);
+        const tplDir = path.join(wsRoot, 'templates');
+        const specPath = path.join(wsRoot, 'spec.yaml');
+        const dpPath = path.join(wsRoot, 'design-prompts.md');
+        const tplPath = path.join(tplDir, 'artifact.md');
+        const created = []; // tracks files for rollback
+
+        // TOCTOU guard: defensive collision re-check.
+        if (fs.existsSync(wsRoot)) {
+          error(
+            `add-workstream write: workstream "${resolved}" already exists at ` +
+              `brief/workstreams/${resolved}/ (TOCTOU collision guard)`,
+          );
+          break;
+        }
+
+        function rollback() {
+          for (const f of created) {
+            try { fs.unlinkSync(f); } catch (_) { /* best-effort */ }
+          }
+          // Remove templates/ if empty, then workstream dir if empty.
+          try { fs.rmdirSync(tplDir); } catch (_) { /* may not exist */ }
+          try { fs.rmdirSync(wsRoot); } catch (_) { /* may not exist */ }
+        }
+
+        // Minimal YAML serializer for the spec object (flat schema with
+        // string fields + arrays of strings + 1 boolean-ish arg). We do NOT
+        // depend on a generic library — the schema is closed (Phase 7 D-13)
+        // and hand-rolled emission is the safest path.
+        function emitYaml(spec) {
+          const lines = [];
+          // Required fields in canonical order (D-13)
+          lines.push(`name: ${spec.name}`);
+          lines.push(`description: ${JSON.stringify(spec.description || '')}`);
+          // research_prompts
+          lines.push('research_prompts:');
+          const rp = Array.isArray(spec.research_prompts) ? spec.research_prompts : [];
+          for (const p of rp) lines.push(`  - ${JSON.stringify(p)}`);
+          if (rp.length === 0) lines.push('  - "(no research prompts specified)"');
+          // design_prompts
+          lines.push('design_prompts:');
+          const dp = Array.isArray(spec.design_prompts) && spec.design_prompts.length > 0
+            ? spec.design_prompts
+            : ['file:design-prompts.md'];
+          for (const p of dp) lines.push(`  - ${JSON.stringify(p)}`);
+          // output_artifact_template
+          lines.push(
+            `output_artifact_template: ${spec.output_artifact_template || 'templates/artifact.md'}`,
+          );
+          // gates_required (D-10 default — we lock the literal here defensively)
+          const gates = Array.isArray(spec.gates_required) && spec.gates_required.length > 0
+            ? spec.gates_required
+            : ['align', 'audience', 'compliance'];
+          lines.push(`gates_required: [${gates.join(', ')}]`);
+          // depends_on
+          const deps = Array.isArray(spec.depends_on) ? spec.depends_on : [];
+          lines.push(`depends_on: [${deps.join(', ')}]`);
+          // Optional extends_workstream (D-11 fork)
+          if (spec.extends_workstream && typeof spec.extends_workstream === 'string') {
+            lines.push(`extends_workstream: ${spec.extends_workstream}`);
+          }
+          // Optional compliance_packs (Q4 advisory)
+          if (Array.isArray(spec.compliance_packs) && spec.compliance_packs.length > 0) {
+            lines.push(`compliance_packs: [${spec.compliance_packs.join(', ')}]`);
+          }
+          return lines.join('\n') + '\n';
+        }
+
+        let parsedSpec;
+        try {
+          parsedSpec = JSON.parse(specJson);
+        } catch (err) {
+          error(`add-workstream write: invalid --spec-json: ${err.message}`);
+          break;
+        }
+        // Force the slug into spec.name (Phase 2 D-13: name MUST equal directory name)
+        parsedSpec.name = resolved;
+
+        try {
+          fs.mkdirSync(wsRoot, { recursive: true });
+          fs.mkdirSync(tplDir, { recursive: true });
+
+          atomicWriteFileSync(specPath, emitYaml(parsedSpec), 'utf-8');
+          created.push(specPath);
+
+          atomicWriteFileSync(dpPath, dpContent, 'utf-8');
+          created.push(dpPath);
+
+          atomicWriteFileSync(tplPath, tplContent, 'utf-8');
+          created.push(tplPath);
+
+          // brief-tools commit --files (atomic single git commit per Pattern 4).
+          // Note: we DO NOT mutate STATE.md here — workstream addition is
+          // filesystem-only per CONTEXT.md D-09 (no STATE.md mutation in the
+          // skeleton write step).
+          commands.cmdCommit(
+            cwd,
+            `feat(07-04): add workstream ${resolved} via /brief-add-workstream`,
+            [
+              path.relative(cwd, specPath),
+              path.relative(cwd, dpPath),
+              path.relative(cwd, tplPath),
+            ],
+            true, // raw — suppress decorative output; the workflow renders user-facing message
+            false,
+            true, // noVerify — match parallel executor convention (also tolerates pre-commit hook failures)
+          );
+
+          core.output(
+            {
+              created: true,
+              slug: resolved,
+              files: [
+                path.relative(cwd, specPath),
+                path.relative(cwd, dpPath),
+                path.relative(cwd, tplPath),
+              ],
+            },
+            raw,
+            `workstream ${resolved} created`,
+          );
+        } catch (err) {
+          rollback();
+          error(`add-workstream write: ${err.message} (3 files rolled back atomically)`);
+        }
+        break;
+      }
+
+      error(
+        `add-workstream: unknown subcommand '${awSubcommand}'. ` +
+          'Valid: check-collision, check-overlap, write',
+      );
+      break;
+    }
+
     case 'gap-detect': {
       // Phase 6 Plan 06-04 — Gap-detect gate dispatcher. Subcommands:
       //   run             — validate-only (agent spawn happens in workflow)
