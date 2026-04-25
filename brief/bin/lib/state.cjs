@@ -1,11 +1,46 @@
 /**
  * State — STATE.md operations and progression engine
+ *
+ * state.brief.* allowlist (preserved wholesale across writes; no closed-enum
+ * validator — see syncStateFrontmatter / cmdStateJson for the preserve-and-pass
+ * mechanism). Documented fields per phase:
+ *
+ *   Phase 2 D-21 (foundation):
+ *     - return_stack:           array of frame objects (DISCOVER↔DESIGN)
+ *     - return_stack_history:   append-only log of pushed frames
+ *     - gap_queue:              array of gap descriptors
+ *     - last_gate_results:      { align, audience, compliance } nested map
+ *     - current_workstream:     scalar slug string
+ *     - business_model:         scalar enum (b2b / b2c / b2b2c / enterprise)
+ *     - region:                 scalar string (e.g., "kr")
+ *     - audience_policy:        nested map
+ *     - compliance_packs:       array of pack ids (e.g., ["pipa", "isms-p"])
+ *
+ *   Phase 7 D-13/D-21 (this phase):
+ *     - last_design_workstream: scalar slug string — set by /brief-design on
+ *                                workstream completion
+ *     - workstreams_completed:  array of slug strings — append on workstream
+ *                                completion; consumed by computeRecommendedNext
+ *                                in status.cjs
+ *     - financial_drivers:      path string OR inline driver map (per A7) —
+ *                                set by /brief-design financial Step 4 Q&A
  */
 
 const fs = require('fs');
 const path = require('path');
 const { escapeRegex, loadConfig, getMilestoneInfo, getMilestonePhaseFilter, normalizeMd, planningDir, planningPaths, output, error, atomicWriteFileSync } = require('./core.cjs');
 const { extractFrontmatter, reconstructFrontmatter } = require('./frontmatter.cjs');
+
+// Phase 7 D-21 — schema-documentation allowlist for state.brief.* fields
+// added in this phase. The preserve-wholesale write path (syncStateFrontmatter
+// + cmdStateJson) does not validate against this list — it's enforced by
+// convention and the round-trip test in tests/brief-design-recommended-next.test.cjs.
+// New fields here should be paired with a documenting comment in the header above.
+const PHASE_7_BRIEF_FIELDS = Object.freeze([
+  'last_design_workstream',
+  'workstreams_completed',
+  'financial_drivers',
+]);
 
 // Cache disk scan results from buildStateFrontmatter per cwd per process (#1967).
 // Avoids re-reading N+1 directories on every state write when the phase structure
@@ -1630,4 +1665,5 @@ module.exports = {
   cmdStatePrune,
   cmdSignalWaiting,
   cmdSignalResume,
+  PHASE_7_BRIEF_FIELDS,
 };

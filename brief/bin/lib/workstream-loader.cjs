@@ -82,6 +82,49 @@ function loadWorkstreams(cwd) {
       );
     }
 
+    // Phase 7 D-13 extension: gates_required + depends_on (additive — Phase 2 D-13
+    // 5-field validation above is preserved unchanged).
+    //
+    //   gates_required: array; each entry MUST be in VALID_GATES; default below.
+    //   depends_on:     array of slug strings; forward-references allowed
+    //                   (referenced workstream may not exist at load time;
+    //                   resolution happens at /brief-status render time per D-07).
+    const VALID_GATES = new Set(['align', 'audience', 'compliance']);
+    if (parsed.gates_required !== undefined) {
+      if (!Array.isArray(parsed.gates_required)) {
+        throw new Error(
+          `Workstream "${dir}": gates_required must be a list ` +
+          `(got ${typeof parsed.gates_required})`
+        );
+      }
+      for (const g of parsed.gates_required) {
+        if (!VALID_GATES.has(g)) {
+          throw new Error(
+            `Workstream "${dir}": gates_required contains invalid gate "${g}" ` +
+            `(valid: align, audience, compliance)`
+          );
+        }
+      }
+    }
+    if (parsed.depends_on !== undefined) {
+      if (!Array.isArray(parsed.depends_on)) {
+        throw new Error(
+          `Workstream "${dir}": depends_on must be a list of slugs ` +
+          `(got ${typeof parsed.depends_on})`
+        );
+      }
+      for (const slug of parsed.depends_on) {
+        if (typeof slug !== 'string' || slug.length === 0) {
+          throw new Error(
+            `Workstream "${dir}": depends_on contains non-string entry`
+          );
+        }
+        // Forward-references allowed per D-13: a depends_on entry may name a
+        // workstream that has not yet been added. /brief-status render-time
+        // derivation skips dangling deps gracefully.
+      }
+    }
+
     // T-02-05-02 directory-traversal + existence for output_artifact_template
     validatePathWithin(workstreamDir, parsed.output_artifact_template, 'output_artifact_template', dir);
 
@@ -103,6 +146,15 @@ function loadWorkstreams(cwd) {
     // fields explicitly into a plain object for downstream predictability.
     const spec = { slug: dir };
     for (const k of Object.keys(parsed)) spec[k] = parsed[k];
+
+    // Phase 7 D-13 + D-10 defaults (applied AFTER copy so explicit values win).
+    if (spec.gates_required === undefined) {
+      spec.gates_required = ['align', 'audience', 'compliance'];
+    }
+    if (spec.depends_on === undefined) {
+      spec.depends_on = [];
+    }
+
     specs.push(spec);
   }
 
