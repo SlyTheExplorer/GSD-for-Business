@@ -31,6 +31,66 @@ const fs = require('fs');
 const path = require('path');
 const { planningPaths, output } = require('./core.cjs');
 const { extractFrontmatter } = require('./frontmatter.cjs');
+const { loadWorkstreams } = require('./workstream-loader.cjs');
+
+// Phase 7 D-07 soft-recommended workstream order. Drives /brief-status
+// "Recommended next" line: first workstream in this order whose slug is
+// NOT in state.brief.workstreams_completed AND whose depends_on entries
+// are all completed wins. Forward-references in depends_on (workstreams
+// that haven't been added yet) are skipped gracefully (treated as unsatisfied).
+const PHASE_7_SOFT_ORDER = [
+  'business-model-canvas',
+  'go-to-market',
+  'brand',
+  'operations',
+  'financial',
+  'risk',
+  'roadmap',
+  'tech-arch',
+  'compliance',
+];
+
+/**
+ * computeRecommendedNext — derive the next workstream to suggest at /brief-status
+ * render time. Pure read-only derivation per D-07 + D-08:
+ *   - reads spec.yaml depends_on via loadWorkstreams(cwd)
+ *   - reads state.brief.workstreams_completed (Phase 7 D-21 allowlist extension)
+ *   - returns the first slug in PHASE_7_SOFT_ORDER that is NOT completed AND
+ *     whose depends_on are all completed; falls back to '—' sentinel.
+ *
+ * NEVER stored in state — derived every render to keep state slim and to
+ * avoid drift when the user runs workstreams out of order.
+ */
+function computeRecommendedNext(cwd, briefState) {
+  try {
+    const ws = loadWorkstreams(cwd);
+    const completed = new Set(
+      Array.isArray(briefState && briefState.workstreams_completed)
+        ? briefState.workstreams_completed
+        : []
+    );
+    // Order the loaded workstreams by D-07 soft-order, then append any
+    // user-added workstreams (via /brief-add-workstream) that aren't in the
+    // canonical 9 — they sort to the end.
+    const orderedWs = PHASE_7_SOFT_ORDER
+      .map(slug => ws.find(w => (w.slug || w.name) === slug))
+      .filter(Boolean)
+      .concat(
+        ws.filter(w => !PHASE_7_SOFT_ORDER.includes(w.slug || w.name))
+      );
+    for (const s of orderedWs) {
+      const slug = s.slug || s.name;
+      if (slug === '_example') continue; // _example is a fixture, not a recommendation
+      if (completed.has(slug)) continue;
+      const depsOk = (s.depends_on || []).every(d => completed.has(d));
+      if (depsOk) return slug;
+    }
+    return '—';
+  } catch {
+    // D-17 resilience: never throw on render path.
+    return '—';
+  }
+}
 
 function formatGate(gate) {
   if (!gate || typeof gate !== 'object') return '— (none yet)';
@@ -135,6 +195,10 @@ function renderStatus(cwd, raw) {
     ? '—'
     : Array.from(byWs.entries()).map(([ws, count]) => `${ws}: ${count}`).join(', ');
 
+  // Phase 7 D-07 — Recommended next workstream derivation. Read-only at render
+  // time; never stored. See computeRecommendedNext above for derivation rules.
+  const recommendedNext = computeRecommendedNext(cwd, brief);
+
   const lines = [
     'BRIEF Status',
     '='.repeat(32),
@@ -146,6 +210,7 @@ function renderStatus(cwd, raw) {
     `  Last COMPLIANCE ${complianceLine}`,
     `  Gap loop        ${activeTopic}`,
     `  Round-trips     ${roundTripLine}`,
+    `  Recommended next ${recommendedNext}`,
     '-'.repeat(32),
     `  Next: ${nextHint}`,
   ];
@@ -162,4 +227,4 @@ function renderStatus(cwd, raw) {
   return rendered;
 }
 
-module.exports = { renderStatus };
+module.exports = { renderStatus, computeRecommendedNext };
