@@ -6,9 +6,9 @@ business_context, spawns the workstream's design Task, runs sequential 3-gate th
 and presents the workstream completion handoff. Phase 7 D-05/D-06/D-07/D-08 lock.
 
 Single-workstream-per-session contract (D-05): /brief-design accepts ONE workstream
-slug per invocation. No wave queue, no multi-select category list. Re-running the
-command for the next workstream is the v1 path (the Step 7 handoff offers a recursive
-Skill-tool dispatch on user "Continue" selection).
+slug per invocation. The orchestrator is not a discover-style fan-out and does not
+loop over a category list. Re-running the command for the next workstream is the v1
+path (the Step 7 handoff offers a recursive Skill-tool dispatch on user "Continue").
 
 OBJECTIVES insufficiency directive routing (D-06): when Step 2 detects required
 mutable_hypotheses fields are missing for the requested workstream, the workflow
@@ -201,7 +201,7 @@ here; the workflow body is not exercised end-to-end until Plan 07-08 (Wave 5)
 canary E2E, by which time Plan 04's agent file exists. Tests for Plan 07-03
 are grep-based on this workflow markdown; they do NOT spawn the agent.
 
-Single Task spawn (NO wave queue, NO parallel spawn, NO multi-select):
+Exactly one Task spawn — sibling-fan-out and slug-loop patterns are forbidden:
 
 ```
 <Task>
@@ -227,9 +227,9 @@ Other workstreams skip Step 4.5 and proceed directly from Step 4 to Step 5.
 ## Step 5: Sequential 3-gate threading (D-02)
 
 The artifact emitted by Step 4 passes through the 3 gates IN SERIES:
-ALIGN → AUDIENCE → COMPLIANCE. NO parallel spawn. fail-fast on any
-BLOCKING verdict — downstream gates are NOT invoked when an upstream
-gate exits with a non-override BLOCKING decision.
+ALIGN → AUDIENCE → COMPLIANCE. Concurrent gate dispatch is forbidden
+here. fail-fast on any BLOCKING verdict — downstream gates are NOT
+invoked when an upstream gate exits with a non-override BLOCKING decision.
 
 ### Step 5.A: ALIGN gate
 
