@@ -1,0 +1,53 @@
+{
+  "phase": "7",
+  "phase_name": "DESIGN — Workstream Orchestration + COMPLIANCE Checker",
+  "timestamp": "2026-04-24T00:00:00.000Z",
+  "areas_completed": ["A — COMPLIANCE checker shape + pack scope"],
+  "areas_remaining": [
+    "B — /brief-design orchestrator UX",
+    "C — /brief-add-workstream flow depth",
+    "D — 9 workstream template shape"
+  ],
+  "decisions": {
+    "A — COMPLIANCE checker shape + pack scope": [
+      {
+        "question": "COMPLIANCE verdict 3-output 이름을 어떻게 가져갈까요?",
+        "options_presented": [
+          "COMPLIANCE-OK / FINDINGS-MATERIAL / FINDINGS-BLOCKING (recommended)",
+          "COMPLIANCE-OK / DRIFTED-evidence / DRIFTED-coverage",
+          "NO-FINDINGS / FINDINGS / NO-APPLICABLE-CLAUSES"
+        ],
+        "answer": "COMPLIANCE-OK / FINDINGS-MATERIAL / FINDINGS-BLOCKING"
+      },
+      {
+        "question": "오케스트레이터에서 세 게이트가 어떤 순서로 돌아갈까요?",
+        "options_presented": [
+          "순차: ALIGN → AUDIENCE → COMPLIANCE (recommended)",
+          "병렬: 세 게이트 동시 스폰 후 merge",
+          "조건부: spec.yaml의 gate_required 플래그로 게이트 토글"
+        ],
+        "answer": "순차: ALIGN → AUDIENCE → COMPLIANCE"
+      },
+      {
+        "question": "2026 PIPA CEO 개인책임 + 10% 매출액 벌금 시나리오는 어떻게 처리할까요?",
+        "options_presented": [
+          "일반 blocking findings로 표시, 면책 문구에 CEO 책임 언급 포함 (recommended)",
+          "새 severity 정의: 'critical-personal-liability'",
+          "severity 그대로 + 전용 top-of-report 경고 배너"
+        ],
+        "answer": "일반 blocking findings로 표시, 면책 문구에 CEO 책임 언급 포함"
+      },
+      {
+        "question": "v1에서 어떤 compliance 팩을 지원할까요?",
+        "options_presented": [
+          "Korea 3개 스켈레톤만 (PIPA / ISMS-P / MyData) — Phase 5 유산 그대로 사용 (recommended)",
+          "Korea 3개 + 글로벌 스텁 4개 (GDPR, SOC 2, HIPAA, CCPA)",
+          "팩 템플릿 뼈대만 유지, 내용 채우기는 v2"
+        ],
+        "answer": "Korea 3개 스켈레톤만 (PIPA / ISMS-P / MyData) — Phase 5 유산 그대로 사용"
+      }
+    ]
+  },
+  "deferred_ideas": [],
+  "canonical_refs": []
+}
