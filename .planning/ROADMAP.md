@@ -163,6 +163,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User reads any non-COMPLIANCE-workstream artifact (e.g., a BMC.md or GTM.md) and finds an accompanying `*.checker-finding.md` file emitted by the COMPLIANCE checker that ran automatically on it — the checker output uses findings-not-checks vocabulary, cites regulation clause + required evidence + found-in-artifact + gap, and includes a mandatory disclaimer ("This is not legal advice. Findings are starting points for review with qualified counsel.") (CC-01)
   4. User confirms the COMPLIANCE checker output never contains the word "compliant" or a green checkmark; instead uses "Documented obligations addressed:" / "Obligations needing further work:" / "Obligations BRIEF cannot verify (requires human counsel):" (CC-01)
 **Plans**: 8 plans
+- [ ] 07-01-PLAN.md — COMPLIANCE checker triad (agent + workflow + lib + report + vocabulary + dispatcher + 6 Wave 0 tests) — CC-01
+- [ ] 07-02-PLAN.md — Korea pack auto-load + verbatim PIPA disclaimer byte-identity tests — CC-01 (D-03 + D-04)
+- [ ] 07-03-PLAN.md — /brief-design orchestrator (commands/workflows/dispatcher) + sequential 3-gate threading + 4 Wave 0 tests — DSG-10, CC-01
+- [ ] 07-04-PLAN.md — /brief-add-workstream + parameterized brief-workstream-designer agent + 3 Wave 0 tests — DSG-10
+- [ ] 07-05-PLAN.md — 6 workstream bundles (BMC, GTM, BRAND, RISK, ROADMAP, COMPLIANCE) + canary fixture + 6 Wave 0 tests — DSG-01, DSG-02, DSG-05, DSG-06, DSG-07, DSG-08
+- [ ] 07-06-PLAN.md — 3 workstream bundles (OPERATIONS, TECH-ARCH, FINANCIAL) + Step 4.5 FINANCIAL driver Q&A + B2B fixture + 5 Wave 0 tests — DSG-03, DSG-04, DSG-09
+- [ ] 07-07-PLAN.md — workstream-loader gates_required+depends_on extension + status.cjs recommended-next + state.cjs allowlist + 6 structural tests — FND-08, FND-09, FND-10, CC-01
+- [ ] 07-08-PLAN.md — Korea-first canary E2E + TEXT_MODE multi-runtime parity test — DSG-01..10 + CC-01 + FND-06
 
 **Pitfall coverage**: #4 Compliance checkbox theater (CC-01 findings-not-checks + clause-level evidence + mandatory disclaimer — directly responds to CEO liability under 2026 PIPA), #6 Hallucinated market data (DSG-03 driver-based bottom-up financial modeling), #11 Korean cultural gotchas (DSG-05 region-aware compliance findings using Phase 5 reference library), #13 Framework specialization lock-in (DSG-10 dynamic workstream addition uses workstream-as-yaml from Phase 2, not bespoke code).
 
