@@ -1,0 +1,11 @@
+name: financial
+description: "Driver-based bottom-up financial model. NOT top-down market-share assumption (Pitfall #6 mitigation per Phase 7 D-15). User supplies 8-12 drivers via guided AskUserQuestion Q&A covering 5 categories (revenue / cost / customer / capital / time); LLM produces 12-month projection with bear/base/bull sensitivity (×0.7 / ×1.0 / ×1.3) — every cell carries [VERIFIED:user-supplied] or [ASSUMED:multiplier-X] provenance. v1 single-currency."
+research_prompts:
+  - "What does pricing-benchmarks tell us about ARPU and contribution margin baselines?"
+  - "What does customer-research tell us about retention/churn baselines?"
+  - "What does competitor-landscape tell us about CAC ranges?"
+design_prompts:
+  - file:design-prompts.md
+output_artifact_template: templates/artifact.md
+gates_required: [align, audience, compliance]
+depends_on: [business-model-canvas, go-to-market]

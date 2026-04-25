@@ -1,0 +1,11 @@
+name: operations
+description: "Operations plan covering Org & Hiring (initial team + 12-month hiring plan with sequencing aligned to FINANCIAL runway), Process & SOP catalogue (sales pipeline / customer onboarding / support tier-1/2 / financial close / hiring / release management), Tool Stack (lean — minimum tools that don't compound learning overhead — Communication / PM / CRM-or-Analytics / Finance / Identity-payroll / Hiring), Cadence (daily/weekly/monthly/quarterly + all-hands), and Decision Rights & Escalation (RACI on hiring/spending/PR/customer issues). B2B/B2C variant content per design-prompts.md conditional blocks: B2B emphasizes sales + CS roles; B2C emphasizes product + marketing + community."
+research_prompts:
+  - "What does customer-research and competitor-landscape tell us about operating tempo and customer-success expectations in this category?"
+  - "What does technology-and-product research tell us about platform / infrastructure ops requirements (uptime, on-call, deploy cadence)?"
+  - "What does hiring-and-team-structure research tell us about typical team shape at this stage (seed / Series A / etc.)?"
+design_prompts:
+  - file:design-prompts.md
+output_artifact_template: templates/artifact.md
+gates_required: [align, audience, compliance]
+depends_on: [business-model-canvas, go-to-market]
