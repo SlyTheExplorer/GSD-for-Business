@@ -634,6 +634,83 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
       break;
     }
 
+    case 'compliance': {
+      // Plan 07-01 Task 3 — COMPLIANCE gate dispatcher. Mirrors the `audience`
+      // case (Plan 05-04). Both subcommand branches wrap compliance.cjs calls
+      // in try/catch that forwards err.message to core.error (no absolute-path
+      // stack leakage). Phase 7 D-01 verdict-enum is COMPLIANCE-OK /
+      // FINDINGS-MATERIAL / FINDINGS-BLOCKING.
+      const compliance = require('./lib/compliance.cjs');
+      const compSubcommand = args[1];
+      const compArtIdx = args.indexOf('--artifact');
+      const compBaseIdx = args.indexOf('--baseline');
+      const compOutIdx = args.indexOf('--verdict-out');
+      const compVIdx = args.indexOf('--verdict');
+      const compReasonIdx = args.indexOf('--override-reason');
+      const compOverride = args.includes('--override');
+
+      if (compSubcommand === 'run') {
+        const artifact = compArtIdx !== -1 ? args[compArtIdx + 1] : null;
+        const baseline = compBaseIdx !== -1 ? args[compBaseIdx + 1] : null;
+        const verdictOutPath = compOutIdx !== -1 ? args[compOutIdx + 1] : null;
+        if (!artifact || !baseline) {
+          error('compliance run requires --artifact <path> --baseline <path>');
+          break;
+        }
+        try {
+          const screen = compliance.runDeterministicScreen(cwd, { artifact, baseline });
+          const outPath = verdictOutPath
+            || path.join(core.planningPaths(cwd).planning, '.compliance-verdict.tmp.json');
+          if (screen.verdict) {
+            compliance.writeVerdict(outPath, screen.verdict);
+            core.output(
+              { short_circuited: true, verdict: screen.verdict, verdictPath: outPath },
+              raw,
+              'short_circuited',
+            );
+          } else {
+            core.output(
+              { short_circuited: false, deterministic_findings: screen.findings },
+              raw,
+              'llm_pass_needed',
+            );
+          }
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      if (compSubcommand === 'commit') {
+        const verdictPath = compVIdx !== -1 ? args[compVIdx + 1] : null;
+        const artifactPath = compArtIdx !== -1 ? args[compArtIdx + 1] : null;
+        const overrideReason = compReasonIdx !== -1 ? args[compReasonIdx + 1] : null;
+        if (!verdictPath) {
+          error('compliance commit requires --verdict <path>');
+          break;
+        }
+        if (!artifactPath) {
+          error('compliance commit requires --artifact <path>');
+          break;
+        }
+        try {
+          const result = compliance.commitComplianceVerdict(cwd, {
+            verdictPath,
+            artifactPath,
+            override: compOverride,
+            overrideReason,
+          });
+          core.output(result, raw, `compliance report written at ${result.compliancePath}`);
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      error(`compliance: unknown subcommand '${compSubcommand}'. Valid: run, commit`);
+      break;
+    }
+
     case 'gap-detect': {
       // Phase 6 Plan 06-04 — Gap-detect gate dispatcher. Subcommands:
       //   run             — validate-only (agent spawn happens in workflow)
