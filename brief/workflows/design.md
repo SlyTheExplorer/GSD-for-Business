@@ -137,11 +137,13 @@ If the workstream-relevant fields are absent OR baseline validation reports
 1. Records the paused-status to STATE.md via the existing brief.workstream_paused
    allowlist field (Plan 07 Wave 4 ships the allowlist extension; Plan 03
    writes the markdown body — the body is not exercised end-to-end until
-   Plan 08 canary, by which time Plan 07's extension is live):
+   Plan 08 canary, by which time Plan 07's extension is live). The mutation
+   uses a Node one-liner that reads STATE.md, merges into the brief.* object,
+   and writes back atomically under the existing state lock (same pattern as
+   discover.md Step 4 / gap-detect.cjs return-stack writes):
 
    ```
-   node brief/bin/brief-tools.cjs state set --path brief.workstream_paused \
-     --value '{"slug":"<name>","reason":"objectives-insufficient","missing":[...]}'
+   node -e "const{readModifyWriteStateMd}=require('./brief/bin/lib/state.cjs');const{extractFrontmatter,reconstructFrontmatter,stripFrontmatter}=require('./brief/bin/lib/frontmatter.cjs');const{planningPaths}=require('./brief/bin/lib/core.cjs');const cwd=process.cwd();const value=JSON.parse(process.argv[1]);readModifyWriteStateMd(planningPaths(cwd).state,(content)=>{const body=stripFrontmatter(content);const fm=extractFrontmatter(content)||{};(fm.brief=fm.brief||{}).workstream_paused=value;return '---\n'+reconstructFrontmatter(fm)+'\n---\n\n'+body;},cwd);" '{"slug":"<name>","reason":"objectives-insufficient","missing":[...]}'
    ```
 
 2. Prints the user-facing directive (Korean default; English fallback):
@@ -289,14 +291,16 @@ auto-resume) or Step 1 (fresh invocation).
 
 ## Step 6: Update workstream-completion state
 
-Record the now-AUDIENCE-OK + COMPLIANCE-{OK|MATERIAL} workstream in state:
+Record the now-AUDIENCE-OK + COMPLIANCE-{OK|MATERIAL} workstream in state.
+The mutation uses a Node one-liner under the existing state lock (same pattern
+as Step 1 paused-status write):
 
 ```
-node brief/bin/brief-tools.cjs state set --path brief.last_design_workstream \
-  --value <WORKSTREAM_SLUG>
+node -e "const{readModifyWriteStateMd}=require('./brief/bin/lib/state.cjs');const{extractFrontmatter,reconstructFrontmatter,stripFrontmatter}=require('./brief/bin/lib/frontmatter.cjs');const{planningPaths}=require('./brief/bin/lib/core.cjs');const cwd=process.cwd();const slug=process.argv[1];readModifyWriteStateMd(planningPaths(cwd).state,(content)=>{const body=stripFrontmatter(content);const fm=extractFrontmatter(content)||{};const brief=(fm.brief=fm.brief||{});brief.last_design_workstream=slug;if(!Array.isArray(brief.workstreams_completed))brief.workstreams_completed=[];if(!brief.workstreams_completed.includes(slug))brief.workstreams_completed.push(slug);return '---\n'+reconstructFrontmatter(fm)+'\n---\n\n'+body;},cwd);" "<WORKSTREAM_SLUG>"
 ```
 
-Append the slug to `brief.workstreams_completed` (a list — append-only).
+The same one-liner appends the slug to `brief.workstreams_completed`
+(a list — append-only, deduped).
 
 CROSS-PLAN DEPENDENCY: the `brief.last_design_workstream` and
 `brief.workstreams_completed` allowlist extensions land in Plan 07-07 Task 2;

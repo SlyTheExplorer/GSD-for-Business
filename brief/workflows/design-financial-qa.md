@@ -157,11 +157,11 @@ sequential AskUserQuestion calls; in TEXT_MODE, batch via Step 4.5.E (below).
    node brief/bin/brief-tools.cjs commit --files .planning/workstreams/financial/drivers.md
    ```
 
-3. Set state via:
+3. Set state via a Node one-liner under the existing state lock (same pattern
+   as design.md Step 1 paused-status / Step 6 last_design_workstream writes):
 
    ```
-   node brief/bin/brief-tools.cjs state set --path brief.financial_drivers \
-     --value '.planning/workstreams/financial/drivers.md'
+   node -e "const{readModifyWriteStateMd}=require('./brief/bin/lib/state.cjs');const{extractFrontmatter,reconstructFrontmatter,stripFrontmatter}=require('./brief/bin/lib/frontmatter.cjs');const{planningPaths}=require('./brief/bin/lib/core.cjs');const cwd=process.cwd();const driversPath=process.argv[1];readModifyWriteStateMd(planningPaths(cwd).state,(content)=>{const body=stripFrontmatter(content);const fm=extractFrontmatter(content)||{};(fm.brief=fm.brief||{}).financial_drivers=driversPath;return '---\n'+reconstructFrontmatter(fm)+'\n---\n\n'+body;},cwd);" '.planning/workstreams/financial/drivers.md'
    ```
 
    The `brief.financial_drivers` allowlist extension lands in Plan 07-07 Wave 4
