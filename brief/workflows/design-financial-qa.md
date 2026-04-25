@@ -25,7 +25,11 @@ lines OR semicolons and validates exactly 12 entries (FND-06 latency mitigation 
    (5 sections: Revenue 3 / Customer 2 / Cost 3 / Capital 2 / Time 2).
 2. Detect TEXT_MODE: if `--text` is in $ARGUMENTS OR `workflow.text_mode` from init JSON
    is true, set TEXT_MODE=true; otherwise TEXT_MODE=false. (Same detection rule as
-   `align-gate.md` / `discover.md` Step 0.)
+   `align-gate.md` / `discover.md` Step 0.) When TEXT_MODE is active, every AskUserQuestion
+   call is replaced with a plain-text numbered list (the user types their choice number),
+   and the 12-question Q&A is batched into a single consolidated turn per Step 4.5.E.
+   This is required for Claude Code remote sessions (`/rc`) and non-Claude runtimes
+   (OpenAI Codex, Gemini CLI, OpenCode) where AskUserQuestion is unavailable (FND-06).
 3. If `state.brief.financial_drivers` already points to an existing
    `.planning/workstreams/financial/drivers.md`, the user is RE-RUNNING /brief-design
    financial after a prior gate failure — skip the Q&A and reuse the existing
