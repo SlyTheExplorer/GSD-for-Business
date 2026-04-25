@@ -91,12 +91,45 @@ function grepBanList(artifactPath) {
 //   (a) Pack-applicability — empty packs + no Korea signal → COMPLIANCE-OK pass-through
 //   (b) PIPA hard-required-evidence — packs include PIPA + artifact mentions personal-data
 //                                     terms + lacks CPO/consent evidence → FINDINGS-BLOCKING
+//                                     B2B SaaS without consumer-data tokens AND artifacts
+//                                     containing explicit denial patterns ("No PII collected",
+//                                     "개인정보 미수집") are EXEMPT to prevent CEO-liability
+//                                     credibility-gradient false-positives (Risk Notes
+//                                     mitigation per 07-CONTEXT.md / 07-02-PLAN Test 3).
 //   (c) Ban-list grep — additive material findings (no short-circuit)
-function runDeterministicScreen(cwd, { artifact, baseline, businessContext }) {
+//
+// Polymorphic signature (Plan 07-02 Task 2 contract):
+//   runDeterministicScreen(cwd, opts)  — legacy form used by Plan 01 / Phase-4 sibling
+//   runDeterministicScreen(opts)       — single-arg form per 07-02-PLAN Task 2
+// Both forms accept opts = { artifact, baseline, businessContext, cwd? }.
+function runDeterministicScreen(...args) {
+  let cwd, artifact, baseline, businessContext;
+  if (args.length === 1) {
+    const o = args[0] || {};
+    artifact = o.artifact;
+    baseline = o.baseline;
+    businessContext = o.businessContext;
+    cwd = o.cwd || process.cwd();
+  } else {
+    cwd = args[0];
+    const o = args[1] || {};
+    artifact = o.artifact;
+    baseline = o.baseline;
+    businessContext = o.businessContext;
+  }
+
   const findings = [];
-  const korea = detectKoreaSignalFromConfig(cwd);
+  // Korea signal preference: businessContext.region trumps state-file detection.
+  // Plan-01 callers pass cwd-only; Plan-02 callers pass businessContext directly.
+  let korea;
+  if (businessContext && typeof businessContext.region === 'string') {
+    korea = businessContext.region === 'kr';
+  } else {
+    korea = detectKoreaSignalFromConfig(cwd);
+  }
   const ctx = businessContext || buildBusinessContext({ cwd });
   const packs = Array.isArray(ctx.compliance_packs) ? ctx.compliance_packs : [];
+  const businessModel = typeof ctx.business_model === 'string' ? ctx.business_model : null;
   const artifactContent = fs.readFileSync(artifact, 'utf-8');
 
   // Screen (a): Pack-applicability check.
@@ -107,7 +140,7 @@ function runDeterministicScreen(cwd, { artifact, baseline, businessContext }) {
       severity: 'nice-to-have',
       location: 'baseline',
       description: korea
-        ? '적용 가능한 compliance pack이 선언되지 않았습니다 — pass-through 모드로 게이트가 실행되었습니다.'
+        ? '적용 가능한 compliance pack이 선언되지 않았습니다 — pass-through 모드로 게이트가 실행되었습니다 (no applicable compliance packs).'
         : 'No applicable compliance packs declared; gate ran in pass-through mode.',
     };
     return {
@@ -127,10 +160,38 @@ function runDeterministicScreen(cwd, { artifact, baseline, businessContext }) {
   // When packs include PIPA AND artifact mentions personal-data terms AND artifact
   // lacks CPO/consent/breach-notification evidence → blocking finding,
   // short-circuit to FINDINGS-BLOCKING.
+  //
+  // FALSE-POSITIVE GUARD (Risk Notes / Plan 07-02 Task 2 Test 3): if artifact
+  // contains an explicit personal-data DENIAL pattern (e.g., "No PII collected",
+  // "PII-free", "개인정보 미수집") AND the business_model is non-consumer
+  // (enterprise / b2b), the screen does NOT short-circuit — it lets the LLM
+  // pass adjudicate. This prevents CEO-liability credibility-gradient
+  // degradation when a B2B SaaS infra artifact merely uses "PII" to declare
+  // its absence.
   if (packs.includes('PIPA')) {
+    // Personal-data POSITIVE signals — broadened to require contextual usage,
+    // not just lexical presence. "PII" alone matches; we then check denial.
     const personalDataRe = /(PII|personal information|customer data|biometric|location data|sensitive data|개인정보|위치정보|민감정보)/i;
     const evidenceRe = /(CPO|개인정보보호책임자|breach notification|침해 통지|consent|동의)/i;
-    if (personalDataRe.test(artifactContent) && !evidenceRe.test(artifactContent)) {
+    // Denial patterns: explicit declarations that the artifact's system does
+    // NOT process the regulated category. Catches "No PII", "PII-free",
+    // "no personal data", "no PII collected", "개인정보 없음", "개인정보 미수집".
+    const denialRe = /\b(no PII\b|PII-free\b|no personal data\b|no PII collected\b|does not collect PII\b|does not process personal data\b|no personally identifiable information\b)|개인정보(?:\s+)?(?:없음|미수집|수집하지\s*않)/i;
+    const isNonConsumerBM = businessModel === 'enterprise' || businessModel === 'b2b';
+
+    const personalDataMatch = personalDataRe.test(artifactContent);
+    const evidenceMatch = evidenceRe.test(artifactContent);
+    const denialMatch = denialRe.test(artifactContent);
+
+    // Suppress Screen (b) blocking when:
+    //   - artifact has explicit denial pattern AND business_model is non-consumer, OR
+    //   - artifact has explicit denial pattern AND has no consumer-positive signals
+    //     beyond the PII keyword itself.
+    const consumerPositiveRe = /(결제|customer signup|user registration|회원가입|consumer|end[-\s]?user data|subscriber|회원)/i;
+    const hasConsumerPositive = consumerPositiveRe.test(artifactContent);
+    const suppressByDenial = denialMatch && (isNonConsumerBM || !hasConsumerPositive);
+
+    if (personalDataMatch && !evidenceMatch && !suppressByDenial) {
       const pipaFinding = {
         severity: 'blocking',
         location: `${path.basename(artifact)}:body`,
@@ -168,7 +229,7 @@ function runDeterministicScreen(cwd, { artifact, baseline, businessContext }) {
       severity: 'material',
       location: hit.location,
       description: korea
-        ? `금지 표현 감지 — 명확한 findings 언어로 다시 써주세요: '${hit.token}'`
+        ? `금지 표현 감지 — 명확한 findings 언어로 다시 써주세요 (forbidden vocabulary): '${hit.token}'`
         : `Forbidden vocabulary detected — rewrite with findings language: '${hit.token}'`,
     });
   }
