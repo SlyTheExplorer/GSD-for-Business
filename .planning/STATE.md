@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 6 context gathered (interactive, 11 decisions D-01..D-11)
-last_updated: "2026-04-24T06:05:18.293Z"
+stopped_at: Phase 7 context gathered (resumed checkpoint, 15 decisions D-01..D-15 across A/B/C/D)
+last_updated: "2026-04-25T12:27:53.025Z"
 last_activity: 2026-04-24
 progress:
   total_phases: 9
@@ -103,6 +103,6 @@ Items acknowledged and carried forward for resolution in later phases:
 
 ## Session Continuity
 
-Last session: 2026-04-24T02:38:21.417Z
-Stopped at: Phase 6 context gathered (interactive, 11 decisions D-01..D-11)
-Resume file: .planning/phases/06-bidirectional-foundation-phase-1-2-return-stack/06-CONTEXT.md
+Last session: --stopped-at
+Stopped at: Phase 7 context gathered (resumed checkpoint, 15 decisions D-01..D-15 across A/B/C/D)
+Resume file: --resume-file
