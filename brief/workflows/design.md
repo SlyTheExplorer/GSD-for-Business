@@ -365,7 +365,7 @@ Load-bearing citations:
   - 07-RESEARCH.md (ALIGN+AUDIENCE precedent inherited; COMPLIANCE same shape)
 
 Structural test (Plan 07-08 canary):
-  ! grep -rE "brief-design|design\.md|brief_design|compliance|add-workstream" hooks/ 2>/dev/null
+  ! grep -rE "brief/workflows/design|brief-workstream-designer|brief/workflows/add-workstream|agents/brief-compliance-checker" hooks/ 2>/dev/null
   MUST return exit 0 (no hook file references this workflow, the COMPLIANCE
   gate, or the add-workstream surface).
 </no_hooks_assertion>
