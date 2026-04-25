@@ -1,0 +1,11 @@
+name: risk
+description: "5-category Risk Register (Technology / Market / Regulatory / Financial / Operational) with likelihood-impact-mitigation-owner-review-date columns, plus Top 5 cross-category prioritized list, plus Quarterly Review Cadence. Cross-references COMPLIANCE workstream output for region:kr / fintech / healthcare regulatory specifics, FINANCIAL for runway / break-even, and OPERATIONS for hiring / tool-stack risk."
+research_prompts:
+  - "What does competitor-landscape and market-sizing research tell us about market risks (entry, retention, growth)?"
+  - "What does regulation-and-compliance research tell us about regulatory risks (region+industry-specific)?"
+  - "What does technology-and-product research tell us about technology and operational risks?"
+design_prompts:
+  - file:design-prompts.md
+output_artifact_template: templates/artifact.md
+gates_required: [align, audience, compliance]
+depends_on: [business-model-canvas]
