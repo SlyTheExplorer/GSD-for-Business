@@ -811,23 +811,21 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
         completed = completed.map(resolveSlug);
 
         try {
-          const specs = loadWorkstreams(cwd);
-          // Derivation: first workstream in spec sort order where (a) not in
-          // completed AND (b) every dep is in completed. specs come pre-sorted
-          // alphabetically by dir name from loadWorkstreams; the soft-order
-          // fallback is depends_on satisfaction.
-          const completedSet = new Set(completed);
-          let candidate = null;
-          for (const spec of specs) {
-            if (completedSet.has(spec.slug)) continue;
-            const deps = Array.isArray(spec.depends_on) ? spec.depends_on : [];
-            const depsMet = deps.every((d) => completedSet.has(d));
-            if (depsMet) {
-              candidate = spec.slug;
-              break;
-            }
-          }
-          core.output({ recommended_next: candidate }, raw);
+          // Phase 7 D-07 soft-order delegation: defer to status.cjs
+          // computeRecommendedNext for the canonical PHASE_7_SOFT_ORDER walk.
+          // This keeps the workflow handoff (design.md Step 7) and /brief-status
+          // dashboard line in lock-step — both surfaces share the same recommendation
+          // semantics. The dispatcher previously used a pure alphabetical
+          // loadWorkstreams walk which surfaced the `_example` fixture as a
+          // recommendation; computeRecommendedNext skips `_example` and respects
+          // the canonical 9-workstream order.
+          const { computeRecommendedNext } = require('./lib/status.cjs');
+          const candidate = computeRecommendedNext(cwd, { workstreams_completed: completed });
+          // computeRecommendedNext returns the literal sentinel '—' when no
+          // candidate remains (all completed). Normalize to null for dispatcher
+          // contract callers (workflow's `recommended_next is null` branch).
+          const recommended = candidate === '—' ? null : candidate;
+          core.output({ recommended_next: recommended }, raw);
         } catch (err) {
           // Per contract: NEVER throw — emit null with reason.
           core.output({ recommended_next: null, reason: err.message }, raw);
