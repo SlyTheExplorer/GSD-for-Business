@@ -1,0 +1,11 @@
+name: tech-arch
+description: "High-level Technology Architecture sketch (component map, data flow, build sequence) suitable as PRD INPUT for an engineer to expand. Explicitly NOT detailed design — no interface specs, no protocol details, no schema columns, no code structure. Boundary is high-level: this artifact is what a founder shares with the engineering lead BEFORE PRD authoring; the engineering team takes it from here. v2 may add /brief-design tech-arch-detailed for sub-workstream depth (deferred). Marty Cagan SVPG Experience-vs-Platform team topology informs Component Responsibilities ownership column."
+research_prompts:
+  - "What does technology-and-product research tell us about platform options (mobile / web / hybrid / native) and integration patterns for this category?"
+  - "What does competitor-landscape tell us about technology choices in similar products (build vs buy patterns)?"
+  - "What does customer-research tell us about non-functional requirements (uptime expectations, data residency, regional latency)?"
+design_prompts:
+  - file:design-prompts.md
+output_artifact_template: templates/artifact.md
+gates_required: [align, audience, compliance]
+depends_on: [business-model-canvas, go-to-market]
