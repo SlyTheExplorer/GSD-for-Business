@@ -1,0 +1,11 @@
+name: business-model-canvas
+description: "9-block Strategyzer Business Model Canvas. Maps how the business creates, delivers, and captures value across customer segments, value propositions, channels, customer relationships, revenue streams, key resources, key activities, key partners, and cost structure."
+research_prompts:
+  - "What does customer-research, market-sizing, and competitor-landscape research tell us about who the customer is and what they need?"
+  - "What does pricing-benchmarks research tell us about revenue model options?"
+  - "What does distribution-channels research tell us about channel options?"
+design_prompts:
+  - file:design-prompts.md
+output_artifact_template: templates/artifact.md
+gates_required: [align, audience, compliance]
+depends_on: []

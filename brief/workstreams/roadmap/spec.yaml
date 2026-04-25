@@ -1,0 +1,11 @@
+name: roadmap
+description: "Phased business roadmap with 4 horizons (Now 0-90 / Near 90-180 / Mid 180-365 / Far 365+) plus Critical Path, Risks, and Assumptions sections. CRITICAL: distinct from BRIEF tool's .planning/ROADMAP.md (which is BRIEF's own build plan); this artifact is the user's BUSINESS roadmap, owned by the founder/operator team."
+research_prompts:
+  - "What does customer-research and market-sizing tell us about milestone sequencing and phase gates?"
+  - "What does competitor-landscape tell us about competitive timing pressure (must-ship-by dates)?"
+  - "What does the BMC and GTM tell us about the dependency chain — which milestones gate downstream work?"
+design_prompts:
+  - file:design-prompts.md
+output_artifact_template: templates/artifact.md
+gates_required: [align, audience, compliance]
+depends_on: [business-model-canvas, go-to-market]

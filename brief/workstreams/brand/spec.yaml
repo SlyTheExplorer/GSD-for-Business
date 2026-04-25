@@ -1,0 +1,11 @@
+name: brand
+description: "Brand strategy artifact covering Voice (3-5 attributes), Tone Matrix (voice + context), Messaging Framework (3-5 pillars + proof points), and Positioning Statement. Korean variant adds 존댓말 / honorific guard, idiom-substitution awareness, and pitch-order convention for Korean investor audiences."
+research_prompts:
+  - "What does customer-research and competitor-landscape tell us about how the audience perceives the category and the dominant brand voices in it?"
+  - "What does cultural-context research (especially region:kr honorifics + idiom expectations) tell us about voice / tone constraints?"
+  - "What does the BMC and GTM tell us about positioning differentiator and audience tone?"
+design_prompts:
+  - file:design-prompts.md
+output_artifact_template: templates/artifact.md
+gates_required: [align, audience, compliance]
+depends_on: [business-model-canvas, go-to-market]
