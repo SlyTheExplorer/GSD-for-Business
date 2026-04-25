@@ -1031,21 +1031,28 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
           lines.push(
             `output_artifact_template: ${spec.output_artifact_template || 'templates/artifact.md'}`,
           );
-          // gates_required (D-10 default — we lock the literal here defensively)
+          // gates_required (D-10 default — we lock the literal here defensively).
+          // Values are constrained canonical slugs (validated enum), so unquoted
+          // emission is YAML-safe AND the locked-literal test asserts this exact
+          // unquoted format (tests/brief-add-workstream-gates.test.cjs:108).
           const gates = Array.isArray(spec.gates_required) && spec.gates_required.length > 0
             ? spec.gates_required
             : ['align', 'audience', 'compliance'];
           lines.push(`gates_required: [${gates.join(', ')}]`);
-          // depends_on
+          // depends_on — values are constrained canonical workstream slugs.
           const deps = Array.isArray(spec.depends_on) ? spec.depends_on : [];
           lines.push(`depends_on: [${deps.join(', ')}]`);
           // Optional extends_workstream (D-11 fork)
           if (spec.extends_workstream && typeof spec.extends_workstream === 'string') {
             lines.push(`extends_workstream: ${spec.extends_workstream}`);
           }
-          // Optional compliance_packs (Q4 advisory)
+          // Optional compliance_packs (Q4 advisory). Per-element JSON.stringify
+          // ensures YAML-safe quoted strings — the workflow Q4 "Other" branch
+          // (add-workstream.md Step 3) can flow free-form user text into this
+          // array (e.g. "DSL, eIDAS" or "GDPR Art. 5(1)(e)") which would break
+          // the next yaml-mini.cjs parseYamlDocument round-trip if unquoted (WR-03).
           if (Array.isArray(spec.compliance_packs) && spec.compliance_packs.length > 0) {
-            lines.push(`compliance_packs: [${spec.compliance_packs.join(', ')}]`);
+            lines.push(`compliance_packs: [${spec.compliance_packs.map((p) => JSON.stringify(p)).join(', ')}]`);
           }
           return lines.join('\n') + '\n';
         }
