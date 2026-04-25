@@ -711,6 +711,137 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
       break;
     }
 
+    case 'design': {
+      // Plan 07-03 Task 1 — /brief-design orchestrator helper dispatcher.
+      // Read-only subcommands consumed by brief/workflows/design.md:
+      //   design list                          — emit JSON array of all workstream slugs
+      //   design get-workstream --slug <name>  — emit spec JSON; non-zero on unknown slug
+      //   design recommended-next --completed "<csv>" — derive next-eligible slug per
+      //                                                soft-order (depends_on subset)
+      // Aliases (canonical → full slug) per RESOLVED Open Question #2:
+      //   BMC → business-model-canvas, GTM → go-to-market, FIN → financial,
+      //   OPS → operations, COMP → compliance, ROAD → roadmap, BRAND → brand,
+      //   RISK → risk, TECH → tech-arch
+      // NEVER throws to caller — all error paths emit JSON or call core.error.
+      const { loadWorkstreams } = require('./lib/workstream-loader.cjs');
+      const designSubcommand = args[1];
+
+      // Slug-alias map (RESOLVED Open Question #2 in 07-RESEARCH.md). The
+      // dispatcher resolves aliases case-insensitively before calling the
+      // loader; the loader's slugs are dir-name lowercase-dash-separated.
+      const SLUG_ALIASES = {
+        bmc: 'business-model-canvas',
+        gtm: 'go-to-market',
+        fin: 'financial',
+        ops: 'operations',
+        comp: 'compliance',
+        road: 'roadmap',
+        brand: 'brand',
+        risk: 'risk',
+        tech: 'tech-arch',
+      };
+
+      function resolveSlug(input) {
+        if (!input) return null;
+        const lower = String(input).toLowerCase();
+        return SLUG_ALIASES[lower] || lower;
+      }
+
+      if (designSubcommand === 'list') {
+        try {
+          const specs = loadWorkstreams(cwd);
+          const slugs = specs.map((s) => s.slug);
+          core.output(slugs, raw);
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      if (designSubcommand === 'get-workstream') {
+        const slugIdx = args.indexOf('--slug');
+        const rawSlug = slugIdx !== -1 ? args[slugIdx + 1] : null;
+        if (!rawSlug) {
+          error('design get-workstream requires --slug <name>');
+          break;
+        }
+        const resolved = resolveSlug(rawSlug);
+        try {
+          const specs = loadWorkstreams(cwd);
+          const match = specs.find((s) => s.slug === resolved);
+          if (!match) {
+            // Emit JSON-shaped error to stdout for the workflow to grep, AND
+            // call core.error to set non-zero exit. core.error writes to
+            // stderr + exits — write the JSON FIRST so the workflow can read
+            // both streams and reach a deterministic decision.
+            process.stdout.write(JSON.stringify({
+              error: `unknown workstream ${rawSlug}`,
+              resolved_slug: resolved,
+              available: specs.map((s) => s.slug),
+            }) + '\n');
+            error(`unknown workstream ${rawSlug}`);
+            break;
+          }
+          core.output(match, raw);
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+
+      if (designSubcommand === 'recommended-next') {
+        const completedIdx = args.indexOf('--completed');
+        const completedRaw = completedIdx !== -1 ? args[completedIdx + 1] : '';
+        // Parse CSV; empty or undefined → []. Tolerate JSON-array form too
+        // (state.brief.workstreams_completed may render as `["bmc","gtm"]`).
+        let completed = [];
+        const trimmed = (completedRaw || '').trim();
+        if (trimmed.startsWith('[')) {
+          try {
+            const parsed = JSON.parse(trimmed);
+            if (Array.isArray(parsed)) completed = parsed.map(String);
+          } catch (_) {
+            completed = [];
+          }
+        } else if (trimmed.length > 0) {
+          completed = trimmed.split(',').map((s) => s.trim()).filter(Boolean);
+        }
+        // Resolve any alias forms in completed list to canonical slugs so
+        // depends_on (which uses canonical slugs) compares correctly.
+        completed = completed.map(resolveSlug);
+
+        try {
+          const specs = loadWorkstreams(cwd);
+          // Derivation: first workstream in spec sort order where (a) not in
+          // completed AND (b) every dep is in completed. specs come pre-sorted
+          // alphabetically by dir name from loadWorkstreams; the soft-order
+          // fallback is depends_on satisfaction.
+          const completedSet = new Set(completed);
+          let candidate = null;
+          for (const spec of specs) {
+            if (completedSet.has(spec.slug)) continue;
+            const deps = Array.isArray(spec.depends_on) ? spec.depends_on : [];
+            const depsMet = deps.every((d) => completedSet.has(d));
+            if (depsMet) {
+              candidate = spec.slug;
+              break;
+            }
+          }
+          core.output({ recommended_next: candidate }, raw);
+        } catch (err) {
+          // Per contract: NEVER throw — emit null with reason.
+          core.output({ recommended_next: null, reason: err.message }, raw);
+        }
+        break;
+      }
+
+      error(
+        `design: unknown subcommand '${designSubcommand}'. ` +
+          'Valid: list, get-workstream, recommended-next',
+      );
+      break;
+    }
+
     case 'gap-detect': {
       // Phase 6 Plan 06-04 — Gap-detect gate dispatcher. Subcommands:
       //   run             — validate-only (agent spawn happens in workflow)
