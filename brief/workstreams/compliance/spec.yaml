@@ -1,0 +1,11 @@
+name: compliance
+description: "Region+industry-aware compliance plan for the user's business. Auto-loads brief/references/compliance/korea/{pipa-2026,isms-p,mydata-2026}.md primers based on state.brief.compliance_packs. Output is a compliance roadmap (Documented obligations addressed / Obligations needing further work / Obligations BRIEF cannot verify) with mandatory legal-counsel disclaimer. DSG-05 — distinct from CC-01 COMPLIANCE checker (which runs on EVERY artifact in EVERY phase as a cross-cutting gate). v1 ships Korea-only; global packs (GDPR/SOC 2/HIPAA/CCPA) deferred to v2 (CC-V2-01) per Phase 7 D-04."
+research_prompts:
+  - "What does customer-research and regulation-and-compliance research tell us about applicable regulations for this business?"
+  - "What does the auto-loaded Korea primer (PIPA / ISMS-P / MyData) say about applicable clauses?"
+  - "What does technology-and-product research tell us about data-flow / security surfaces that map to clause-level obligations?"
+design_prompts:
+  - file:design-prompts.md
+output_artifact_template: templates/artifact.md
+gates_required: [align, audience, compliance]
+depends_on: [business-model-canvas]
