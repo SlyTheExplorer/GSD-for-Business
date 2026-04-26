@@ -45,10 +45,28 @@ AND region: kr). The check is gated by both `options.isKorean === true` AND
 
 - -야 / -지 / -라구요 / -거든요 / -는데요 (반말 endings)
 
-Boundary semantics: regex uses negative lookahead `(?![가-힣])` (Hangul is not
-in JavaScript's `\w` class so `\b` is a no-op for Korean text). The lookahead
-correctly suppresses noun + particle forms (e.g. 아버지가, 아버지는, 아버지를)
-where the suffix is followed by another Hangul.
+Boundary semantics: regex uses positive lookahead `(?=[.!?]|$)` requiring
+the matched suffix to be IMMEDIATELY followed by sentence-terminating
+punctuation (`.`, `!`, `?`) or end-of-string. This is the most reliable
+proxy for "sentence-final 반말" without morphological analysis. Hangul is
+not in JavaScript's `\w` class so `\b` is a no-op for Korean text; the
+positive lookahead on terminator punctuation is what enforces sentence-final
+scoping.
+
+False-positive suppression:
+- Particles (까지, 부터, 마저) mid-sentence: NOT matched (no terminator
+  follows the suffix).
+- Noun + particle forms (아버지가, 아버지는, 아버지를): NOT matched (the
+  지 suffix is followed by another Hangul particle, not a terminator).
+- Edge case: a noun sentence-final without a particle (편지.) still
+  false-positives — grammatically rare in natural Korean prose.
+
+This regex was tightened from `\b` (the original Plan 02 spec) to
+`(?=[.!?]|$)` during Plan 02 GREEN implementation when the Korean exemplar
+text exposed false positives on noun + particle sequences. The original
+spec assumed a negative lookahead `(?![가-힣])` boundary form; that form
+was replaced by the positive-lookahead-on-terminator pattern that ships
+in voice-fit.cjs:54 today (08-REVIEW.md WR-05 documentation correction).
 
 Source: D-D04 honorific guard. Korean cultural context: 반말 in external
 material reads as disrespectful or unprofessional and damages credibility with
