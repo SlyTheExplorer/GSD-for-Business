@@ -196,6 +196,46 @@ Orchestrator BLOCKS until the Task returns. Timeout per BRIEF Task default; on
 timeout, surface a stderr warning and ROUTE the user to manual artifact creation
 under .planning/deliverables/type-b/ (no auto-retry — Pitfall #7).
 
+### Step 3B.2a: Resolve `{{watermark_text}}` placeholder in agent-emitted source (Layer 2 watermark fill)
+
+After the agent writes the artifact at `{{OUT_PATH}}`, the source markdown still
+contains the literal placeholder string `{{watermark_text}}` in two load-bearing
+locations: the Marp `footer:` directive (frontmatter) and the Cover slide
+literal (`> **{{watermark_text}}**`). The placeholder MUST be substituted with
+the resolved per-confidentiality watermark string from Plan 04 export.cjs
+WATERMARKS_EN/WATERMARKS_KO maps BEFORE Step 3B.3 (voice-fit) — otherwise the
+literal `{{watermark_text}}` survives into Marp render and the Layer 2 watermark
+defense (DLV-09) silently breaks (08-REVIEW.md WR-01).
+
+Skip this step for `exec-summary` and `decision-memo` (no Marp, no watermark
+placeholder). Only `internal-deck` and `proposal-deck` carry the placeholder.
+
+```bash
+# Substitute {{watermark_text}} → watermarkFor(confidentiality, language) inline.
+# Mirrors voice-fit's read-modify-write dispatch shape; uses the same Plan 04
+# WATERMARKS_KO/EN single source-of-truth.
+node -e "
+  const fs = require('fs');
+  const { watermarkFor } = require('./brief/bin/lib/export.cjs');
+  const { extractFrontmatter } = require('./brief/bin/lib/frontmatter.cjs');
+  const { buildBusinessContext } = require('./brief/bin/lib/context-inject.cjs');
+  const p = '$OUT_PATH';
+  const content = fs.readFileSync(p, 'utf-8');
+  const fm = extractFrontmatter(content) || {};
+  const conf = (fm.audience && fm.audience.confidentiality)
+    || fm['audience.confidentiality']
+    || 'internal';
+  const lang = buildBusinessContext({ cwd: process.cwd() }).language || 'en';
+  const wm = watermarkFor(conf, lang);
+  fs.writeFileSync(p, content.split('{{watermark_text}}').join(wm));
+"
+```
+
+After substitution, the artifact source has its watermark text resolved per the
+4 confidentiality enums × 2 languages = 8 entries map. The export.md workflow
+performs an idempotent re-substitution at render time as a defense-in-depth
+guard against post-deliver edits that re-introduce the placeholder.
+
 ### Step 3B.3: voice-fit dispatch (banned-words density check)
 
 After the agent writes the artifact at `{{OUT_PATH}}`, invoke:

@@ -265,6 +265,35 @@ the gate verdict; the artifact still renders).
 
 ## Step 7: Marp render via brief-tools export render
 
+### Step 7a: Defensive `{{watermark_text}}` re-substitution (idempotent)
+
+Before invoking Marp render, defensively re-resolve `{{watermark_text}}` in the
+source markdown so post-deliver edits that re-introduce the literal placeholder
+do NOT survive into the rendered PPTX cover slide (Layer 2 watermark; 08-REVIEW
+WR-01). The deliver.md Step 3B.2a already filled the placeholder at synthesis
+time; this step is a defense-in-depth idempotent re-substitution.
+
+```bash
+node -e "
+  const fs = require('fs');
+  const { watermarkFor } = require('./brief/bin/lib/export.cjs');
+  const { extractFrontmatter } = require('./brief/bin/lib/frontmatter.cjs');
+  const { buildBusinessContext } = require('./brief/bin/lib/context-inject.cjs');
+  const p = '$RESOLVED_PATH';
+  const content = fs.readFileSync(p, 'utf-8');
+  if (content.indexOf('{{watermark_text}}') === -1) return;
+  const fm = extractFrontmatter(content) || {};
+  const conf = (fm.audience && fm.audience.confidentiality)
+    || fm['audience.confidentiality']
+    || 'internal';
+  const lang = buildBusinessContext({ cwd: process.cwd() }).language || 'en';
+  const wm = watermarkFor(conf, lang);
+  fs.writeFileSync(p, content.split('{{watermark_text}}').join(wm));
+"
+```
+
+### Step 7b: Marp render
+
 Invoke:
 
 ```bash
