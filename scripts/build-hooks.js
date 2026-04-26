@@ -27,7 +27,8 @@ const HOOKS_TO_COPY = [
   'brief-session-state.sh',
   'brief-validate-commit.sh',
   'brief-validate-provenance.sh',
-  'brief-phase-boundary.sh'
+  'brief-phase-boundary.sh',
+  'brief-validate-frontmatter.sh'
 ];
 
 /**
