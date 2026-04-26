@@ -51,15 +51,14 @@ created: 2026-04-26
 > Test infrastructure stubs that MUST exist before any execution wave begins. Planner enumerates per RESEARCH.md §Wave 0.
 
 - [ ] `tests/brief-deliver-type-a.test.cjs` — Type A 자동 합성 fixture (PRODUCT-BRIEF + SERVICE-POLICY[B2B/B2C] + HIGH-LEVEL-SPEC + FEATURE-MAP)
-- [ ] `tests/brief-deliver-type-b-marp.test.cjs` — Marp invocation smoke (npx --yes @marp-team/marp-cli@4.3.1; PPTX/PDF/HTML fallback ladder)
 - [ ] `tests/brief-export-confirm.test.cjs` — 1단계 confirm + AUDIENCE/COMPLIANCE 재실행 + force-accept audit trail
 - [ ] `tests/brief-export-leakage-diff.test.cjs` — TF-IDF cross-artifact 키워드 diff (intentional-leak fixture vs incidental-overlap fixture)
 - [ ] `tests/brief-voice-fit-banned-words.test.cjs` — banned-words density (16 영어 + 8 한국어 seed) + 1회 regenerate dispatch
 - [ ] `tests/brief-validate-frontmatter-hook.test.cjs` — CC-03 hook 결측 frontmatter 차단 + opt-in `hooks.community: true` gate + path-pattern filter
-- [ ] `tests/brief-deliver-filename-watermark.test.cjs` — 파일명 audience encoding `{name}.{confidentiality}.{ext}` + Marp directive footer + literal first-slide content (ko/en)
+- [ ] `tests/brief-export-filename-watermark.test.cjs` — 파일명 audience encoding `{name}.{confidentiality}.{ext}` + Marp directive footer + literal first-slide content (ko/en)
 - [ ] `tests/brief-deliver-canary-e2e.test.cjs` — Korea-first B2C fintech canary E2E (`/brief-deliver --type-a` + `/brief-deliver --type-b internal-deck` + `/brief-deliver --type-b proposal-deck` + `/brief-export` 1단계 + leakage diff trigger 검증)
 
-*Wave 0 fixtures total: 8 test files (per RESEARCH.md §Wave 0 enumeration). Planner refines exact path/content per task.*
+*Wave 0 fixtures total: 7 test files (per RESEARCH.md §Wave 0 enumeration; Marp invocation is mocked inside `tests/brief-export-confirm.test.cjs` Plan 04 — no separate Marp smoke fixture). Planner refines exact path/content per task.*
 
 ---
 
@@ -79,7 +78,7 @@ created: 2026-04-26
 
 - [ ] All tasks have `<automated>` verify or Wave 0 dependencies
 - [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references (8 test fixtures listed above)
+- [ ] Wave 0 covers all MISSING references (7 test fixtures listed above)
 - [ ] No watch-mode flags
 - [ ] Feedback latency < 30s for quick / 5min for full
 - [ ] c8 line coverage ≥ 70% for new lib files (`deliver.cjs`, `export.cjs`, `voice-fit.cjs`, `leakage-diff.cjs`)
