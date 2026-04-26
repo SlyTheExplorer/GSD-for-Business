@@ -16,7 +16,7 @@
  *     - audience_policy:        nested map
  *     - compliance_packs:       array of pack ids (e.g., ["pipa", "isms-p"])
  *
- *   Phase 7 D-13/D-21 (this phase):
+ *   Phase 7 D-13/D-21:
  *     - last_design_workstream: scalar slug string — set by /brief-design on
  *                                workstream completion
  *     - workstreams_completed:  array of slug strings — append on workstream
@@ -24,6 +24,15 @@
  *                                in status.cjs
  *     - financial_drivers:      path string OR inline driver map (per A7) —
  *                                set by /brief-design financial Step 4 Q&A
+ *
+ *   Phase 8 D-21 (this phase) — see PHASE_8_BRIEF_FIELDS constant below:
+ *     - deliverable_index:      map of {artifact-key: {synthesized_at, exported_at}}
+ *                                — set by /brief-deliver and /brief-export
+ *     - last_export_at:         ISO timestamp — set by /brief-export on success
+ *
+ *   Note: state.brief.last_gate_results.audience.override is supported by the
+ *   Phase 4 D-07 substrate via the nested-map preserve-wholesale write path; no
+ *   state.cjs change is required for the Phase 8 force-accept audit trail.
  */
 
 const fs = require('fs');
@@ -40,6 +49,17 @@ const PHASE_7_BRIEF_FIELDS = Object.freeze([
   'last_design_workstream',
   'workstreams_completed',
   'financial_drivers',
+]);
+
+// Phase 8 D-21 — schema-documentation allowlist for state.brief.* fields
+// added in this phase. The preserve-wholesale write path
+// (syncStateFrontmatter + cmdStateJson) does not validate against this list
+// — it's enforced by convention and the round-trip test in
+// tests/brief-export-force-accept-audit.test.cjs (Plan 08-04) and the canary
+// E2E test in tests/brief-deliver-canary.test.cjs (Plan 08-08+).
+const PHASE_8_BRIEF_FIELDS = Object.freeze([
+  'deliverable_index',     // map of deliverable-name → last_synthesized_at + last_export_at
+  'last_export_at',        // ISO timestamp of most recent /brief-export invocation
 ]);
 
 // Cache disk scan results from buildStateFrontmatter per cwd per process (#1967).
@@ -1666,4 +1686,5 @@ module.exports = {
   cmdSignalWaiting,
   cmdSignalResume,
   PHASE_7_BRIEF_FIELDS,
+  PHASE_8_BRIEF_FIELDS,
 };
