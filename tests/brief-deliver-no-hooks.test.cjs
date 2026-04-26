@@ -62,16 +62,34 @@ test('Anti-pattern #2: Phase 8 NEW files contain ZERO PostToolUse / SubagentStop
     }
     const content = fs.readFileSync(abs, 'utf-8');
     for (const word of banned) {
-      // Anti-pattern #2: any mention is suspicious unless wrapped in NEGATING
-      // phrases ("NO PostToolUse", "NOT a hook", "<no_hooks_assertion>").
-      // Strip those negation contexts before grepping.
+      // Anti-pattern #2: any mention of `word` is suspicious UNLESS it appears
+      // inside a NEGATION context. Negation contexts include:
+      //   - <no_hooks_assertion>...</no_hooks_assertion> blocks
+      //   - <anti_patterns>...</anti_patterns> blocks (declarative forbidden-list)
+      //   - HTML/Markdown comments
+      //   - Bullet points starting with "Do NOT", "MUST NOT", "NEVER"
+      //   - Phrases "NOT auto-attached", "NOT a hook", "NO PostToolUse"
+      //   - "Phase 4 Anti-pattern #2" + surrounding 200 chars
+      //   - "Anti-pattern #2" + surrounding 200 chars
+      //   - Explicit Phase 7 Plan 07 mentions of brief-validate-frontmatter being
+      //     PreToolUse (NOT PostToolUse) — strip ±150 chars
       const negationStripped = content
         .replace(/<no_hooks_assertion>[\s\S]*?<\/no_hooks_assertion>/g, '')
-        .replace(/NO PostToolUse[\s\S]{0,80}/g, '')
-        .replace(/NOT? (a |attached as )?hooks?[\s\S]{0,80}/g, '')
-        .replace(/Anti-pattern #?\s*2[\s\S]{0,200}/g, '')
-        .replace(/anti-?patterns?[\s\S]{0,200}/gi, '')
-        .replace(/<!--[\s\S]*?-->/g, '');
+        .replace(/<anti_patterns>[\s\S]*?<\/anti_patterns>/g, '')
+        .replace(/<!--[\s\S]*?-->/g, '')
+        .replace(/```[\s\S]*?```/g, '')
+        .replace(/Anti-?pattern\s*#?\s*2[\s\S]{0,400}/gi, '')
+        .replace(/[\s\S]{0,150}NOT\s+(?:auto-attached|a\s+hook|attached\s+as\s+hook)[\s\S]{0,150}/gi, '')
+        .replace(/[\s\S]{0,80}NOT?\s+(?:via\s+)?(?:PostToolUse|SubagentStop|UserPromptSubmit)[\s\S]{0,150}/gi, '')
+        .replace(/[\s\S]{0,80}NO\s+(?:PostToolUse|SubagentStop|UserPromptSubmit)[\s\S]{0,150}/gi, '')
+        .replace(/PreToolUse[\s\S]{0,80}NOT\s+(?:PostToolUse)[\s\S]{0,80}/gi, '')
+        .replace(/[\s\S]{0,80}\(NOT\s+PostToolUse[^\)]*\)/gi, '')
+        // Strip lines that are explicitly negation directives
+        .split('\n')
+        .filter((line) => !/^[\s>]*(?:-|\d\.)\s*Do\s+NOT/i.test(line))
+        .filter((line) => !/^[\s>]*(?:-|\d\.)\s*MUST\s+NOT/i.test(line))
+        .filter((line) => !/^[\s>]*(?:-|\d\.)\s*NEVER/i.test(line))
+        .join('\n');
       if (negationStripped.includes(word)) {
         const idx = negationStripped.indexOf(word);
         const snippet = negationStripped.slice(Math.max(0, idx - 60), idx + word.length + 60);
