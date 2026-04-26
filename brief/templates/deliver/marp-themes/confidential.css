@@ -1,0 +1,52 @@
+/* @theme brief-confidential
+ * CONFIDENTIAL banner overlay — applied IN ADDITION to default.css for confidential decks.
+ * Highlights confidentiality marking on every slide (footer + cover blockquote).
+ */
+
+:root {
+  --brief-warning: #dc2626;
+  --brief-warning-bg: #fef2f2;
+  --brief-warning-text: #ffffff;
+}
+
+@import 'default';
+
+section {
+  /* inherit default sizing */
+  position: relative;
+}
+
+footer {
+  background: var(--brief-warning-bg);
+  color: var(--brief-warning);
+  font-weight: 700;
+  border-top: 3px solid var(--brief-warning);
+  padding: 8px 16px;
+  text-align: center;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+section.cover blockquote,
+section:first-of-type blockquote {
+  background: var(--brief-warning);
+  color: var(--brief-warning-text);
+  padding: 16px 24px;
+  border-radius: 4px;
+  display: inline-block;
+  border-left: none;
+  font-weight: 700;
+}
+
+/* Top-right corner watermark on every slide for paranoid confidentiality */
+section::before {
+  content: 'CONFIDENTIAL';
+  position: absolute;
+  top: 12px;
+  right: 24px;
+  color: var(--brief-warning);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+}

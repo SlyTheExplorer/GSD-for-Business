@@ -1,0 +1,71 @@
+/* @theme brief-partner
+ * Marp theme for BRIEF PROPOSAL deck — outward-facing partner deck palette.
+ * More polished, brand-forward; suitable for external partner audiences.
+ */
+
+:root {
+  --brief-primary: #0f766e;       /* teal-700 — outward brand */
+  --brief-accent: #14b8a6;        /* teal-500 */
+  --brief-text: #042f2e;          /* deep teal text */
+  --brief-muted: #64748b;
+  --brief-bg: #f8fafc;            /* slate-50 — subtle warmth */
+  --brief-warning: #ea580c;       /* orange-600 — partner banner */
+}
+
+@import 'default';
+
+section {
+  background: var(--brief-bg);
+  color: var(--brief-text);
+  font-family: 'Inter', sans-serif;
+  font-size: 28px;
+  padding: 60px;
+}
+
+h1 {
+  color: var(--brief-primary);
+  font-weight: 700;
+  font-size: 48px;
+  margin-bottom: 32px;
+}
+
+h2 {
+  color: var(--brief-primary);
+  font-weight: 700;
+  font-size: 36px;
+  border-bottom: 3px solid var(--brief-accent);
+  padding-bottom: 12px;
+  margin-bottom: 24px;
+}
+
+h3 {
+  color: var(--brief-primary);
+  font-weight: 600;
+  font-size: 28px;
+}
+
+blockquote {
+  color: var(--brief-warning);
+  font-weight: 600;
+  font-style: normal;
+  border-left: 4px solid var(--brief-warning);
+  padding: 12px 16px;
+  background: rgba(234, 88, 12, 0.05);
+  margin: 16px 0;
+}
+
+a {
+  color: var(--brief-accent);
+  text-decoration: underline;
+}
+
+footer {
+  color: var(--brief-muted);
+  font-size: 14px;
+  text-align: center;
+  font-weight: 600;
+}
+
+ul, ol {
+  line-height: 1.6;
+}
