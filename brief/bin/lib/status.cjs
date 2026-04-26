@@ -102,8 +102,34 @@ function formatGate(gate) {
   // into plain ALIGNED display. D-20 serializer may round-trip boolean true
   // as string 'true' (Pitfall #5) — treat both as equivalent here.
   const override = gate.override === true || gate.override === 'true';
-  const suffix = override ? ' (override applied)' : '';
-  return `${decision} (${findings} findings)${suffix}`;
+  if (!override) return `${decision} (${findings} findings)`;
+
+  // Phase 8 Plan 08-08 Task 3 — Type B force-accept visibility extension
+  // (Pitfall #1 mitigation). Display override_count + truncated override_reason
+  // alongside the override flag so the operator sees how often the force-accept
+  // path has been exercised + the most recent justification. The fields are
+  // populated by audience.commitAudienceVerdict (Phase 4 D-07 substrate) +
+  // export.cjs Step 2/3 force-accept paths.
+  //
+  // Field expectations from STATE.md state.brief.last_gate_results.<gate>:
+  //   override         — boolean true (Pitfall #5: may be string 'true')
+  //   override_count   — integer (Phase 8 — Plan 04 increments per export run-id)
+  //                       Falls back to 1 when absent so single-override cases
+  //                       still surface a meaningful count.
+  //   override_reason  — sanitized free-text from the user (Plan 04 +
+  //                       security.cjs sanitizeForPrompt). Truncated to ~80
+  //                       chars in the display surface.
+  const overrideCount = (typeof gate.override_count === 'number' && gate.override_count > 0)
+    ? gate.override_count
+    : 1;
+  const rawReason = (typeof gate.override_reason === 'string') ? gate.override_reason : '';
+  const truncatedReason = rawReason.length > 80
+    ? rawReason.slice(0, 80) + '…'
+    : rawReason;
+  if (!truncatedReason) {
+    return `${decision} (${findings} findings) (override applied; total overrides: ${overrideCount})`;
+  }
+  return `${decision} (${findings} findings) (override applied; total overrides: ${overrideCount}; latest reason: "${truncatedReason}")`;
 }
 
 /**

@@ -16,6 +16,7 @@ BRIEF is a meta-prompting framework for business and product strategy planning, 
 - **Naming**: `gsd-*` → `brief-*` is a one-shot global rename. No transitional period.
 - **Testing**: `node:test` (not Jest), c8 coverage, cross-platform (Mac/Windows/Linux) — same as GSD.
 - **Distribution**: npm package, similar `bin/install.js` pattern. Likely package name `brief-cc` or similar.
+- **Marp environment dependency** (Phase 8 DLV-05/06/08): User producing Type B Marp decks via `/brief-export` needs Chrome OR Edge OR Firefox installed (puppeteer-core fallback chain). LibreOffice Impress is OPTIONAL for editable PPTX. See `brief/references/marp-environment.md` for the full environment reference + sandbox notes + Pandoc fallback (manual escape hatch only). First `npx --yes @marp-team/marp-cli@4.3.1` invocation downloads marp-cli + puppeteer-core (~50MB, 30-60s); cached thereafter (~2-5s). The `--local-file-access` flag is NEVER passed (Pitfall 8 mitigation per Plan 04 export.cjs).
 <!-- BRIEF:project-end -->
 
 <!-- BRIEF:stack-start source:research/STACK.md -->
@@ -198,7 +199,19 @@ Conventions not yet established. Will populate as patterns emerge during develop
 <!-- BRIEF:architecture-start source:ARCHITECTURE.md -->
 ## Architecture
 
-Architecture not yet mapped. Follow existing patterns found in the codebase.
+Architecture not yet mapped. Follow existing patterns found in the codebase. See `docs/ARCHITECTURE.md` for the canonical system architecture documentation.
+
+**Phase 8 architectural responsibility additions** (DELIVER stage — Type A + Type B + Audience Enforcement + Marp):
+- 4 NEW lib modules under `brief/bin/lib/`: `deliver.cjs` (Plan 01 Type A synthesis), `voice-fit.cjs` (Plan 02 banned-words density + Korean honorific guard), `leakage-diff.cjs` (Plan 03 Salton-1988 TF-IDF cross-artifact diff), `export.cjs` (Plan 04 7-step orchestration with Marp render via `npx --yes @marp-team/marp-cli@4.3.1`).
+- 1 NEW PreToolUse-on-Bash hook: `hooks/brief-validate-frontmatter.sh` (Plan 07 / CC-03 / Layer 4 of 4-layer audience defense). Opt-in via `.planning/config.json hooks.community: true`. Byte-identity inheritance from `brief-validate-provenance.sh`.
+- 8 NEW templates under `brief/templates/deliver/`: 4 Type A (`product-brief.md` / `service-policy.md` / `high-level-spec.md` / `feature-map.md`) + 4 Type B (`internal-deck.md` / `proposal-deck.md` / `exec-summary.md` / `decision-memo.md`).
+- 3 NEW Marp CSS themes under `brief/templates/deliver/marp-themes/`: `default.css`, `partner.css`, `confidential.css`.
+- 2 NEW agents: `agents/brief-deliver-type-a.md` (Plan 05 — parameterized by `{{ARTIFACT}}`) + `agents/brief-deliver-type-b.md` (Plan 06 — Type B internal/proposal/exec/decision artifact set with embedded ban-list + concreteness + Korean honorific rules).
+- 2 NEW commands: `commands/brief/deliver.md` + `commands/brief/export.md` (Plan 08 — NET +2 user-facing slash commands).
+- 2 NEW workflows: `brief/workflows/deliver.md` + `brief/workflows/export.md` (Plan 08 — orchestration steps).
+- 4 NEW brief-tools.cjs case dispatchers: `case 'deliver'` / `case 'export'` / `case 'voice-fit'` / `case 'leakage-diff'` (Plan 08 — mirrors `case 'audience'` byte-identity pattern).
+- status.cjs `formatGate` extension: displays Type B force-accept override count + truncated `override_reason` per Pitfall #1 mitigation.
+- 2 NEW reference docs: `brief/references/marp-environment.md` (Plan 07) + `brief/references/voice-fit-vocabulary.md` (Plan 02).
 <!-- BRIEF:architecture-end -->
 
 <!-- BRIEF PHASE 2 / FND-09 — DO NOT REGENERATE. Preserve across CLAUDE.md template rebuilds. -->
@@ -216,7 +229,7 @@ BRIEF enforces a minimal command/skill surface for memorability and to prevent b
 
 **Enforcement:** Documentation-only in Phase 2 (per Phase 2 decision D-07). No pre-commit hook, no automated gate in Phase 2 — that would block planner work mid-stream and is out of scope for the stable-seam phase. The audit + pruning runs in **Phase 9 HRD-02** (v1 launch gate).
 
-**Current state:** As of v1 design (Phase 2 entry, 2026-04), BRIEF inherits 61 renamed `brief-*` commands and 18 renamed agents from GSD. Both counts exceed the cap. The reduction to ≤12 user-facing commands and ≤8 skills is the Phase 9 HRD-02 audit. Subsequent Phases (3-8) MUST NOT add new commands beyond their requirement-mapped set (e.g., Phase 2 adds `+1` with `/brief-status`; Phase 3 adds `/brief-define`; etc.).
+**Current state:** As of Phase 8 completion (2026-04), BRIEF has the inherited 61 renamed `brief-*` commands plus the per-Phase NET additions: Phase 2 +1 (`/brief-status`), Phase 3 +1 (`/brief-define`), Phase 5 +1 (`/brief-discover`), Phase 6 +0 (return-stack pattern; no new command), Phase 7 +2 (`/brief-design`, `/brief-add-workstream`), and Phase 8 +2 (`/brief-deliver`, `/brief-export`). Total user-facing commands = 68; total agents = 18 inherited + Phase 5 brief-domain-researcher (+1) + Phase 6 brief-gap-detector (+1) + Phase 7 brief-workstream-designer (+1) + Phase 8 brief-deliver-type-a (+1) + brief-deliver-type-b (+1) = 23. Both counts still exceed the cap. The reduction to ≤12 user-facing commands and ≤8 skills is the Phase 9 HRD-02 audit. Subsequent Phases (3-8) MUST NOT add new commands beyond their requirement-mapped set; Phase 8 closure honors this discipline (NET +2 for /brief-deliver and /brief-export only — no audience.md, export-audit.md, voice-fit.md, leakage-diff.md, or other helper commands added).
 
 **Scope clarification:** This cap applies to the *user-facing* command surface defined above. It does NOT constrain:
 - Internal `brief/bin/brief-tools.cjs` subcommands (e.g., `brief-tools.cjs state json`, `brief-tools.cjs status`) — these are implementation dispatchers, not user slash commands.
