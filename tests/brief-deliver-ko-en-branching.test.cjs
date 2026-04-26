@@ -90,8 +90,11 @@ test('ko/en 1: synthesizeTypeA on Korea fixture (region: kr) produces voice.lang
   const result = deliver.synthesizeTypeA(cwd, 'product-brief', {});
   assert.ok(result.outPath, 'result.outPath missing');
   const body = fs.readFileSync(result.outPath, 'utf8');
-  assert.match(body, /voice\.languages:\s*\[?\s*ko\s*\]?/, `expected voice.languages contains 'ko' for region: kr; got body excerpt:\n${body.slice(0, 600)}`);
-  assert.doesNotMatch(body, /voice\.languages:\s*\[\s*ko\s*,\s*en\s*\]/, 'must NOT contain en when options.en absent');
+  // BR-02 fix (08-REVIEW.md): voice.languages now NESTED under voice: so the
+  // shared frontmatter parser (frontmatter.cjs:88 — key regex `[a-zA-Z0-9_-]+:`)
+  // can read it. Pattern matches indented `languages: [ko]` line under voice:.
+  assert.match(body, /\n\s+languages:\s*\[?\s*ko\s*\]?/, `expected nested voice.languages contains 'ko' for region: kr; got body excerpt:\n${body.slice(0, 600)}`);
+  assert.doesNotMatch(body, /\n\s+languages:\s*\[\s*ko\s*,\s*en\s*\]/, 'must NOT contain en when options.en absent');
 });
 
 test('ko/en 2: synthesizeTypeA with options.en=true produces voice.languages: [ko, en]', () => {
@@ -99,7 +102,8 @@ test('ko/en 2: synthesizeTypeA with options.en=true produces voice.languages: [k
   const cwd = buildTmpCwd();
   const result = deliver.synthesizeTypeA(cwd, 'product-brief', { en: true });
   const body = fs.readFileSync(result.outPath, 'utf8');
-  assert.match(body, /voice\.languages:\s*\[\s*ko\s*,\s*en\s*\]/, 'expected voice.languages: [ko, en] when options.en=true');
+  // BR-02 fix: nested voice.languages
+  assert.match(body, /\n\s+languages:\s*\[\s*ko\s*,\s*en\s*\]/, 'expected nested voice.languages: [ko, en] when options.en=true');
 });
 
 test('ko/en 3: synthesizeTypeA with config.brief.region=us produces voice.languages: [en] (no ko)', () => {
@@ -107,11 +111,14 @@ test('ko/en 3: synthesizeTypeA with config.brief.region=us produces voice.langua
   const cwd = buildTmpCwd('us');
   const result = deliver.synthesizeTypeA(cwd, 'product-brief', {});
   const body = fs.readFileSync(result.outPath, 'utf8');
-  assert.match(body, /voice\.languages:\s*\[?\s*en\s*\]?/, `expected voice.languages contains en for region: us; got:\n${body.slice(0, 500)}`);
-  assert.doesNotMatch(body, /voice\.languages:\s*\[\s*ko/, 'region: us must NOT include ko');
+  // BR-02 fix: nested voice.languages
+  assert.match(body, /\n\s+languages:\s*\[?\s*en\s*\]?/, `expected nested voice.languages contains en for region: us; got:\n${body.slice(0, 500)}`);
+  assert.doesNotMatch(body, /\n\s+languages:\s*\[\s*ko/, 'region: us must NOT include ko');
 });
 
 test('ko/en 4: Type B template (proposal-deck.md) supports voice.languages frontmatter placeholder', () => {
   const body = fs.readFileSync(path.join(TYPE_B_DIR, 'proposal-deck.md'), 'utf8');
-  assert.match(body, /voice\.languages:\s*\{\{languages\}\}/, 'proposal-deck.md missing voice.languages: {{languages}} placeholder');
+  // BR-02 fix (08-REVIEW.md): voice.languages placeholder is now NESTED under
+  // voice: as `\n  languages: {{languages}}` instead of flat `voice.languages:`.
+  assert.match(body, /\n\s+languages:\s*\{\{languages\}\}/, 'proposal-deck.md missing nested voice.languages: {{languages}} placeholder');
 });

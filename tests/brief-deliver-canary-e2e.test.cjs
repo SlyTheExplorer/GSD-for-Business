@@ -177,8 +177,10 @@ test('canary E2E Flow 1: /brief-deliver --type-a synthesizes product-brief.md an
   const body = fs.readFileSync(result.outPath, 'utf-8');
   // Anchored to OBJECTIVES.md ## Immutable Intent — 페이앱 vision text must appear.
   assert.match(body, /페이앱/, 'product-brief.md body must contain Korea fixture project name');
-  // Frontmatter voice.languages = ['ko'] for Korea fixture.
-  assert.match(body, /voice\.languages.*\[?ko\]?/, 'product-brief.md frontmatter must declare voice.languages with ko');
+  // Frontmatter voice.languages = ['ko'] for Korea fixture — NESTED form per
+  // BR-02 fix (08-REVIEW.md): languages now appears under voice: as
+  // `\n  languages: [ko]`.
+  assert.match(body, /\n\s+languages:\s*\[?ko\]?/, 'product-brief.md frontmatter must declare nested voice.languages with ko');
   // Vocabulary-lock inheritance.
   assertNoBannedVocabulary(body, 'product-brief.md');
 });
@@ -276,4 +278,82 @@ test('canary E2E status: formatGate displays force-accept override count + trunc
   // Task 3 extends status.cjs formatGate so /brief-status surfaces force-accept history.
   const statusSrc = fs.readFileSync(path.resolve(ROOT, 'brief/bin/lib/status.cjs'), 'utf-8');
   assert.match(statusSrc, /override_reason/, 'status.cjs formatGate must reference override_reason field');
+});
+
+// ─── BR-01 + BR-02 regression (08-REVIEW.md fix-c) ───────────────────────
+//
+// The reviewer recommends adding a single canary assertion that would have
+// caught both BR-01 (template frontmatter not stripped — TWO `---` blocks in
+// output) AND BR-02 (flat-dotted frontmatter unreadable by parser → AUDIENCE
+// blocking on every Type A artifact). Use PRODUCTION templates (not stubs) so
+// the test exercises the same template-frontmatter path that triggered BR-01,
+// and call audience.runAudience on the synthesized artifact to assert
+// severity !== 'blocking' (the BR-02 invariant).
+//
+// Setup mirrors the canary cwd but copies the PRODUCTION Type A templates from
+// brief/templates/deliver/type-a/ over the stub templates so synthesizeTypeA
+// reads frontmatter-bearing source.
+
+function setupKoreaCanaryCwdWithProdTemplates() {
+  const cwd = setupKoreaCanaryCwd();
+  const tplSrc = path.resolve(ROOT, 'brief/templates/deliver/type-a');
+  const tplDst = path.join(cwd, 'brief/templates/deliver/type-a');
+  for (const f of fs.readdirSync(tplSrc)) {
+    if (f.endsWith('.md')) fs.copyFileSync(path.join(tplSrc, f), path.join(tplDst, f));
+  }
+  return cwd;
+}
+
+test('canary E2E BR-01 regression: synthesizeTypeA against PRODUCTION templates produces output with EXACTLY ONE leading frontmatter block', () => {
+  const cwd = setupKoreaCanaryCwdWithProdTemplates();
+  const deliver = lazyRequire('brief/bin/lib/deliver.cjs');
+  const result = deliver.synthesizeTypeA(cwd, 'product-brief', {});
+  const content = fs.readFileSync(result.outPath, 'utf-8');
+  // Count frontmatter blocks at the top of the file. After BR-01 fix
+  // (stripFrontmatter on template before INSERT-fill), the synthesized output
+  // has exactly ONE `---...---` block. Before the fix it had TWO (freshly
+  // composed + un-substituted template original).
+  const m = content.match(/^---\r?\n[\s\S]+?\r?\n---/);
+  assert.ok(m, 'synthesized artifact missing leading frontmatter block');
+  const afterFirst = content.slice(m[0].length);
+  // The next `---` line in the body must NOT be at the start of a frontmatter
+  // block — `> ⚠️ Placeholder` divider lines or other content `---` are body.
+  // The strict check: after the first frontmatter block ends, the next
+  // non-whitespace must NOT be a second `---\n` followed by YAML key:value.
+  assert.doesNotMatch(
+    afterFirst,
+    /^\s*---\r?\n[a-zA-Z]/m,
+    'synthesized artifact must NOT contain a second leading frontmatter block (BR-01: template frontmatter leaked into output)'
+  );
+  // Second guarantee: literal `{{voice.tone}}` etc. placeholders MUST NOT
+  // appear anywhere in output (they'd appear if the template's frontmatter
+  // were not stripped).
+  assert.doesNotMatch(content, /\{\{voice\.tone\}\}/, 'BR-01: literal {{voice.tone}} placeholder must not leak into output');
+  assert.doesNotMatch(content, /\{\{ISO-timestamp\}\}/, 'BR-01: literal {{ISO-timestamp}} placeholder must not leak into output');
+  assert.doesNotMatch(content, /\{\{business_model\}\}/, 'BR-01: literal {{business_model}} placeholder must not leak into output');
+});
+
+test('canary E2E BR-02 regression: audience.runAudience on synthesized PRODUCTION-template artifact returns severity !== "blocking" (DRIFTED-frontmatter no longer triggers)', () => {
+  const cwd = setupKoreaCanaryCwdWithProdTemplates();
+  const deliver = lazyRequire('brief/bin/lib/deliver.cjs');
+  const audience = lazyRequire('brief/bin/lib/audience.cjs');
+  const result = deliver.synthesizeTypeA(cwd, 'product-brief', {});
+  // Run AUDIENCE deterministic screen — this is the gate that historically
+  // emitted DRIFTED-frontmatter blocking on every Type A artifact because
+  // flat-dotted frontmatter keys (audience.type:) were silently skipped by
+  // the parser. After BR-02 fix (nested YAML), all 3 mandatory fields parse.
+  const verdict = audience.runAudience(cwd, {
+    artifact: result.outPath,
+    baseline: path.join(cwd, '.planning', 'OBJECTIVES.md'),
+  });
+  assert.notEqual(
+    verdict.severity,
+    'blocking',
+    `BR-02: synthesized Type A artifact must NOT trigger BLOCKING audience verdict (got severity='${verdict.severity}', decision='${verdict.decision}', findings: ${JSON.stringify(verdict.findings)})`
+  );
+  assert.notEqual(
+    verdict.decision,
+    'DRIFTED-frontmatter',
+    `BR-02: synthesized Type A artifact must NOT trigger DRIFTED-frontmatter (got decision='${verdict.decision}')`
+  );
 });

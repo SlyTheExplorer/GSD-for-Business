@@ -238,13 +238,27 @@ function synthesizeTypeA(cwd, artifactKey, options) {
   // Compose frontmatter (Phase 5 D-10 mandatory schema + Phase 8 D-21
   // voice.languages array). audienceDefaults are derived from business_model
   // by buildBusinessContext (Phase 5 D-13/D-14).
+  //
+  // BR-02 fix: emit NESTED YAML structure (audience.{type,confidentiality},
+  // voice.{tone,perspective,languages}, business_context.{model,region}) so the
+  // shared frontmatter parser (frontmatter.cjs:88 — key regex `[a-zA-Z0-9_-]+:`)
+  // can read every field. Flat-dotted keys like `audience.type:` previously
+  // emitted here were silently skipped by the parser (`.` not in key class)
+  // and audience.runAudience read all 3 mandatory fields as undefined →
+  // DRIFTED-frontmatter blocking verdict on every Type A artifact.
   const fm = {
-    'audience.type': 'internal',
-    'audience.confidentiality': 'internal',
-    'voice.tone': ctx.audienceDefaults['voice.tone'],
-    'voice.perspective': ctx.audienceDefaults['voice.perspective'],
-    'business_context.model': ctx.business_model || 'b2b',
-    'business_context.region': ctx.region || '',
+    audience: {
+      type: 'internal',
+      confidentiality: 'internal',
+    },
+    voice: {
+      tone: ctx.audienceDefaults['voice.tone'],
+      perspective: ctx.audienceDefaults['voice.perspective'],
+    },
+    business_context: {
+      model: ctx.business_model || 'b2b',
+      region: ctx.region || '',
+    },
   };
   // voice.languages derivation per Phase 8 D-D03:
   //   ctx.language === 'ko' (Korea fixture):
@@ -254,11 +268,18 @@ function synthesizeTypeA(cwd, artifactKey, options) {
   //     - either → ['en']
   // Order matters: ko branch must run AFTER en branch so ko + --en → ['ko', 'en']
   // (RESEARCH.md Code Example 1 lines 1253-1254 verbatim semantics).
-  if (opts.en || ctx.language === 'en') fm['voice.languages'] = ['en'];
-  if (ctx.language === 'ko') fm['voice.languages'] = opts.en ? ['ko', 'en'] : ['ko'];
+  if (opts.en || ctx.language === 'en') fm.voice.languages = ['en'];
+  if (ctx.language === 'ko') fm.voice.languages = opts.en ? ['ko', 'en'] : ['ko'];
 
   // Fill template by replacing each `<!-- INSERT: {section} -->` placeholder.
-  let body = template;
+  // BR-01 fix: strip the template's own frontmatter BEFORE INSERT-fill so the
+  // synthesized output ends up with EXACTLY ONE frontmatter block (the freshly
+  // composed `fm` above). Without this strip, the template's `---...---`
+  // frontmatter (containing un-substituted placeholders like `{{voice.tone}}`,
+  // `{{ISO-timestamp}}`) was concatenated AFTER the new frontmatter, producing
+  // two consecutive `---` blocks — second one polluted with literal placeholder
+  // strings (BR-01 reproduction in 08-REVIEW.md).
+  let body = stripFrontmatter(template);
   for (const [section, content] of Object.entries(sectionContent)) {
     const placeholder = `<!-- INSERT: ${section} -->`;
     body = body.split(placeholder).join(content);

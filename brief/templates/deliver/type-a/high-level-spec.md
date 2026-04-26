@@ -1,11 +1,14 @@
 ---
-audience.type: internal
-audience.confidentiality: internal
-voice.tone: {{voice.tone}}
-voice.perspective: {{voice.perspective}}
-business_context.model: {{business_model}}
-business_context.region: {{region}}
-voice.languages: {{languages}}
+audience:
+  type: internal
+  confidentiality: internal
+voice:
+  tone: {{voice.tone}}
+  perspective: {{voice.perspective}}
+  languages: {{languages}}
+business_context:
+  model: {{business_model}}
+  region: {{region}}
 deliverable: high-level-spec
 generated_by: brief-deliver-type-a
 generated_at: {{ISO-timestamp}}

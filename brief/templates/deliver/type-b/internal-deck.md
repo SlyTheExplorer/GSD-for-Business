@@ -1,11 +1,14 @@
 ---
-audience.type: internal
-audience.confidentiality: confidential
-voice.tone: formal
-voice.perspective: first-person-plural
-business_context.model: {{business_model}}
-business_context.region: {{region}}
-voice.languages: {{languages}}
+audience:
+  type: internal
+  confidentiality: confidential
+voice:
+  tone: formal
+  perspective: first-person-plural
+  languages: {{languages}}
+business_context:
+  model: {{business_model}}
+  region: {{region}}
 deliverable: internal-deck
 generated_by: brief-deliver-type-b
 generated_at: {{ISO-timestamp}}

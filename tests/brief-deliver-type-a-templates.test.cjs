@@ -75,14 +75,18 @@ test('Test 3 — product-brief.md frontmatter has 5 mandatory + voice.languages 
   const fmMatch = body.match(/^---\n([\s\S]*?)\n---/);
   assert.ok(fmMatch, 'product-brief.md missing YAML frontmatter block bounded by `---`');
   const fm = fmMatch[1];
-  // 5 mandatory fields (Phase 5 D-10 schema):
-  assert.ok(fm.includes('audience.type'), 'product-brief.md frontmatter missing audience.type');
-  assert.ok(fm.includes('audience.confidentiality'), 'product-brief.md frontmatter missing audience.confidentiality');
-  assert.ok(fm.includes('voice.tone'), 'product-brief.md frontmatter missing voice.tone');
-  assert.ok(fm.includes('voice.perspective'), 'product-brief.md frontmatter missing voice.perspective');
-  assert.ok(fm.includes('business_context.model'), 'product-brief.md frontmatter missing business_context.model');
-  // Phase 8 D-D03 + D-21 additions:
-  assert.ok(fm.includes('voice.languages'), 'product-brief.md frontmatter missing voice.languages placeholder');
+  // 5 mandatory fields (Phase 5 D-10 schema) — NESTED form per BR-02 fix
+  // (08-REVIEW.md): templates now ship nested YAML so the shared parser at
+  // frontmatter.cjs:88 (key regex `[a-zA-Z0-9_-]+:` excludes `.`) can read
+  // every field. Substring `audience.type` no longer appears (it's
+  // `audience:\n  type:` instead).
+  assert.ok(/audience:\s*\n\s+type:/.test(fm), 'product-brief.md frontmatter missing nested audience.type');
+  assert.ok(/\n\s+confidentiality:/.test(fm), 'product-brief.md frontmatter missing nested audience.confidentiality');
+  assert.ok(/voice:\s*\n\s+tone:/.test(fm), 'product-brief.md frontmatter missing nested voice.tone');
+  assert.ok(/\n\s+perspective:/.test(fm), 'product-brief.md frontmatter missing nested voice.perspective');
+  assert.ok(/business_context:\s*\n\s+model:/.test(fm), 'product-brief.md frontmatter missing nested business_context.model');
+  // Phase 8 D-D03 + D-21 additions — voice.languages now nested under voice:
+  assert.ok(/\n\s+languages:/.test(fm), 'product-brief.md frontmatter missing nested voice.languages placeholder');
   assert.ok(fm.includes('deliverable:'), 'product-brief.md frontmatter missing deliverable:');
   assert.ok(/generated_by:\s*brief-deliver-type-a/.test(fm),
     'product-brief.md frontmatter missing generated_by: brief-deliver-type-a');
@@ -168,7 +172,8 @@ test('Test 9 — All 4 Type A templates have frontmatter + deliverable + voice.l
     assert.ok(fmMatch, `${name}: missing YAML frontmatter block bounded by ---`);
     const fm = fmMatch[1];
     assert.ok(fm.includes('deliverable:'), `${name}: frontmatter missing deliverable: field`);
-    assert.ok(fm.includes('voice.languages'), `${name}: frontmatter missing voice.languages placeholder`);
+    // voice.languages now nested under voice: per BR-02 fix (08-REVIEW.md)
+    assert.ok(/\n\s+languages:/.test(fm), `${name}: frontmatter missing nested voice.languages placeholder`);
     assert.ok(/generated_by:\s*brief-deliver-type-a/.test(fm),
       `${name}: frontmatter missing generated_by: brief-deliver-type-a`);
   }

@@ -268,19 +268,24 @@ test('synthesizeTypeA(product-brief): writes file with Immutable Intent + Custom
     'go-to-market.md ## Personas body inlined'
   );
 
-  // 5 mandatory frontmatter fields + voice.languages
+  // 5 mandatory frontmatter fields + voice.languages — NESTED form per BR-02
+  // fix (08-REVIEW.md): deliver.cjs now emits nested YAML (audience.{type,
+  // confidentiality}, voice.{tone,perspective,languages}, business_context.
+  // {model,region}) so frontmatter.cjs (key regex `[a-zA-Z0-9_-]+:` excludes
+  // `.`) can parse every field and audience.runAudience finds all 3 mandatory
+  // fields → AUDIENCE-OK, not BLOCKING DRIFTED-frontmatter.
   assert.match(content, /^---/, 'has frontmatter open fence');
-  assert.match(content, /audience\.type:\s*internal/);
-  assert.match(content, /audience\.confidentiality:\s*internal/);
-  assert.match(content, /voice\.tone:\s*direct/, 'b2c → direct tone (Phase 5 D-10)');
+  assert.match(content, /audience:\s*\n\s+type:\s*internal/, 'nested audience.type');
+  assert.match(content, /\n\s+confidentiality:\s*internal/, 'nested audience.confidentiality');
+  assert.match(content, /voice:\s*\n\s+tone:\s*direct/, 'b2c → nested voice.tone direct (Phase 5 D-10)');
   assert.match(
     content,
-    /voice\.perspective:\s*first-person-plural/,
-    'b2c → first-person-plural perspective'
+    /\n\s+perspective:\s*first-person-plural/,
+    'b2c → nested voice.perspective first-person-plural'
   );
-  assert.match(content, /business_context\.model:\s*b2c/, 'business model b2c from fixture');
-  // voice.languages: ['ko'] (Korea fixture, no --en)
-  assert.match(content, /voice\.languages:\s*\[ko\]/, 'voice.languages = [ko] for kr fixture');
+  assert.match(content, /business_context:\s*\n\s+model:\s*b2c/, 'nested business_context.model b2c from fixture');
+  // voice.languages: ['ko'] (Korea fixture, no --en) — nested under voice
+  assert.match(content, /\n\s+languages:\s*\[ko\]/, 'nested voice.languages = [ko] for kr fixture');
 });
 
 // ─── Test 2: service-policy B2C/B2B conditional prose ──────────────────────
@@ -311,8 +316,8 @@ test('synthesizeTypeA(service-policy): B2C contains B2C prose only; switching to
   assert.match(c2, /99\.95% uptime/, 'B2B: contains uptime SLA');
   assert.doesNotMatch(c2, /환불 정책/, 'B2B: must NOT contain B2C 환불 정책');
   assert.doesNotMatch(c2, /커뮤니티 가이드라인/, 'B2B: must NOT contain B2C 커뮤니티 가이드라인');
-  // Frontmatter business_context.model now b2b
-  assert.match(c2, /business_context\.model:\s*b2b/);
+  // Frontmatter business_context.model now b2b — nested form per BR-02 fix
+  assert.match(c2, /business_context:\s*\n\s+model:\s*b2b/);
 });
 
 // ─── Test 3: high-level-spec synthesis ──────────────────────────────────────

@@ -72,11 +72,22 @@ test('templates 8: decision-memo.md has NO Marp + 4 ADR sections', () => {
 });
 
 test('templates 9: all 4 Type B templates have 5 mandatory frontmatter fields + voice.languages', () => {
-  const mandatory = ['audience.type', 'audience.confidentiality', 'voice.tone', 'voice.perspective', 'business_context.model', 'voice.languages'];
+  // Per BR-02 fix (08-REVIEW.md): templates now ship NESTED YAML so the shared
+  // parser at frontmatter.cjs:88 (key regex `[a-zA-Z0-9_-]+:` excludes `.`)
+  // can read every field. Each mandatory field is asserted via a nested-form
+  // pattern (parent-key followed by indented child-key).
+  const mandatoryNested = [
+    { label: 'audience.type', re: /audience:\s*\n\s+type:/ },
+    { label: 'audience.confidentiality', re: /\n\s+confidentiality:/ },
+    { label: 'voice.tone', re: /voice:\s*\n\s+tone:/ },
+    { label: 'voice.perspective', re: /\n\s+perspective:/ },
+    { label: 'business_context.model', re: /business_context:\s*\n\s+model:/ },
+    { label: 'voice.languages', re: /\n\s+languages:/ },
+  ];
   for (const t of ['internal-deck.md', 'proposal-deck.md', 'exec-summary.md', 'decision-memo.md']) {
     const body = readSafe(path.join(TYPE_B_DIR, t));
-    for (const field of mandatory) {
-      assert.match(body, new RegExp(`${field.replace(/\./g, '\\.')}:`), `${t} missing ${field}`);
+    for (const { label, re } of mandatoryNested) {
+      assert.match(body, re, `${t} missing nested ${label}`);
     }
   }
 });
