@@ -711,6 +711,220 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
       break;
     }
 
+    case 'deliver': {
+      // Plan 08-08 Task 3 — DELIVER dispatcher. Mirrors `case 'audience'`
+      // (Plan 05-04 lines 558-635) byte-identity pattern: try/catch + core.error
+      // + core.output. Spawned by brief/workflows/deliver.md per Type A loop.
+      //
+      // Subcommands:
+      //   deliver synthesize --artifact <key> [--en]
+      //     → synthesizeTypeA(cwd, artifactKey, {en}) per Plan 01 contract
+      //   deliver list-type-a
+      //     → emit TYPE_A_ARTIFACTS frozen list (4 keys)
+      //   deliver list-type-b
+      //     → emit Type B artifact key list (4 names)
+      const deliver = require('./lib/deliver.cjs');
+      const delivSubcommand = args[1];
+      const delivArtIdx = args.indexOf('--artifact');
+      const delivArtifactKey = delivArtIdx !== -1 ? args[delivArtIdx + 1] : null;
+      const delivEn = args.includes('--en');
+
+      if (delivSubcommand === 'synthesize') {
+        if (!delivArtifactKey) { error('deliver synthesize: --artifact <key> required'); break; }
+        try {
+          const result = deliver.synthesizeTypeA(cwd, delivArtifactKey, { en: delivEn });
+          core.output(
+            result,
+            raw,
+            `synthesized ${result.outPath}${result.complete ? '' : ' (incomplete: ' + result.missing.join(', ') + ')'}`,
+          );
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+      if (delivSubcommand === 'list-type-a') {
+        core.output({ artifacts: deliver.TYPE_A_ARTIFACTS }, raw, deliver.TYPE_A_ARTIFACTS.join('\n'));
+        break;
+      }
+      if (delivSubcommand === 'list-type-b') {
+        const TYPE_B = ['internal-deck', 'proposal-deck', 'exec-summary', 'decision-memo'];
+        core.output({ artifacts: TYPE_B }, raw, TYPE_B.join('\n'));
+        break;
+      }
+      error(`deliver: unknown subcommand '${delivSubcommand}'. Valid: synthesize, list-type-a, list-type-b`);
+      break;
+    }
+
+    case 'export': {
+      // Plan 08-08 Task 3 — EXPORT dispatcher. Mirrors `case 'audience'`
+      // byte-identity pattern. Spawned by brief/workflows/export.md per
+      // Plan 04 7-step orchestration.
+      //
+      // Subcommands:
+      //   export run --artifact <path> [--format pptx|pdf|html] [--theme <name>]
+      //              [--force-accept --override-reason "<reason>"] [--gate audience|compliance|both]
+      //     → exportArtifact(cwd, path, opts) per Plan 04 contract
+      //   export render --artifact <path> [--format pptx|pdf|html] [--theme <name>]
+      //     → renderMarp helper for direct render dispatch (skips gate stack)
+      //
+      // For brief-tools dispatch, askUser is provided as a stub returning the
+      // value passed via env or option; real workflow uses AskUserQuestion /
+      // text_mode in workflows/export.md.
+      const exportLib = require('./lib/export.cjs');
+      const expSubcommand = args[1];
+      const expArtIdx = args.indexOf('--artifact');
+      const expArtifactPath = expArtIdx !== -1 ? args[expArtIdx + 1] : null;
+      const expFormatIdx = args.indexOf('--format');
+      const expFormat = expFormatIdx !== -1 ? args[expFormatIdx + 1] : 'pptx';
+      const expThemeIdx = args.indexOf('--theme');
+      const expTheme = expThemeIdx !== -1 ? args[expThemeIdx + 1] : null;
+      const expForceAccept = args.includes('--force-accept');
+      const expReasonIdx = args.indexOf('--override-reason');
+      const expOverrideReason = expReasonIdx !== -1 ? args[expReasonIdx + 1] : null;
+      const expGateIdx = args.indexOf('--gate');
+      const expGate = expGateIdx !== -1 ? args[expGateIdx + 1] : null;
+
+      if (expSubcommand === 'run') {
+        if (!expArtifactPath) { error('export run: --artifact <path> required'); break; }
+        try {
+          // brief-tools-dispatch askUser: when --force-accept is set on the
+          // command line, return option-2 (force-accept) for any 3-path
+          // interrupt. Otherwise return option-0 (frontmatter revision —
+          // safer default for unattended dispatch).
+          const askUser = (q) => {
+            if (expForceAccept && q && Array.isArray(q.paths)) return 2;
+            return 0;
+          };
+          const result = exportLib.exportArtifact(cwd, expArtifactPath, {
+            format: expFormat,
+            theme: expTheme,
+            allowFallback: true,
+            askUser,
+            _gate: expGate,
+            _forceAcceptOverrideReason: expOverrideReason,
+          });
+          core.output(
+            result,
+            raw,
+            result.ok ? `exported ${result.output}` : `export not completed: ${result.reason}`,
+          );
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+      if (expSubcommand === 'render') {
+        if (!expArtifactPath) { error('export render: --artifact <path> required'); break; }
+        try {
+          const inputMd = path.resolve(cwd, expArtifactPath);
+          const fm = require('./lib/frontmatter.cjs').extractFrontmatter(
+            require('fs').readFileSync(inputMd, 'utf-8'),
+          ) || {};
+          const conf = (fm['audience.confidentiality'])
+            || (fm.audience && fm.audience.confidentiality)
+            || 'internal';
+          const baseName = path.basename(expArtifactPath, '.md');
+          const outPath = path.join(path.dirname(inputMd), `${baseName}.${conf}.${expFormat}`);
+          const result = exportLib.renderMarp(cwd, {
+            inputMd,
+            outputPath: outPath,
+            format: expFormat,
+            theme: expTheme,
+            allowFallback: true,
+          });
+          core.output(
+            result,
+            raw,
+            result.ok ? `rendered ${result.outputPath}` : `render did not complete: ${result.error}`,
+          );
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+      error(`export: unknown subcommand '${expSubcommand}'. Valid: run, render`);
+      break;
+    }
+
+    case 'voice-fit': {
+      // Plan 08-08 Task 3 — VOICE-FIT dispatcher. Mirrors `case 'audience'`
+      // byte-identity pattern. Spawned by brief/workflows/deliver.md Step 3B.3
+      // per Plan 02 banned-words density check + Korean honorific guard.
+      //
+      // Subcommands:
+      //   voice-fit check --artifact <path>
+      //     → checkBannedWords(text, {isKorean, isExternal}) per Plan 02 contract
+      const voiceFit = require('./lib/voice-fit.cjs');
+      const vfSubcommand = args[1];
+      const vfArtIdx = args.indexOf('--artifact');
+      const vfArtifactPath = vfArtIdx !== -1 ? args[vfArtIdx + 1] : null;
+
+      if (vfSubcommand === 'check') {
+        if (!vfArtifactPath) { error('voice-fit check: --artifact <path> required'); break; }
+        try {
+          const fs2 = require('fs');
+          const fm2 = require('./lib/frontmatter.cjs');
+          const inputMd = path.resolve(cwd, vfArtifactPath);
+          const raw2 = fs2.readFileSync(inputMd, 'utf-8');
+          const text = fm2.stripFrontmatter(raw2);
+          const fm = fm2.extractFrontmatter(raw2) || {};
+          const ctx = require('./lib/context-inject.cjs').buildBusinessContext({ cwd });
+          const conf = (fm['audience.confidentiality'])
+            || (fm.audience && fm.audience.confidentiality)
+            || 'internal';
+          const isExternal = ['partner', 'public', 'external'].includes(conf);
+          const result = voiceFit.checkBannedWords(text, {
+            isKorean: ctx.language === 'ko',
+            isExternal,
+          });
+          core.output(
+            result,
+            raw,
+            `density ${result.density.toFixed(2)}/${result.threshold} pages=${result.pages} hits=${result.hits.length}${result.exceedsThreshold ? ' EXCEEDS' : ''}`,
+          );
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+      error(`voice-fit: unknown subcommand '${vfSubcommand}'. Valid: check`);
+      break;
+    }
+
+    case 'leakage-diff': {
+      // Plan 08-08 Task 3 — LEAKAGE-DIFF dispatcher. Mirrors `case 'audience'`
+      // byte-identity pattern. Spawned by brief/workflows/export.md Step 2 per
+      // Plan 03 cross-artifact TF-IDF leakage detection.
+      //
+      // Subcommands:
+      //   leakage-diff scan --artifact <path>
+      //     → leakageDiff(absPath) per Plan 03 contract
+      const leakageLib = require('./lib/leakage-diff.cjs');
+      const ldSubcommand = args[1];
+      const ldArtIdx = args.indexOf('--artifact');
+      const ldArtifactPath = ldArtIdx !== -1 ? args[ldArtIdx + 1] : null;
+
+      if (ldSubcommand === 'scan') {
+        if (!ldArtifactPath) { error('leakage-diff scan: --artifact <path> required'); break; }
+        try {
+          const result = leakageLib.leakageDiff(path.resolve(cwd, ldArtifactPath));
+          core.output(
+            result,
+            raw,
+            result.findings.length === 0
+              ? `0 findings (${result.rationale})`
+              : `${result.findings.length} finding(s) (${result.rationale})`,
+          );
+        } catch (err) {
+          error(err.message);
+        }
+        break;
+      }
+      error(`leakage-diff: unknown subcommand '${ldSubcommand}'. Valid: scan`);
+      break;
+    }
+
     case 'design': {
       // Plan 07-03 Task 1 — /brief-design orchestrator helper dispatcher.
       // Read-only subcommands consumed by brief/workflows/design.md:

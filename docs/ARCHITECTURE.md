@@ -169,6 +169,8 @@ Shared knowledge documents that workflows and agents `@-reference` (35 total):
 - `workstream-flag.md` — Workstream active pointer conventions
 - `user-profiling.md` — User behavioral profiling methodology
 - `thinking-partner.md` — Conditional thinking partner activation at decision points
+- `marp-environment.md` — (Phase 8 Plan 07) Single-source-of-truth Marp environment reference (Chrome/Edge/Firefox/LibreOffice/Pandoc fallback ladder + npx 30-60s latency + CHROME_NO_SANDBOX + sandbox notes for Claude/Codex/Gemini/OpenCode)
+- `voice-fit-vocabulary.md` — (Phase 8 Plan 02) Banned-words + Korean honorific vocabulary lists for Type B agent self-check + voice-fit.cjs primary enforcement
 
 **Thinking model references:**
 
@@ -199,6 +201,9 @@ Markdown templates for all planning artifacts. Used by `brief-tools.cjs template
 - `discussion-log.md` — Discussion audit trail template
 - `codebase/` — Brownfield mapping templates (stack, architecture, conventions, concerns, structure, testing, integrations)
 - `research-project/` — Research output templates (SUMMARY, STACK, FEATURES, ARCHITECTURE, PITFALLS)
+- `deliver/type-a/` — (Phase 8 Plan 05) 4 Type A PRD-input templates: `product-brief.md`, `service-policy.md` (B2B/B2C conditional prose), `high-level-spec.md`, `feature-map.md`
+- `deliver/type-b/` — (Phase 8 Plan 06) 4 Type B communication templates: `internal-deck.md` (Marp source), `proposal-deck.md` (Marp source), `exec-summary.md` (1-2 page), `decision-memo.md` (ADR variant)
+- `deliver/marp-themes/` — (Phase 8 Plan 06) 3 Marp CSS themes: `default.css`, `partner.css`, `confidential.css`
 
 ### Hooks (`hooks/`)
 
@@ -215,10 +220,12 @@ Runtime hooks that integrate with the host AI agent:
 | `gsd-session-state.sh` | `PostToolUse` | Session state tracking for shell-based runtimes |
 | `gsd-validate-commit.sh` | `PostToolUse` | Commit validation for conventional commit enforcement |
 | `gsd-phase-boundary.sh` | `PostToolUse` | Phase boundary detection for workflow transitions |
+| `brief-validate-provenance.sh` | `PreToolUse` | (Phase 5) Opt-in validator: blocks `git commit` when staged `.planning/discover/*.md` files miss provenance tags |
+| `brief-validate-frontmatter.sh` | `PreToolUse` | (Phase 8 / CC-03) Opt-in validator: blocks `git commit` when staged `.planning/**/*.md` files miss the 5 mandatory frontmatter fields. Layer 4 of the 4-layer audience defense. |
 
 ### CLI Tools (`brief/bin/`)
 
-Node.js CLI utility (`brief-tools.cjs`) with 19 domain modules:
+Node.js CLI utility (`brief-tools.cjs`) with 23 domain modules (19 inherited + 4 NEW Phase 8 lib modules — `deliver.cjs`, `voice-fit.cjs`, `leakage-diff.cjs`, `export.cjs`):
 
 | Module | Responsibility |
 |--------|---------------|
@@ -241,6 +248,10 @@ Node.js CLI utility (`brief-tools.cjs`) with 19 domain modules:
 | `schema-detect.cjs` | Schema-drift detection for ORM patterns (Prisma, Drizzle, etc.) |
 | `profile-pipeline.cjs` | User behavioral profiling data pipeline, session file scanning |
 | `profile-output.cjs` | Profile rendering, USER-PROFILE.md and dev-preferences.md generation |
+| `deliver.cjs` | (Phase 8 Plan 01) Type A auto-synthesis — composes 4 PRD-input artifacts (PRODUCT-BRIEF / SERVICE-POLICY / HIGH-LEVEL-SPEC / FEATURE-MAP) deterministically from workstream artifacts + OBJECTIVES.md sections |
+| `voice-fit.cjs` | (Phase 8 Plan 02) Banned-words density + concreteness heuristic + Korean honorific post-check for Type B agent output (Pitfall #10 AI Slop + Pitfall #11 Korean honorific mitigation) |
+| `leakage-diff.cjs` | (Phase 8 Plan 03) Cross-artifact Salton-1988 TF-IDF keyword diff — detects copy-paste leakage from a stricter-confidentiality sibling artifact into a less-strict artifact in the same folder |
+| `export.cjs` | (Phase 8 Plan 04) `/brief-export` 7-step orchestration — leakage diff → AUDIENCE re-run → COMPLIANCE re-run → 1-step confirm UI → BLOCKING 3-path interrupt with force-accept → Marp render via npx --yes → atomic 5-file commit |
 
 ---
 
@@ -282,6 +293,11 @@ Orchestrator (workflow .md)
 | **Doc Writers** | brief-doc-writer, brief-doc-verifier | Sequential (writer then verifier) |
 | **Profilers** | brief-user-profiler | Sequential |
 | **Analyzers** | brief-assumptions-analyzer | Sequential (during discuss-phase) |
+| **Domain Researchers** | brief-domain-researcher | (Phase 5) Wave-spawned ≤4 concurrent for /brief-discover broad parallel research |
+| **Gap Detectors** | brief-gap-detector | (Phase 6) Sequential at gate-deviation points; emits BLOCKING/MATERIAL/NICE-TO-HAVE severity routing |
+| **Workstream Designers** | brief-workstream-designer | (Phase 7) Single per /brief-design invocation — parameterized by workstream slug |
+| **Type A Synthesizers** | brief-deliver-type-a | (Phase 8 Plan 05) Sequential (4 spawns per /brief-deliver --type-a — parameterized by {{ARTIFACT}}) |
+| **Type B Generators** | brief-deliver-type-b | (Phase 8 Plan 06) Single per /brief-deliver --type-b <name> invocation — parameterized by {{ARTIFACT}} for internal-deck/proposal-deck/exec-summary/decision-memo |
 
 ### Wave Execution Model
 
