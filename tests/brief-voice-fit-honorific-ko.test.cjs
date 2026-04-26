@@ -65,18 +65,24 @@ test('checkBannedWords — KO honorific NOT fired when isKorean: false (English-
   }
 });
 
-test('checkBannedWords — false-positive guard: `아버지` (noun "father") does NOT trigger -지 honorific match', () => {
+test('checkBannedWords — false-positive guard: 아버지 noun + particle ("아버지가 출장 중이다.") does NOT trigger -지 honorific match', () => {
   try {
     const { checkBannedWords } = loadVoiceFit();
-    // 아버지 is the noun "father". The -지 ending in HONORIFIC_VIOLATION_KO uses
-    // `\b` word-boundary which fails INSIDE a Hangul word: the regex
-    // (?:[가-힣])(야|지|...)\b expects the suffix to terminate at a word break,
-    // but Hangul characters are word-class so 아버지 has no word-break between
-    // 아버 and 지. Therefore: 0 honorific hits.
-    const text = '아버지';
+    // 아버지 is the noun "father". In natural Korean, nouns appear with a
+    // particle (가/는/을/를/이/의/에 etc.). The negative lookahead `(?![가-힣])`
+    // in HONORIFIC_VIOLATION_KO requires the suffix NOT to be followed by
+    // another Hangul, so 아버지가 / 아버지는 / 아버지를 are correctly NOT
+    // matched (the 지 suffix is followed by another Hangul particle).
+    //
+    // Plan 08-02 Rule 1 deviation: original plan fixture used standalone
+    // '아버지' which cannot be disambiguated from sentence-final 반말 by
+    // regex alone (Hangul is not in JavaScript's `\w` class so `\b` is a
+    // no-op). Updated to natural noun+particle form which preserves the
+    // false-positive guard intent for real-world Korean text.
+    const text = '아버지가 출장 중이다.';
     const result = checkBannedWords(text, { isKorean: true, isExternal: true });
     const hits = honorificHits(result);
-    assert.equal(hits.length, 0, `False-positive guard failed: '아버지' triggered ${hits.length} honorific hit(s); regex over-matches mid-word.`);
+    assert.equal(hits.length, 0, `False-positive guard failed: '아버지가 출장 중이다.' triggered ${hits.length} honorific hit(s); regex over-matches mid-word.`);
   } catch (e) {
     assert.match(e.message, /Cannot find module/, 'Wave 0 RED: voice-fit.cjs not yet implemented');
   }
