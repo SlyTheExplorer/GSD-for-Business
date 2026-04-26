@@ -1,0 +1,9 @@
+{
+  "brief": {
+    "region": "kr",
+    "business_model": "b2c",
+    "audience_policy": { "default_type": "internal", "default_confidentiality": "internal" },
+    "compliance_packs": ["korea-pipa", "korea-isms-p"]
+  },
+  "hooks": { "community": false }
+}
