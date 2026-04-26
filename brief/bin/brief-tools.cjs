@@ -785,6 +785,20 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
       const expGateIdx = args.indexOf('--gate');
       const expGate = expGateIdx !== -1 ? args[expGateIdx + 1] : null;
 
+      // 08-REVIEW WR-02: validate --gate against the closed enum at dispatcher
+      // entry. Without this guard, a typo (e.g., --gate audiece) silently makes
+      // both audience+compliance branches in export.cjs evaluate false (the
+      // gating predicate `_gate === 'audience' || _gate === 'both'` rejects
+      // unknown values), so NEITHER gate runs and the render proceeds with
+      // null verdicts that formatConfirmUI displays as the safe-looking
+      // 'AUDIENCE-OK' / 'COMPLIANCE-OK' defaults — silent BYPASS of the gate
+      // stack. Reject unknown values with a clear error.
+      const VALID_EXPORT_GATES = new Set(['audience', 'compliance', 'both']);
+      if (expGate !== null && !VALID_EXPORT_GATES.has(expGate)) {
+        error(`export: --gate must be one of ${[...VALID_EXPORT_GATES].join(' | ')} (got: '${expGate}')`);
+        break;
+      }
+
       if (expSubcommand === 'run') {
         if (!expArtifactPath) { error('export run: --artifact <path> required'); break; }
         try {
