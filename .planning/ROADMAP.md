@@ -185,6 +185,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. User obtains rendered Type B output with audience encoded in the filename (e.g., `proposal-deck.partner.pptx`, `internal-deck.confidential.pptx`) and a literal first-slide watermark stating the confidentiality level visible in the rendered output (not just markdown comment) (DLV-09)
   5. User attempts to commit a `.planning/` artifact whose frontmatter violates schema (missing `audience.type`, `audience.confidentiality`, `voice.tone`, etc.) and the pre-commit Frontmatter Validator git hook (installed by BRIEF setup) blocks the commit with a structured error (CC-03)
 **Plans**: 8 plans
+- [ ] 08-01-PLAN.md — deliver.cjs Type A 자동 합성 lib + 4-artifact SYNTHESIS_MAP + Korea B2C 9-workstream fixture (DLV-01, DLV-02, DLV-03, DLV-04)
+- [ ] 08-02-PLAN.md — voice-fit.cjs banned-words density + concreteness + Korean honorific-violation lib + voice-fit-vocabulary.md reference with 4 hand-written exemplars (DLV-05, DLV-06, DLV-07)
+- [ ] 08-03-PLAN.md — leakage-diff.cjs TF-IDF cross-artifact keyword diff + 2 fixture pairs (intentional-leak + incidental-overlap) (DLV-06)
+- [ ] 08-04-PLAN.md — export.cjs 7-step orchestration (leakage diff + AUDIENCE/COMPLIANCE re-run + 1-step confirm + 3-path interrupt + Marp render env-detect + atomic commit) + state.cjs PHASE_8_BRIEF_FIELDS (DLV-08)
+- [ ] 08-05-PLAN.md — agents/brief-deliver-type-a.md parameterized agent + 4 Type A templates with B2B/B2C conditional prose (DLV-01..04 narrative)
+- [ ] 08-06-PLAN.md — agents/brief-deliver-type-b.md parameterized agent + 4 Type B templates (Marp + non-Marp) + 3 Marp CSS themes + ko/en branching (DLV-05, DLV-06, DLV-07, DLV-09)
+- [ ] 08-07-PLAN.md — hooks/brief-validate-frontmatter.sh CC-03 hook (byte-identity copy of brief-validate-provenance.sh) + bin/install.js 4-anchor registration + brief/references/marp-environment.md (CC-03)
+- [ ] 08-08-PLAN.md — commands/brief/{deliver,export}.md user commands + brief/workflows/{deliver,export}.md + brief-tools.cjs 4 dispatchers + status.cjs formatGate extension + Korea-first canary E2E + vocabulary-lock + no-hooks anti-pattern (DLV-01..09 + CC-03 integration)
 **UI hint**: yes
 
 **Pitfall coverage**: #5 Audience leakage in Type B (DLV-08 mandatory export step + DLV-09 filename audience encoding + literal first-slide watermark + CC-03 pre-commit frontmatter validator — four-layer defense), #4 Compliance checkbox theater (Type B artifacts inherit COMPLIANCE checker from Phase 7), #11 Korean cultural gotchas (Type B agents apply honorific guard + bilingual `.ko.md`/`.en.md` pairs + idiom-substitution table for `region: kr` projects).
