@@ -66,14 +66,24 @@ once: `npx --yes @marp-team/marp-cli@4.3.1 --version`. After that, subsequent
 ### Enterprise environments
 
 Some enterprise environments block `npx` network calls (egress firewall, npm registry
-allow-listing, etc.). Workaround:
+allow-listing, etc.). Workaround: pre-warm the npm cache so subsequent `npx` calls
+resolve from cache instead of hitting the registry. Run once on a host with egress
+permitted (or with the corporate proxy whitelisted):
 
 ```bash
-npm install -g @marp-team/marp-cli@4.3.1
+npx --yes @marp-team/marp-cli@4.3.1 --version
 ```
 
-Then `/brief-export` falls back to invoking `marp` directly from PATH instead of `npx`.
-The CLI on PATH is detected first; npx is only used as the second-choice path.
+After the first invocation pulls marp-cli + puppeteer-core (~50MB) into the npm cache,
+subsequent `/brief-export` invocations resolve from cache (~2-5s) without registry hits.
+A global install (`npm install -g @marp-team/marp-cli@4.3.1`) ALSO populates the npm
+cache as a side effect, which has the same effect — but `/brief-export` ALWAYS spawns
+`npx` and does NOT detect / prefer the global binary on PATH. Treat the global install
+as a cache-pre-warm convenience, not a fallback dispatch path.
+
+(If your operations posture requires invoking the global `marp` binary directly without
+`npx`, run Marp manually on the artifact source: `marp <name>.md -o <name>.<conf>.pptx`.
+See `node brief/bin/lib/export.cjs renderMarp` for the exact arg list to mirror.)
 
 ### GitHub Actions / Docker
 
