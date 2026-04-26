@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Phase 8 complete (15/15 must-haves; 118/118 tests; 8/8 plans; 7/7 review findings fixed; verification passed). Next: /brief-discuss-phase 9 to start Phase 9 Hardening."
-last_updated: "2026-04-26T15:52:53.935Z"
+stopped_at: "Phase 8 complete (15/15 must-haves; 118/118 tests). Phase 9 discuss draft saved at .planning/phases/09-.../09-DISCUSS-DRAFT.md. Next: /clear → /brief-discuss-phase 9 OR /gsd-autonomous --from 9 — draft contains 4 gray area proposals."
+last_updated: "2026-04-26T22:59:08.961Z"
 last_activity: 2026-04-26 -- Phase 8 execution started
 progress:
   total_phases: 9
@@ -103,8 +103,8 @@ Items acknowledged and carried forward for resolution in later phases:
 
 ## Session Continuity
 
-Last session: 2026-04-26T15:52:53.907Z
-Stopped at: Phase 8 complete (15/15 must-haves; 118/118 tests; 8/8 plans; 7/7 review findings fixed; verification passed). Next: /brief-discuss-phase 9 to start Phase 9 Hardening.
-Resume file: .planning/phases/08-deliver-type-a-type-b-audience-enforcement-marp/08-VERIFICATION.md
+Last session: 2026-04-26T22:59:08.939Z
+Stopped at: Phase 8 complete (15/15 must-haves; 118/118 tests). Phase 9 discuss draft saved at .planning/phases/09-.../09-DISCUSS-DRAFT.md. Next: /clear → /brief-discuss-phase 9 OR /gsd-autonomous --from 9 — draft contains 4 gray area proposals.
+Resume file: .planning/phases/09-hardening-cross-runtime-smoke-non-developer-pilot/09-DISCUSS-DRAFT.md
 
 **Planned Phase:** 07 (DESIGN — Workstream Orchestration + COMPLIANCE Checker) — 8 plans — 2026-04-25T13:52:45.748Z
