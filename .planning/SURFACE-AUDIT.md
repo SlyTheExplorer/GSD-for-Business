@@ -28,8 +28,8 @@
 
 ## Removed in v1 (56 commands deleted from `commands/brief/`)
 
-> All deleted commands preserved on `backup/original-gsd` branch.
-> Recovery: `git checkout backup/original-gsd -- commands/brief/{name}.md`
+> All deleted commands preserved on `backup/original-gsd` branch (at the original `commands/gsd/{name}.md` path, since the branch predates the Phase 1 `gsd-*` → `brief-*` hard rename).
+> Recovery: `git show backup/original-gsd:commands/gsd/{name}.md > commands/brief/{name}.md` (then re-add Phase 1 rename pattern manually if reviving). Verify the file exists in the backup tree first via `git ls-tree -r backup/original-gsd --name-only | grep {name}.md`.
 
 NOTE on count: this section enumerates 56 deleted slugs. Wave 0 fixture `brief-surface-audit-install-cleanup.test.cjs` carries a Rule-1 deviation note documenting the constant was renamed from `DELETED_56` → `DELETED_57` because the filesystem-true count is 57 (the 56 above PLUS `new-project` which is RENAMED to `init.md` rather than deleted; see footnote below).
 
@@ -102,8 +102,8 @@ NOTE on count: this section enumerates 56 deleted slugs. Wave 0 fixture `brief-s
 
 ## Recovery
 
-> All deleted commands preserved on `backup/original-gsd` branch.
-> Recovery: `git checkout backup/original-gsd -- commands/brief/{name}.md`
+> All deleted commands preserved on `backup/original-gsd` branch (at the original `commands/gsd/{name}.md` path, since the branch predates the Phase 1 `gsd-*` → `brief-*` hard rename).
+> Recovery: `git show backup/original-gsd:commands/gsd/{name}.md > commands/brief/{name}.md` (then re-add Phase 1 rename pattern manually if reviving). Verify the file exists in the backup tree first via `git ls-tree -r backup/original-gsd --name-only | grep {name}.md`.
 
 ## Cap Discipline (W10)
 
