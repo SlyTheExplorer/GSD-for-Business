@@ -61,10 +61,15 @@ describe('Levenshtein top-3 typo suggestion (HRD-03 / C-D03)', () => {
       t.skip('blocked: brief/bin/lib/help.cjs not yet created (Plan 02)');
       return;
     }
-    // Pitfall 3: define and design differ by 2 characters (f→s, e→g) — DP must
-    // return 2, and suggestTopK MUST return BOTH within the k=3 / threshold=3
-    // window so the user disambiguates rather than silently picking one.
-    assert.strictEqual(help.levenshtein('define', 'design'), 2);
+    // Pitfall 3: define and design differ by 3 substitutions at positions 2,4,5
+    // (f→s, n→g, e→n). The original RESEARCH.md narrative miscounted as 2;
+    // canonical Wikipedia DP returns 3. Plan 09-02 Rule 1 deviation: assertion
+    // corrected to match canonical algorithm output. Pitfall 3 disambiguation
+    // contract (both define+design surface for near-typo inputs) still holds:
+    // distance 3 ≤ threshold 3, so suggestTopK includes both for inputs within
+    // 1-2 edits of either (e.g., `desin` → design(1), define(2); `defin` →
+    // define(1), design(3)).
+    assert.strictEqual(help.levenshtein('define', 'design'), 3);
   });
 
   test('suggestTopK returns ≤3 results below distance threshold (sorted ascending)', (t) => {
