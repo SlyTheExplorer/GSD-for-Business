@@ -1,24 +1,25 @@
 ---
-name: gsd:help
-description: Show available BRIEF commands and usage guide
+name: brief:help
+description: Categorized BRIEF command reference (4D phase grouping — DEFINE / DISCOVER / DESIGN / DELIVER / HELPERS) with partial-keyword topic match and Levenshtein typo correction (top-3, distance ≤ 3). Run with no argument for full listing; with `<topic>` for partial-keyword match; unmatched input returns top-3 Levenshtein suggestions. Phase 9 HRD-03 / C-D01..C-D04.
+argument-hint: "[<topic>]"
 allowed-tools:
   - Read
+  - Bash
 ---
 <objective>
-Display the complete BRIEF command reference.
+Render the BRIEF command reference categorized by 4D phase (DEFINE / DISCOVER / DESIGN / DELIVER + HELPERS).
 
-Output ONLY the reference content below. Do NOT add:
+- No argument: full categorized listing of every command in `commands/brief/*.md`.
+- `<topic>` (e.g., `def`, `discover`, `audit`): case-insensitive substring/prefix match on slug + description; on match, render the matching commands plus the body of the first matched command's `.md` file.
+- No match: top-3 Levenshtein suggestions with distance ≤ 3 (e.g., `defone` → `define`, `design`).
+
+Output ONLY the help content. Do NOT add:
 - Project-specific analysis
 - Git status or file context
 - Next-step suggestions
-- Any commentary beyond the reference
+- Any commentary beyond the help reference.
 </objective>
 
-<execution_context>
-@~/.claude/brief/workflows/help.md
-</execution_context>
-
 <process>
-Output the complete BRIEF command reference from @~/.claude/brief/workflows/help.md.
-Display the reference content directly — no additions or modifications.
+Execute `brief-tools.cjs help [<topic>] --raw` and print stdout verbatim. Read-only — no writes.
 </process>

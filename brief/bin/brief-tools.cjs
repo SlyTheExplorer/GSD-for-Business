@@ -936,6 +936,45 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
       break;
     }
 
+    case 'help': {
+      // Plan 09-02 — HELP dispatcher. Mirrors `case 'voice-fit'` byte-identity
+      // pattern (lines 864-907): try/catch + error + core.output. Read-only —
+      // no writes. Inserted AFTER `case 'smoke-test'` (Plan 09-01) per the
+      // canonical brief-tools.cjs case ordering: voice-fit → smoke-test → help
+      // → leakage-diff. Spawned by commands/brief/help.md.
+      //
+      // Subcommands (single-arg form):
+      //   help                 → renderCategorized(buildCatalog())
+      //   help <topic>         → if substring match: renderTopicMatch
+      //                          else: renderTypoSuggestions(suggestTopK(<topic>, slugs, 3, 3))
+      const help = require('./lib/help.cjs');
+      const subarg = args[1];
+      const COMMANDS_DIR = path.join(__dirname, '..', '..', 'commands', 'brief');
+      try {
+        const catalog = help.buildCatalog(COMMANDS_DIR);
+        if (!subarg) {
+          core.output({ catalog }, raw, help.renderCategorized(catalog));
+          break;
+        }
+        // partial keyword match (C-D02): case-insensitive substring on slug + description
+        const matches = catalog.filter((e) =>
+          e.slug.toLowerCase().includes(subarg.toLowerCase()) ||
+          (e.description || '').toLowerCase().includes(subarg.toLowerCase())
+        );
+        if (matches.length > 0) {
+          core.output({ matches }, raw, help.renderTopicMatch(matches));
+          break;
+        }
+        // typo correction via Levenshtein (C-D03): distance ≤ 3, top-3
+        const slugs = catalog.map((e) => e.slug);
+        const suggestions = help.suggestTopK(subarg, slugs, 3, 3);
+        core.output({ suggestions }, raw, help.renderTypoSuggestions(subarg, suggestions));
+      } catch (err) {
+        error(err.message);
+      }
+      break;
+    }
+
     case 'leakage-diff': {
       // Plan 08-08 Task 3 — LEAKAGE-DIFF dispatcher. Mirrors `case 'audience'`
       // byte-identity pattern. Spawned by brief/workflows/export.md Step 2 per
