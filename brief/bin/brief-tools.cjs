@@ -906,6 +906,36 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
       break;
     }
 
+    case 'smoke-test': {
+      // Plan 09-01 — SMOKE-TEST dispatcher. Mirrors `case 'voice-fit'`
+      // (lines 864-907) byte-identity pattern: try/catch + error +
+      // core.output. Stub-driven (B-D01) — never invokes real
+      // Codex/Gemini/OpenCode CLIs.
+      //
+      // Subcommands:
+      //   smoke-test run [--out <path>]
+      //     → buildMatrix() over RUNTIMES × COMMANDS, renders to SMOKE-TEST.md
+      const smoke = require('./lib/smoke-test.cjs');
+      const stSubcommand = args[1];
+      const stOutIdx = args.indexOf('--out');
+      const stOutPath = stOutIdx !== -1
+        ? args[stOutIdx + 1]
+        : path.join(core.planningPaths(cwd).planning, 'SMOKE-TEST.md');
+      try {
+        if (stSubcommand === 'run') {
+          const matrix = smoke.buildMatrix(cwd);
+          const md = smoke.renderMatrixMarkdown(matrix);
+          core.atomicWriteFileSync(stOutPath, md);
+          core.output({ matrix, outPath: stOutPath }, raw, `SMOKE-TEST.md written: ${stOutPath}`);
+          break;
+        }
+        error(`smoke-test: unknown subcommand '${stSubcommand}'. Valid: run`);
+      } catch (err) {
+        error(err.message);
+      }
+      break;
+    }
+
     case 'leakage-diff': {
       // Plan 08-08 Task 3 — LEAKAGE-DIFF dispatcher. Mirrors `case 'audience'`
       // byte-identity pattern. Spawned by brief/workflows/export.md Step 2 per
