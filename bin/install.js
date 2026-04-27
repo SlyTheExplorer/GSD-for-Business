@@ -6481,18 +6481,18 @@ function finishInstall(settingsPath, settings, statuslineCommand, shouldInstallS
   if (runtime === 'cline') program = 'Cline';
   if (runtime === 'qwen') program = 'Qwen Code';
 
-  let command = '/brief-new-project';
-  if (runtime === 'opencode') command = '/brief-new-project';
-  if (runtime === 'kilo') command = '/brief-new-project';
-  if (runtime === 'codex') command = '$brief-new-project';
-  if (runtime === 'copilot') command = '/brief-new-project';
-  if (runtime === 'antigravity') command = '/brief-new-project';
-  if (runtime === 'cursor') command = 'brief-new-project (mention the skill name)';
-  if (runtime === 'windsurf') command = '/brief-new-project';
-  if (runtime === 'augment') command = '/brief-new-project';
-  if (runtime === 'trae') command = '/brief-new-project';
-  if (runtime === 'cline') command = '/brief-new-project';
-  if (runtime === 'qwen') command = '/brief-new-project';
+  let command = '/brief-init';
+  if (runtime === 'opencode') command = '/brief-init';
+  if (runtime === 'kilo') command = '/brief-init';
+  if (runtime === 'codex') command = '$brief-init';
+  if (runtime === 'copilot') command = '/brief-init';
+  if (runtime === 'antigravity') command = '/brief-init';
+  if (runtime === 'cursor') command = 'brief-init (mention the skill name)';
+  if (runtime === 'windsurf') command = '/brief-init';
+  if (runtime === 'augment') command = '/brief-init';
+  if (runtime === 'trae') command = '/brief-init';
+  if (runtime === 'cline') command = '/brief-init';
+  if (runtime === 'qwen') command = '/brief-init';
   console.log(`
   ${green}Done!${reset} Open a blank directory in ${program} and run ${cyan}${command}${reset}.
 
