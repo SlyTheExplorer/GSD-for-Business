@@ -5,6 +5,7 @@ status: draft
 nyquist_compliant: false
 wave_0_complete: false
 created: 2026-04-27
+revised: 2026-04-27 (W1 — renumbered Per-Task Verification Map to match actual plan layout)
 ---
 
 # Phase 9 — Validation Strategy
@@ -36,24 +37,27 @@ created: 2026-04-27
 
 ## Per-Task Verification Map
 
+> **Note:** Plan numbering matches the actual plan files on disk after revision iteration 1. Plan 01 = HRD-01, Plan 02 = HRD-03, Plan 03 = HRD-04, Plan 04 = HRD-05b regex fix, Plan 05 = HRD-02 surface pruning, Plan 06 = HRD-05 closure + V1 launch gate.
+
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
 | 9-00-W0 | 00 | 0 | All HRD-* | — | N/A | scaffolding | `node scripts/run-tests.cjs tests/brief-help-*.test.cjs tests/brief-smoke-*.test.cjs tests/brief-surface-*.test.cjs tests/brief-pilot-*.test.cjs tests/brief-v1-launch-*.test.cjs` | ❌ Wave 0 (11 fixtures) | ⬜ pending |
 | 9-01-01 | 01 | 1 | HRD-01 | — | N/A | unit | `node --test tests/brief-smoke-test-stub.test.cjs` | ❌ Wave 0 | ⬜ pending |
 | 9-01-02 | 01 | 1 | HRD-01 | — | N/A | unit | `node --test tests/brief-smoke-test-text-mode.test.cjs` | ❌ Wave 0 | ⬜ pending |
 | 9-01-03 | 01 | 1 | HRD-01 | — | N/A | structural | `node --test tests/brief-smoke-test-output-format.test.cjs` | ❌ Wave 0 | ⬜ pending |
-| 9-02-01 | 02 | 1 | HRD-02 | — | N/A | structural | `node --test tests/brief-surface-audit-count.test.cjs` | ❌ Wave 0 | ⬜ pending |
-| 9-02-02 | 02 | 2 | HRD-02 | — | Backup branch preserves deleted commands | structural | `node --test tests/brief-surface-audit-install-cleanup.test.cjs` | ❌ Wave 0 | ⬜ pending |
-| 9-02-03 | 02 | 1 | HRD-02 | — | N/A | structural | `node --test tests/brief-surface-audit-doc.test.cjs` | ❌ Wave 0 | ⬜ pending |
-| 9-03-01 | 03 | 1 | HRD-03 | — | N/A | unit | `node --test tests/brief-help-categorization.test.cjs` | ❌ Wave 0 | ⬜ pending |
-| 9-03-02 | 03 | 1 | HRD-03 | — | N/A | unit | `node --test tests/brief-help-partial-match.test.cjs` | ❌ Wave 0 | ⬜ pending |
-| 9-03-03 | 03 | 1 | HRD-03 | — | N/A | unit | `node --test tests/brief-help-levenshtein.test.cjs` | ❌ Wave 0 | ⬜ pending |
-| 9-03-04 | 03 | 1 | HRD-03 | — | N/A | coverage | `npm run test:coverage` (target: c8 line ≥ 70% for help.cjs) | (existing infra) | ⬜ pending |
-| 9-04-01 | 04 | 1 | HRD-04 | — | N/A | structural | `node --test tests/brief-pilot-journal-structure.test.cjs` | ❌ Wave 0 | ⬜ pending |
-| 9-05-01 | 05 | 1 | HRD-05(a) | — | N/A | regression | `node scripts/run-tests.cjs tests/bug-2004-* tests/bug-2075-*` (per-test triage) | (existing infra) | ⬜ pending |
-| 9-05-02 | 05 | 1 | HRD-05(b) | — | N/A | structural | `node --test tests/architecture-counts.test.cjs tests/command-count-sync.test.cjs` | (existing — fix in plan) | ⬜ pending |
-| 9-05-03 | 05 | 2 | HRD-05 | — | N/A | empirical | `node scripts/run-tests.cjs 2>&1 \| grep -cE '^✖'` (target ≤ 16) | (full suite) | ⬜ pending |
-| 9-06-01 | 06 | 2 | V1-Launch-Gate | — | N/A | structural | `node --test tests/brief-v1-launch-gate.test.cjs` | ❌ Wave 0 | ⬜ pending |
+| 9-02-01 | 02 | 2 | HRD-03 | — | N/A | unit | `node --test tests/brief-help-categorization.test.cjs` | ❌ Wave 0 | ⬜ pending |
+| 9-02-02 | 02 | 2 | HRD-03 | — | N/A | unit | `node --test tests/brief-help-partial-match.test.cjs` | ❌ Wave 0 | ⬜ pending |
+| 9-02-03 | 02 | 2 | HRD-03 | — | N/A | unit | `node --test tests/brief-help-levenshtein.test.cjs` | ❌ Wave 0 | ⬜ pending |
+| 9-02-04 | 02 | 2 | HRD-03 | — | N/A | coverage | `npm run test:coverage` (target: c8 line ≥ 70% for help.cjs) | (existing infra) | ⬜ pending |
+| 9-03-01 | 03 | 1 | HRD-04 | — | N/A | structural | `node --test tests/brief-pilot-journal-structure.test.cjs` | ❌ Wave 0 | ⬜ pending |
+| 9-04-01 | 04 | 1 | HRD-05(b) regex | — | N/A | structural | `node --test tests/command-count-sync.test.cjs` (regex now matches `commands/brief/`; count-mismatch may persist until Plan 06 ARCH sync) | (existing infra) | ⬜ pending |
+| 9-05-01 | 05 | 3 | HRD-02 | — | Backup branch preserves deleted commands | structural | `node --test tests/brief-surface-audit-count.test.cjs` | ❌ Wave 0 | ⬜ pending |
+| 9-05-02 | 05 | 3 | HRD-02 | — | Backup branch preserves deleted commands | structural | `node --test tests/brief-surface-audit-install-cleanup.test.cjs` | ❌ Wave 0 | ⬜ pending |
+| 9-05-03 | 05 | 3 | HRD-02 | — | N/A | structural | `node --test tests/brief-surface-audit-doc.test.cjs` | ❌ Wave 0 | ⬜ pending |
+| 9-06-01 | 06 | 4 | HRD-05(a) | — | N/A | regression | `node scripts/run-tests.cjs $(grep -rln "pr-branch\|diagnose-issues\|ui-brand" tests/ \| sort \| tr '\n' ' ')` (per-test triage; affected files enumerated at runtime) | (existing infra) | ⬜ pending |
+| 9-06-02 | 06 | 4 | HRD-05(b) | — | N/A | structural | `node --test tests/architecture-counts.test.cjs tests/command-count-sync.test.cjs` | (existing — sync in plan) | ⬜ pending |
+| 9-06-03 | 06 | 4 | V1-Launch-Gate | — | N/A | structural | `node --test tests/brief-v1-launch-gate.test.cjs` | ❌ Wave 0 | ⬜ pending |
+| 9-06-04 | 06 | 4 | HRD-05 | — | N/A | empirical | `node scripts/run-tests.cjs 2>&1 \| grep -cE '^(✖\|not ok)'` (target ≤ 16; matches both spec and TAP reporter outputs per W5) | (full suite) | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -72,10 +76,10 @@ created: 2026-04-27
 - [ ] `tests/brief-help-categorization.test.cjs` — HRD-03 4D listing
 - [ ] `tests/brief-help-partial-match.test.cjs` — HRD-03 partial keyword match
 - [ ] `tests/brief-help-levenshtein.test.cjs` — HRD-03 inline Levenshtein top-3 (distance ≤ 3)
-- [ ] `tests/brief-pilot-journal-structure.test.cjs` — HRD-04 friction journal frontmatter + Pitfall #9 row
+- [ ] `tests/brief-pilot-journal-structure.test.cjs` — HRD-04 friction journal frontmatter + Pitfall #9 row (uses awk-based body extraction + canonical BANNED_EN import per B5/W6 revision)
 - [ ] `tests/brief-v1-launch-gate.test.cjs` — V1-LAUNCH-GATE.md 3-prong checklist
 
-Existing test infra covers HRD-05(b) without new files (regex fix in `tests/command-count-sync.test.cjs` line 48).
+Existing test infra covers HRD-05(b) without new files (regex fix in `tests/command-count-sync.test.cjs` line 48 — see Plan 04).
 
 ---
 
@@ -99,7 +103,7 @@ Existing test infra covers HRD-05(b) without new files (regex fix in `tests/comm
 - [ ] Feedback latency < 30s for quick / 7min for full
 - [ ] c8 line coverage ≥ 70% for `help.cjs`
 - [ ] Vocabulary lock preserved (Phase 4 D-09 / Phase 5 D-09 / Phase 7 D-01 — no `compliant`, no `passed`, no green checkmarks introduced by HRD-04 friction journal)
-- [ ] HRD-05 fail count ≤ 16 (EMPIRICAL_BASELINE 6 + DELTA_CAP 10)
+- [ ] HRD-05 fail count ≤ 16 (EMPIRICAL_BASELINE 6 + DELTA_CAP 10) — fail-count regex includes both `^✖` (spec reporter) and `^not ok` (TAP reporter) per W5
 - [ ] V1-LAUNCH-GATE.md 3-prong PASS — (i) 0 blocking pilot findings (ii) smoke PASS (iii) cap compliance
 - [ ] `nyquist_compliant: true` set in frontmatter at completion
 

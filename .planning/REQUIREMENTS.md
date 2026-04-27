@@ -107,7 +107,8 @@ Pre-launch verification.
 - [ ] **HRD-01**: User can run a cross-runtime smoke test (`brief-cli smoke-test`) that verifies BRIEF works in Claude Code, Codex, Gemini, OpenCode (text mode fallback active for runtimes without AskUserQuestion)
 - [ ] **HRD-02**: User-facing surface count is audited and documented at v1 launch (≤12 commands + ≤8 skills, with rationale for each)
 - [ ] **HRD-03**: User can run `/brief-help` and obtain a categorized command listing with one-line per-command summary (rich help, not raw `--help`)
-- [ ] **HRD-04**: BRIEF is piloted with at least 3 non-developer business planners before public release; their findings are logged in `.planning/pilot/`
+- [ ] **HRD-04**: BRIEF is piloted with the BRIEF vision-keeper (1 of 3 in v1) and ≥2 additional non-developer business planners (deferred to v1.1 beta program) per CONTEXT D-D01. The vision-keeper counts as a non-developer pilot under D-D01 acceptance — they are non-technical and used BRIEF end-to-end on a real planning project, even though they are also the build-team vision-keeper. Findings logged in `.planning/pilot/` with explicit transparency that pilot 1/3 is the build-team vision-keeper (not a fully external pilot). Remaining 2/3 are explicitly Out of Scope for v1 launch per D-D04 — NOT a launch blocker.
+- [ ] **HRD-05**: Phase 1 HALT-ACCEPTED 63 source-drift residuals are closed to ≤ 16 npm test failures (EMPIRICAL_BASELINE 6 + DELTA_CAP 10 inherited from Phase 1) — added mid-flight 2026-04-18 during Phase 1 HALT-ACCEPTED orchestrator decision
 
 ## v2 Requirements
 
@@ -215,11 +216,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HRD-02 | Phase 9 (Hardening — Cross-Runtime + Pilot) | Pending |
 | HRD-03 | Phase 9 (Hardening — Cross-Runtime + Pilot) | Pending |
 | HRD-04 | Phase 9 (Hardening — Cross-Runtime + Pilot) | Pending |
+| HRD-05 | Phase 9 (Hardening — Cross-Runtime + Pilot) | Pending |
 
 **Coverage:**
 
-- v1 requirements: 54 total (note: REQUIREMENTS.md initial metadata stated 47; actual count is 54 across the listed FND/DEF/DSC/DSG/DLV/CC/HRD items)
-- Mapped to phases: 54 ✓
+- v1 requirements: 55 total (note: REQUIREMENTS.md initial metadata stated 47; actual count grew to 54 across the listed FND/DEF/DSC/DSG/DLV/CC/HRD items, then +1 HRD-05 added mid-flight 2026-04-18 during Phase 1 HALT-ACCEPTED → 55)
+- Mapped to phases: 55 ✓
 - Unmapped: 0 ✓
 
 **Per-phase requirement counts:**
@@ -234,9 +236,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Phase 6 (Bidirectional Foundation) | DSG-11, DSG-14 | 2 |
 | Phase 7 (DESIGN) | DSG-01, DSG-02, DSG-03, DSG-04, DSG-05, DSG-06, DSG-07, DSG-08, DSG-09, DSG-10, CC-01 | 11 |
 | Phase 8 (DELIVER) | DLV-01..09, CC-03 | 10 |
-| Phase 9 (Hardening) | HRD-01, HRD-02, HRD-03, HRD-04 | 4 |
-| **Total** | | **54** |
+| Phase 9 (Hardening) | HRD-01, HRD-02, HRD-03, HRD-04, HRD-05 | 5 |
+| **Total** | | **55** |
 
 ---
 *Requirements defined: 2026-04-18*
-*Last updated: 2026-04-17 after roadmap creation (54 requirements mapped to 9 phases)*
+*Last updated: 2026-04-27 — HRD-05 added mid-flight (Phase 1 HALT-ACCEPTED residual closure); 55 requirements mapped to 9 phases*

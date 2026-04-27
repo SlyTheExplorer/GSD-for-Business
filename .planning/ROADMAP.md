@@ -198,16 +198,25 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Pitfall coverage**: #5 Audience leakage in Type B (DLV-08 mandatory export step + DLV-09 filename audience encoding + literal first-slide watermark + CC-03 pre-commit frontmatter validator — four-layer defense), #4 Compliance checkbox theater (Type B artifacts inherit COMPLIANCE checker from Phase 7), #11 Korean cultural gotchas (Type B agents apply honorific guard + bilingual `.ko.md`/`.en.md` pairs + idiom-substitution table for `region: kr` projects).
 
 ### Phase 9: Hardening — Cross-Runtime Smoke + Non-Developer Pilot
-**Goal**: BRIEF is verified to work consistently across Claude Code, OpenAI Codex, Gemini CLI, OpenCode (cross-runtime smoke test); user-facing surface count is audited and documented (≤12 commands + ≤8 skills, with rationale for each); `/brief-help` is rich and categorized (not raw `--help`); BRIEF is piloted with at least 3 non-developer business planners observed before public release.
+**Goal**: BRIEF is verified to work consistently across Claude Code, OpenAI Codex, Gemini CLI, OpenCode (cross-runtime smoke test); user-facing surface count is audited and documented (≤12 commands + ≤8 skills, with rationale for each); `/brief-help` is rich and categorized (not raw `--help`); BRIEF is piloted by the BRIEF vision-keeper for v1 (1 of 3 per CONTEXT D-D01 acceptance — vision-keeper is non-technical and used BRIEF end-to-end on a real planning project), with v1.1 beta planned for the additional 2/3 (Out of Scope per D-D04, NOT a v1 launch blocker).
 **Depends on**: Phase 8
-**Requirements**: HRD-01, HRD-02, HRD-03, HRD-04
+**Requirements**: HRD-01, HRD-02, HRD-03, HRD-04, HRD-05
 **Success Criteria** (what must be TRUE):
   1. User runs `brief-cli smoke-test` and the cross-runtime smoke test exercises BRIEF in Claude Code, Codex, Gemini, and OpenCode — for runtimes without AskUserQuestion the text_mode fallback activates and produces equivalent output for the 5 critical commands (`init`, `define`, `discover`, `design`, `deliver`) (HRD-01)
   2. User opens the surface-count audit document (committed at v1 launch) and reads ≤12 user-facing commands and ≤8 skills, each with one-line rationale; nothing exceeds the cap set in CLAUDE.md back in Phase 2 (HRD-02)
   3. User runs `/brief-help` and obtains a categorized command listing with one-line per-command summary (NOT a raw `--help` dump); supports `/brief-help <topic>` subset queries; suggests closest 3 commands on a typo via Levenshtein distance (HRD-03)
-  4. At least 3 non-developer business planners (NOT on the build team) have used BRIEF for a real planning project end-to-end, observed; their findings are logged in `.planning/pilot/` with friction journal entries; any blocking findings are resolved before public release (HRD-04)
+  4. BRIEF is piloted with the BRIEF vision-keeper (1 of 3 in v1) per CONTEXT D-D01 acceptance — the vision-keeper is non-technical and used BRIEF end-to-end on a real planning project. Findings are logged in `.planning/pilot/` with explicit transparency that pilot 1/3 is the build-team vision-keeper. Remaining 2/3 are explicitly Out of Scope per D-D04 — NOT a v1 launch blocker (HRD-04)
   5. User runs `npm test 2>&1 > /tmp/hardening-test.txt; grep -cE '^✖' /tmp/hardening-test.txt` and gets a value ≤ 16 (EMPIRICAL_BASELINE 6 + DELTA_CAP 10 inherited from Phase 1). Closes the 63 residual failures deferred from Phase 1 per 10-PARTIAL-AUDIT.md §4: (a) restore 19 missing-file tests by creating brief/workflows/pr-branch.md + diagnose-issues.md + brief/references/ui-brand.md — or prune the assertions if the workflows are truly out of scope; (b) reconcile docs/ARCHITECTURE.md component counts (Total commands 75→61, workflows 72→58, agents 31→18) + sync tree comments in tests/architecture-counts.test.cjs + command-count-sync.test.cjs — 14 tests; (c) fix source-behavior drift in hooks/brief-check-update-worker.js MANAGED_HOOKS array + bin/install.js CONV-07 function + hooks/brief-read-guard.js JSON output + custom-file detection — 30 tests; (d) sync source-content drift in agents/*.md required_reading blocks (≥20 agents) + commands/brief/autonomous.md frontmatter + brief/workflows/verify-work.md — 13 tests (HRD-05, added 2026-04-18 during Phase 1 HALT-ACCEPTED orchestrator decision)
-**Plans**: 8 plans
+**Plans**: 7 plans
+
+Plans:
+- [ ] 09-00-PLAN.md — Wave 0 scaffold all 11 test fixtures (RED stubs for HRD-01/02/03/04/05 + V1-LAUNCH-GATE)
+- [ ] 09-01-PLAN.md — HRD-01 cross-runtime smoke test impl (smoke-test.cjs + dispatcher case + SMOKE-TEST.md)
+- [ ] 09-02-PLAN.md — HRD-03 rich /brief-help impl (help.cjs + dispatcher case + help.md rewrite with Levenshtein)
+- [ ] 09-03-PLAN.md — HRD-04 partial 1/3 pilot friction journal at .planning/pilot/01-*-friction-journal.md
+- [ ] 09-04-PLAN.md — HRD-05(b) command-count-sync.test.cjs regex fix (commands/gsd/ -> commands/brief/)
+- [ ] 09-05-PLAN.md — HRD-02 surface pruning (atomic 56-file delete + new-project->init rename + bin/install.js cleanup + SURFACE-AUDIT.md + CLAUDE.md)
+- [ ] 09-06-PLAN.md — HRD-05(a) per-test triage + HRD-05(b) ARCH count sync + V1-LAUNCH-GATE.md + RESIDUAL-FAILS-V1.md
 
 **Pitfall coverage**: #2 Cross-runtime fragility (HRD-01 explicit smoke tests in Codex + Gemini), #1 Skill/command bloat (HRD-02 surface count audit), #12 Slash command memorability failure (HRD-03 rich `/brief-help` with verb-based mappings + suggestion-on-miss), #9 Non-developer friction + #14 Dogfooding trap (HRD-04 external pilot with non-developer planners — Track B of two-track dogfooding), #8 Fork drift residual (HRD-05 closes Phase 1 HALT-ACCEPTED source-drift residue via test-infrastructure modernization — structural closure of the rename-scope boundary).
 
@@ -226,7 +235,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 6. Bidirectional Foundation — Phase 1↔2 Return Stack | 0/TBD | Not started | - |
 | 7. DESIGN — Workstream Orchestration + COMPLIANCE Checker | 0/TBD | Not started | - |
 | 8. DELIVER — Type A + Type B + AUDIENCE Enforcement | 0/TBD | Not started | - |
-| 9. Hardening — Cross-Runtime + Pilot | 0/TBD | Not started | - |
+| 9. Hardening — Cross-Runtime + Pilot | 0/7 | Planned | - |
 
 ---
 *Roadmap created: 2026-04-17*
