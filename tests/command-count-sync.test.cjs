@@ -45,7 +45,7 @@ function docProseCount(content) {
  * Returns null if the pattern is not found.
  */
 function docTreeCount(content) {
-  const m = content.match(/commands\/gsd\/\*\.md[^\n]*#\s*(\d+)\s+slash commands/);
+  const m = content.match(/commands\/brief\/\*\.md[^\n]*#\s*(\d+)\s+slash commands/);
   return m ? parseInt(m[1], 10) : null;
 }
 
