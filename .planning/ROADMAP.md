@@ -210,12 +210,12 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 7 plans
 
 Plans:
-- [ ] 09-00-PLAN.md — Wave 0 scaffold all 11 test fixtures (RED stubs for HRD-01/02/03/04/05 + V1-LAUNCH-GATE)
-- [ ] 09-01-PLAN.md — HRD-01 cross-runtime smoke test impl (smoke-test.cjs + dispatcher case + SMOKE-TEST.md)
-- [ ] 09-02-PLAN.md — HRD-03 rich /brief-help impl (help.cjs + dispatcher case + help.md rewrite with Levenshtein)
-- [ ] 09-03-PLAN.md — HRD-04 partial 1/3 pilot friction journal at .planning/pilot/01-*-friction-journal.md
-- [ ] 09-04-PLAN.md — HRD-05(b) command-count-sync.test.cjs regex fix (commands/gsd/ -> commands/brief/)
-- [ ] 09-05-PLAN.md — HRD-02 surface pruning (atomic 56-file delete + new-project->init rename + bin/install.js cleanup + SURFACE-AUDIT.md + CLAUDE.md)
+- [x] 09-00-PLAN.md — Wave 0 scaffold all 11 test fixtures (RED stubs for HRD-01/02/03/04/05 + V1-LAUNCH-GATE)
+- [x] 09-01-PLAN.md — HRD-01 cross-runtime smoke test impl (smoke-test.cjs + dispatcher case + SMOKE-TEST.md)
+- [x] 09-02-PLAN.md — HRD-03 rich /brief-help impl (help.cjs + dispatcher case + help.md rewrite with Levenshtein)
+- [x] 09-03-PLAN.md — HRD-04 partial 1/3 pilot friction journal at .planning/pilot/01-*-friction-journal.md
+- [x] 09-04-PLAN.md — HRD-05(b) command-count-sync.test.cjs regex fix (commands/gsd/ -> commands/brief/)
+- [x] 09-05-PLAN.md — HRD-02 surface pruning (atomic 56-file delete + new-project->init rename + bin/install.js cleanup + SURFACE-AUDIT.md + CLAUDE.md)
 - [ ] 09-06-PLAN.md — HRD-05(a) per-test triage + HRD-05(b) ARCH count sync + V1-LAUNCH-GATE.md + RESIDUAL-FAILS-V1.md
 
 **Pitfall coverage**: #2 Cross-runtime fragility (HRD-01 explicit smoke tests in Codex + Gemini), #1 Skill/command bloat (HRD-02 surface count audit), #12 Slash command memorability failure (HRD-03 rich `/brief-help` with verb-based mappings + suggestion-on-miss), #9 Non-developer friction + #14 Dogfooding trap (HRD-04 external pilot with non-developer planners — Track B of two-track dogfooding), #8 Fork drift residual (HRD-05 closes Phase 1 HALT-ACCEPTED source-drift residue via test-infrastructure modernization — structural closure of the rename-scope boundary).
@@ -235,7 +235,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 6. Bidirectional Foundation — Phase 1↔2 Return Stack | 0/TBD | Not started | - |
 | 7. DESIGN — Workstream Orchestration + COMPLIANCE Checker | 0/TBD | Not started | - |
 | 8. DELIVER — Type A + Type B + AUDIENCE Enforcement | 0/TBD | Not started | - |
-| 9. Hardening — Cross-Runtime + Pilot | 0/7 | Planned | - |
+| 9. Hardening — Cross-Runtime + Pilot | 6/7 | In Progress|  |
 
 ---
 *Roadmap created: 2026-04-17*
