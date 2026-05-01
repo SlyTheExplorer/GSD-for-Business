@@ -131,19 +131,10 @@ describe('bug-2075: worktree deletion safeguards', () => {
       );
     });
 
-    test('diagnose-issues.md has worktree_branch_check instruction for spawned agents', () => {
-      const content = fs.readFileSync(DIAGNOSE_PATH, 'utf-8');
-
-      assert.ok(
-        content.includes('worktree_branch_check'),
-        'diagnose-issues.md must include worktree_branch_check instruction for spawned debug agents'
-      );
-
-      assert.ok(
-        content.includes('reset --hard'),
-        'diagnose-issues.md worktree_branch_check must instruct agents to use git reset --hard'
-      );
-    });
+    // HRD-05a closure: diagnose-issues.md ties to gsd-debugger agent, intentionally
+    // absent post-Phase-1 FND-02 (developer surface removal). Not in LOCKED_12.
+    // Assertion removed per PATTERNS.md ALL-DELETE rubric.
+    test.skip('diagnose-issues.md has worktree_branch_check instruction for spawned agents — HRD-05a closure: diagnose-issues.md not in LOCKED_12', () => {});
   });
 
   describe('Defense-in-depth: post-commit deletion check (from #1977)', () => {

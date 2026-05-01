@@ -142,17 +142,10 @@ describe('use_worktrees config: cross-workflow structural coverage', () => {
     );
   });
 
-  test('diagnose-issues workflow reads USE_WORKTREES from config', () => {
-    const content = fs.readFileSync(DIAGNOSE_PATH, 'utf-8');
-    assert.ok(
-      content.includes('config-get workflow.use_worktrees'),
-      'diagnose-issues.md should read use_worktrees from config'
-    );
-    assert.ok(
-      content.includes('USE_WORKTREES'),
-      'diagnose-issues.md should reference USE_WORKTREES variable'
-    );
-  });
+  // HRD-05a closure: diagnose-issues.md ties to gsd-debugger agent, intentionally
+  // absent post-Phase-1 FND-02 (developer surface removal). Not in LOCKED_12.
+  // Assertion removed per PATTERNS.md ALL-DELETE rubric.
+  test.skip('diagnose-issues workflow reads USE_WORKTREES from config — HRD-05a closure: diagnose-issues.md not in LOCKED_12', () => {});
 
   test('execute-plan workflow references use_worktrees config', () => {
     const content = fs.readFileSync(EXECUTE_PLAN_PATH, 'utf-8');
