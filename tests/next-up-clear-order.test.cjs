@@ -36,36 +36,11 @@ function collectMarkdownFiles(dir) {
   return results;
 }
 
-describe('ui-brand.md — Next Up template has /clear before command', () => {
-  const content = fs.readFileSync(UI_BRAND, 'utf-8');
-
-  test('Next Up block template does not use <sub>/clear pattern', () => {
-    const subClearPattern = /<sub>[^<]*\/clear[^<]*<\/sub>/gi;
-    const matches = content.match(subClearPattern);
-    assert.strictEqual(
-      matches,
-      null,
-      'ui-brand.md must not contain <sub>/clear</sub> pattern — /clear should appear before the command'
-    );
-  });
-
-  test('Next Up block template shows /clear then: before {copy-paste command}', () => {
-    // Extract the Next Up Block section
-    const nextUpSection = content.slice(
-      content.indexOf('## Next Up Block'),
-      content.indexOf('## Error Box')
-    );
-    assert.ok(nextUpSection.length > 0, 'Should find Next Up Block section');
-
-    const clearIndex = nextUpSection.indexOf('/clear');
-    const commandIndex = nextUpSection.indexOf('{copy-paste command}');
-    assert.ok(clearIndex > -1, 'Should contain /clear');
-    assert.ok(commandIndex > -1, 'Should contain {copy-paste command}');
-    assert.ok(
-      clearIndex < commandIndex,
-      `/clear (at ${clearIndex}) must appear before {copy-paste command} (at ${commandIndex})`
-    );
-  });
+// HRD-05a closure: ui-brand.md ties to gsd-ui-researcher / gsd-ui-checker agents,
+// intentionally absent post-Phase-1 FND-02 (developer surface removal). Not in LOCKED_12.
+// Assertions removed per PATTERNS.md ALL-DELETE rubric.
+describe.skip('ui-brand.md — Next Up template has /clear before command — HRD-05a closure: ui-brand.md not in LOCKED_12', () => {
+  test('removed: ui-brand.md is GSD-only and not in locked-12 lineup (HRD-05a closure)', () => {});
 });
 
 describe('continuation-format.md — Next Up examples have /clear before commands', () => {
