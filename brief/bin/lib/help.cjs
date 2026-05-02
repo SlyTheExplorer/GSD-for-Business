@@ -46,25 +46,29 @@ const PHASE_CATEGORIES = {
 
 // Module-level catalog cache (Pattern 3) — recomputed on next process; survives
 // manual commands/brief/ edits without an install step per RESEARCH.md
-// Discretion-3.
-let _catalogCache = null;
+// Discretion-3. Keyed by resolved commandsDir so callers passing different
+// paths (e.g., fixture temp dirs in tests, future per-workstream subsets)
+// receive the right entries instead of a stale cached set.
+const _catalogCache = new Map();
 
 /**
  * buildCatalog(commandsDir) → array of {slug, name, description, category, body}
  *
  * Reads every `*.md` file under commandsDir, extracts frontmatter via the
  * shared extractFrontmatter helper, and returns a normalized catalog entry per
- * file. Subsequent calls return the cached result.
+ * file. Subsequent calls with the same resolved path return the cached result.
  *
  * @param {string} commandsDir absolute path
  * @returns {Array<{slug:string, name:string, description:string, category:string, body:string}>}
  */
 function buildCatalog(commandsDir) {
-  if (_catalogCache) return _catalogCache;
-  const files = fs.readdirSync(commandsDir).filter((f) => f.endsWith('.md'));
+  const key = path.resolve(commandsDir);
+  const cached = _catalogCache.get(key);
+  if (cached) return cached;
+  const files = fs.readdirSync(key).filter((f) => f.endsWith('.md'));
   const entries = files.map((f) => {
     const slug = f.replace(/\.md$/, '');
-    const content = fs.readFileSync(path.join(commandsDir, f), 'utf-8');
+    const content = fs.readFileSync(path.join(key, f), 'utf-8');
     const fm = extractFrontmatter(content) || {};
     return {
       slug,
@@ -75,7 +79,7 @@ function buildCatalog(commandsDir) {
       body: content.replace(/^---[\s\S]*?---\r?\n/, ''),
     };
   });
-  _catalogCache = entries;
+  _catalogCache.set(key, entries);
   return entries;
 }
 
