@@ -249,15 +249,15 @@ No project skills found. Add skills to any of: `.claude/skills/`, `.agents/skill
 
 Before using Edit, Write, or other file-changing tools on planning artifacts, start work through a BRIEF command so the DEFINE → DISCOVER → DESIGN → DELIVER flow stays anchored to OBJECTIVES.md.
 
-Use these entry points (post-Phase-1; the full command surface is populated in subsequent phases):
-- `/brief-discuss-phase` for phase-level context capture
-- `/brief-plan-phase` for phase planning
-- `/brief-execute-phase` for planned phase execution
-- `/brief-verify-work` for phase-level verification
+Use these LOCKED_12 entry points:
+- `/brief-init` to bootstrap a new project (PROJECT.md, REQUIREMENTS.md, ROADMAP.md, STATE.md)
+- `/brief-define` to capture intent into OBJECTIVES.md
+- `/brief-discover` for broad domain research
+- `/brief-design <workstream>` for workstream planning
+- `/brief-deliver` (Type A) or `/brief-deliver --type-b <name>` for synthesis
+- `/brief-progress` and `/brief-status` for situational awareness
 
 Do not make direct repo edits outside a BRIEF workflow unless the user explicitly asks to bypass it.
-
-> Note — Phase 1: The BRIEF domain-specific commands (`/brief-define`, `/brief-discover`, `/brief-design`, `/brief-deliver`) are not yet implemented. Phase 1 delivers clean fork hygiene; Phases 3–8 add the domain commands.
 <!-- BRIEF:workflow-end -->
 
 
