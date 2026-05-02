@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 6: Bidirectional Foundation — Phase 1↔2 Return Stack** - state.brief.return_stack with 3-deep cap, gap-detector, gap criticality classification, meta-arbiter at iteration 2, return-stack visibility in /brief-status
 - [x] **Phase 7: DESIGN — Workstream Orchestration + COMPLIANCE Checker** - 9 built-in workstreams (BMC, GTM, FINANCIAL, OPERATIONS, COMPLIANCE, ROADMAP, BRAND, RISK, TECH-ARCH), /brief-add-workstream, COMPLIANCE checker on every artifact (clause-level findings + legal-counsel disclaimer) — **Complete** (2026-04-26; 8/8 plans across 5 waves; 15/15 must-haves verified; 225/225 Phase 7 tests pass; canonical gate fourth instance with LOAD-BEARING DEVIATION on FINDINGS-MATERIAL; NET +2 commands; Korea PIPA CEO-liability disclaimer byte-identity locked)
 - [x] **Phase 8: DELIVER — Type A + Type B + AUDIENCE Enforcement + Marp** - Type A artifacts (PRD inputs), Type B Marp decks via npx, audience encoded in filename + watermark, mandatory /brief-export step, frontmatter pre-commit hook — **Complete** (2026-04-26; DLV-01..09 + CC-03 delivered; 8/8 plans across 4 waves; 15/15 must-haves verified; 118/118 Phase 8 tests pass; 4-layer audience defense (filename + Marp directive footer + literal Cover-slide watermark + CC-03 pre-commit hook) wired end-to-end; Type A 4 artifacts auto-synthesized from 9 workstreams + OBJECTIVES; Type B parameterized agent generates 4 deck/document templates; Marp via npx --yes @marp-team/marp-cli@4.3.1 (zero runtime deps); /brief-deliver + /brief-export NET +2 commands; force-accept routes through Phase 4 D-07 audit trail substrate (first live use); Korean honorific + ko/en branching + banned-words self-check inlined in Type B agent; 7 code-review findings fixed (2 BLOCKER + 5 WARNING) — 8 templates restructured to nested YAML + watermark substitution wired in workflows)
-- [ ] **Phase 9: Hardening — Cross-Runtime Smoke + Non-Developer Pilot** - Cross-runtime smoke test (Claude/Codex/Gemini/OpenCode), surface count audit (≤12 commands + ≤8 skills), rich /brief-help, 3-planner non-developer pilot
+- [x] **Phase 9: Hardening — Cross-Runtime Smoke + Non-Developer Pilot** - Cross-runtime smoke test (Claude/Codex/Gemini/OpenCode), surface count audit (≤12 commands + ≤8 skills), rich /brief-help, 3-planner non-developer pilot (completed 2026-05-01)
 
 ## Phase Details
 
@@ -216,7 +216,7 @@ Plans:
 - [x] 09-03-PLAN.md — HRD-04 partial 1/3 pilot friction journal at .planning/pilot/01-*-friction-journal.md
 - [x] 09-04-PLAN.md — HRD-05(b) command-count-sync.test.cjs regex fix (commands/gsd/ -> commands/brief/)
 - [x] 09-05-PLAN.md — HRD-02 surface pruning (atomic 56-file delete + new-project->init rename + bin/install.js cleanup + SURFACE-AUDIT.md + CLAUDE.md)
-- [ ] 09-06-PLAN.md — HRD-05(a) per-test triage + HRD-05(b) ARCH count sync + V1-LAUNCH-GATE.md + RESIDUAL-FAILS-V1.md
+- [x] 09-06-PLAN.md — HRD-05(a) per-test triage + HRD-05(b) ARCH count sync + V1-LAUNCH-GATE.md + RESIDUAL-FAILS-V1.md
 
 **Pitfall coverage**: #2 Cross-runtime fragility (HRD-01 explicit smoke tests in Codex + Gemini), #1 Skill/command bloat (HRD-02 surface count audit), #12 Slash command memorability failure (HRD-03 rich `/brief-help` with verb-based mappings + suggestion-on-miss), #9 Non-developer friction + #14 Dogfooding trap (HRD-04 external pilot with non-developer planners — Track B of two-track dogfooding), #8 Fork drift residual (HRD-05 closes Phase 1 HALT-ACCEPTED source-drift residue via test-infrastructure modernization — structural closure of the rename-scope boundary).
 
@@ -235,7 +235,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 6. Bidirectional Foundation — Phase 1↔2 Return Stack | 0/TBD | Not started | - |
 | 7. DESIGN — Workstream Orchestration + COMPLIANCE Checker | 0/TBD | Not started | - |
 | 8. DELIVER — Type A + Type B + AUDIENCE Enforcement | 0/TBD | Not started | - |
-| 9. Hardening — Cross-Runtime + Pilot | 6/7 | In Progress|  |
+| 9. Hardening — Cross-Runtime + Pilot | 7/7 | Complete   | 2026-05-01 |
 
 ---
 *Roadmap created: 2026-04-17*
