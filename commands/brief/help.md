@@ -20,6 +20,10 @@ Output ONLY the help content. Do NOT add:
 - Any commentary beyond the help reference.
 </objective>
 
+<context>
+$ARGUMENTS
+</context>
+
 <process>
-Execute `brief-tools.cjs help [<topic>] --raw` and print stdout verbatim. Read-only — no writes.
+Execute `brief-tools.cjs help $ARGUMENTS --raw` and print stdout verbatim. If `$ARGUMENTS` is empty, run `brief-tools.cjs help --raw` (no topic). Read-only — no writes.
 </process>
