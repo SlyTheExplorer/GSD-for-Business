@@ -5392,13 +5392,6 @@ function reportLocalPatches(configDir, runtime = 'claude') {
   try { meta = JSON.parse(fs.readFileSync(metaPath, 'utf8')); } catch { return []; }
 
   if (meta.files && meta.files.length > 0) {
-    const reapplyCommand = (runtime === 'opencode' || runtime === 'kilo' || runtime === 'copilot')
-      ? '/brief-reapply-patches'
-      : runtime === 'codex'
-        ? '$brief-reapply-patches'
-        : runtime === 'cursor'
-          ? 'brief-reapply-patches (mention the skill name)'
-          : '/brief-reapply-patches';
     console.log('');
     console.log('  ' + yellow + 'Local patches detected' + reset + ' (from v' + meta.from_version + '):');
     for (const f of meta.files) {
@@ -5406,8 +5399,8 @@ function reportLocalPatches(configDir, runtime = 'claude') {
     }
     console.log('');
     console.log('  Your modifications are saved in ' + cyan + PATCHES_DIR_NAME + '/' + reset);
-    console.log('  Run ' + cyan + reapplyCommand + reset + ' to merge them into the new version.');
-    console.log('  Or manually compare and merge the files.');
+    console.log('  Manually compare each file in ' + cyan + PATCHES_DIR_NAME + '/' + reset + ' against the newly installed sources');
+    console.log('  and merge in any local edits you want to preserve.');
     console.log('');
   }
   return meta.files || [];
