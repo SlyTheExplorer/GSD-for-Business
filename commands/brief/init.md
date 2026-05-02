@@ -35,7 +35,6 @@ Initialize a new project through unified flow: questioning → research (optiona
 <execution_context>
 @~/.claude/brief/workflows/new-project.md
 @~/.claude/brief/references/questioning.md
-@~/.claude/brief/references/ui-brand.md
 @~/.claude/brief/templates/project.md
 @~/.claude/brief/templates/requirements.md
 </execution_context>

@@ -21,7 +21,6 @@ Three modes:
 
 <execution_context>
 @~/.claude/brief/workflows/undo.md
-@~/.claude/brief/references/ui-brand.md
 @~/.claude/brief/references/gate-prompts.md
 </execution_context>
 
