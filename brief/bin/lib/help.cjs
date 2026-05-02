@@ -18,7 +18,7 @@
  * (DEFINE / DISCOVER / DESIGN / DELIVER / HELPERS) gives users a phase-anchored
  * mental model when they don't remember the exact slug.
  *
- * Pitfall 3 (define ↔ design known collision, distance=2): both candidates
+ * Pitfall 3 (define ↔ design known collision, distance=3): both candidates
  * MUST land within the suggestTopK k=3 / threshold=3 window so the user
  * disambiguates rather than silently picking one. Documented inline at the
  * levenshtein() function header.
@@ -163,10 +163,12 @@ function renderTypoSuggestions(input, suggestions) {
  * Inline two-row dynamic programming Levenshtein, copied verbatim from
  * 09-RESEARCH.md §Pattern 2 (lines 344-378). O(min(m,n)) space, O(m*n) time.
  *
- * Pitfall 3 (RESEARCH.md lines 506-523): `levenshtein('define', 'design') === 2`
- * — both slugs differ by `f→s` and `e→g` substitutions. The k=3 / threshold=3
- * window in suggestTopK MUST include both so the user disambiguates rather
- * than silently picking one.
+ * Pitfall 3 (RESEARCH.md lines 506-523): `levenshtein('define', 'design') === 3`
+ * — three substitutions at positions 2, 4, 5 (f→s, n→g, e→n). The original
+ * RESEARCH.md narrative miscounted as 2; canonical Wikipedia DP returns 3
+ * (verified by tests/brief-help-levenshtein.test.cjs). The k=3 / threshold=3
+ * window still surfaces both for inputs within 1-2 edits of either
+ * (e.g., `desin` → design(1), define(2); `defin` → define(1), design(3)).
  *
  * @param {string} a
  * @param {string} b

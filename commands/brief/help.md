@@ -11,7 +11,7 @@ Render the BRIEF command reference categorized by 4D phase (DEFINE / DISCOVER / 
 
 - No argument: full categorized listing of every command in `commands/brief/*.md`.
 - `<topic>` (e.g., `def`, `discover`, `audit`): case-insensitive substring/prefix match on slug + description; on match, render the matching commands plus the body of the first matched command's `.md` file.
-- No match: top-3 Levenshtein suggestions with distance ≤ 3 (e.g., `defone` → `define`, `design`).
+- No match: top-3 Levenshtein suggestions with distance ≤ 3 (e.g., `desin` → `design` (1), `define` (2)).
 
 Output ONLY the help content. Do NOT add:
 - Project-specific analysis
