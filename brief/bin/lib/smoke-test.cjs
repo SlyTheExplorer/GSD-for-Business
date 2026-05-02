@@ -63,6 +63,16 @@ function smokeOneCell(runtime, cmd, briefRoot) {
     ...envOverrides,
     BRIEF_RUNTIME_MOCK: runtime.name,
   };
+  // WR-03 — force-clear runtime-distinguishing keys the parent shell may have
+  // exported (e.g., when the harness is invoked from inside a Codex session
+  // or CI with INSTRUCTION_FILE set). Without this, Claude's cell silently
+  // inherits the parent's INSTRUCTION_FILE because envOverrides has no key
+  // to overwrite it, and B-D03 ("INSTRUCTION_FILE is the canonical
+  // non-Claude detector") is violated. Run AFTER the spread so per-runtime
+  // overrides win for runtimes that DO set the key (e.g., codex).
+  if (!Object.prototype.hasOwnProperty.call(envOverrides, 'INSTRUCTION_FILE')) {
+    delete env.INSTRUCTION_FILE;
+  }
 
   try {
     const out = execFileSync(
