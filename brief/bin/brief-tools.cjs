@@ -723,6 +723,16 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
       //     → emit TYPE_A_ARTIFACTS frozen list (4 keys)
       //   deliver list-type-b
       //     → emit Type B artifact key list (4 names)
+      //
+      // Phase 9 CR-01 — `--smoke` text-mode plumbing probe (no-op). Returns
+      // a deterministic ok payload so smoke-test.cjs verifies the runtime
+      // can route a child invocation through the dispatcher without hitting
+      // an interactive precondition. Inserted BEFORE require() to keep the
+      // probe cost minimal and free of side effects.
+      if (args.includes('--smoke')) {
+        core.output({ smoke: 'ok', cmd: 'deliver' }, raw, 'deliver smoke ok\n');
+        break;
+      }
       const deliver = require('./lib/deliver.cjs');
       const delivSubcommand = args[1];
       const delivArtIdx = args.indexOf('--artifact');
@@ -1020,6 +1030,13 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
       //   OPS → operations, COMP → compliance, ROAD → roadmap, BRAND → brand,
       //   RISK → risk, TECH → tech-arch
       // NEVER throws to caller — all error paths emit JSON or call core.error.
+      //
+      // Phase 9 CR-01 — `--smoke` text-mode plumbing probe (no-op). See
+      // identical handler in `case 'deliver'` for rationale.
+      if (args.includes('--smoke')) {
+        core.output({ smoke: 'ok', cmd: 'design' }, raw, 'design smoke ok\n');
+        break;
+      }
       const { loadWorkstreams } = require('./lib/workstream-loader.cjs');
       const designSubcommand = args[1];
 
@@ -1897,6 +1914,12 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
     }
 
     case 'define': {
+      // Phase 9 CR-01 — `--smoke` text-mode plumbing probe (no-op). See
+      // identical handler in `case 'deliver'` for rationale.
+      if (args.includes('--smoke')) {
+        core.output({ smoke: 'ok', cmd: 'define' }, raw, 'define smoke ok\n');
+        break;
+      }
       const subcommand = args[1];
       const define = require('./lib/define.cjs');
       if (subcommand === 'apply') {
@@ -1932,6 +1955,14 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
       //   Plan 06 — DEF-06 stale-anchor 48h interrupt (shouldStaleAnchorFire
       //             + renderStaleAnchorPrompt), ordered BEFORE the Phase 5
       //             placeholder so W-8 `idxPrompt < idxPlaceholder` holds.
+      //
+      // Phase 9 CR-01 — `--smoke` text-mode plumbing probe (no-op). Inserted
+      // BEFORE validateObjectivesComplete so the smoke matrix can verify the
+      // dispatcher routes without tripping the OBJECTIVES.md precondition.
+      if (args.includes('--smoke')) {
+        core.output({ smoke: 'ok', cmd: 'discover' }, raw, 'discover smoke ok\n');
+        break;
+      }
       const objectives = require('./lib/objectives.cjs');
       const r = objectives.validateObjectivesComplete(cwd);
       if (!r.valid) {
@@ -2020,6 +2051,14 @@ async function runCommand(command, args, cwd, raw, defaultValue) {
     }
 
     case 'init': {
+      // Phase 9 CR-01 — `--smoke` text-mode plumbing probe (no-op). Inserted
+      // BEFORE the inner workflow switch so the smoke matrix can verify the
+      // dispatcher routes without supplying a sub-subcommand. See identical
+      // handler in `case 'deliver'` for rationale.
+      if (args.includes('--smoke')) {
+        core.output({ smoke: 'ok', cmd: 'init' }, raw, 'init smoke ok\n');
+        break;
+      }
       const workflow = args[1];
       switch (workflow) {
         case 'execute-phase': {
