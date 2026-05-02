@@ -8,6 +8,36 @@ BRIEF is a meta-prompting framework for business and product strategy planning, 
 
 A business planner can transform a fuzzy idea into well-researched, audience-correct, compliance-aware deliverables — without already knowing what they want when they start.
 
+## Current State
+
+**Shipped:** v1.0 — Hard Fork from GSD (2026-05-02)
+
+- 9 phases × 67 plans × 107 tasks delivered
+- 55/55 v1 requirements satisfied (per REQUIREMENTS archive)
+- v1 Launch Gate 3-prong PASS: (i) 0 blocking pilot findings + (ii) 20/20 smoke matrix + (iii) 12/12 commands + 0/8 skills surface compliance
+- A1 zero-runtime-deps invariant intact (`package.json dependencies: {}`)
+- 4 canonical evaluator-optimizer gate instances locked (ALIGN/AUDIENCE/gap-detect/COMPLIANCE) with 3-output verdict pattern
+- 4-layer audience defense wired end-to-end (filename + Marp footer + Cover-slide watermark + CC-03 pre-commit hook)
+- Korea-first compliance reference library (PIPA Feb 2026 amendment + ISMS-P July 2027 mandatory + MyData 2026 10-sector expansion)
+
+**Tech debt accepted (v1.1 backlog):**
+- 185 npm test failures from Plan 09-05 deletion-cascade (~10-15h closure per RESIDUAL-FAILS-V1.md)
+- 2/3 non-developer beta pilots (vision-keeper as 1/3 per HRD-04 D-D01)
+- ~48 orphan workflow files post-deletion-cascade
+- 4 INFO findings from Phase 9 code review (deferred per --auto scope)
+
+**Archive references:**
+- `.planning/milestones/v1.0-ROADMAP.md` — full v1.0 phase breakdown
+- `.planning/milestones/v1.0-REQUIREMENTS.md` — 55-REQ traceability
+- `.planning/milestones/v1.0-MILESTONE-AUDIT.md` — audit detail
+
+## Next Milestone Goals (v1.1 — Beta Hardening)
+
+- Close Plan 09-05 deletion-cascade test fallout (target: ≤16 npm test failures empirically)
+- Recruit + observe 2/3 external non-developer beta pilots (HRD-04 completion)
+- Sweep orphan workflow files (~48 in `brief/workflows/` post Plan 05)
+- Polish 4 INFO findings + UX improvements from v1 launch UAT feedback
+
 ## Requirements
 
 ### Validated

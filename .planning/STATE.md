@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: "v1.0 milestone audit complete (status: tech_debt; 55/55 reqs verified; v1 Launch Gate 3-prong PASS; 9/9 phases; 67/67 plans). Doc-sync done. Next: /gsd-complete-milestone v1.0 → /gsd-cleanup."
-last_updated: "2026-05-02T01:10:41.743Z"
-last_activity: 2026-05-02 -- Phase 9 marked complete
+status: verifying
+stopped_at: "Phase 8 complete (15/15 must-haves; 118/118 tests). Phase 9 discuss draft saved at .planning/phases/09-.../09-DISCUSS-DRAFT.md. Next: /clear → /brief-discuss-phase 9 OR /gsd-autonomous --from 9 — draft contains 4 gray area proposals."
+last_updated: "2026-05-02T01:33:53.968Z"
+last_activity: 2026-05-02
 progress:
   total_phases: 9
   completed_phases: 9
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-18)
 Phase: 9 — COMPLETE
 Plan: 7 of 7
 Status: v1.0 milestone audit done (status: tech_debt accepted; 55/55 reqs verified; v1 Launch Gate 3-prong PASS)
-Last activity: 2026-05-02 -- v1.0 milestone audit + doc-sync complete
+Last activity: 2026-05-02
 
 Progress: [██████████] 100% v1.0 — 9 of 9 phases complete; 67 of 67 plans complete; ready for /gsd-complete-milestone v1.0 archive.
 
@@ -100,6 +100,10 @@ Items acknowledged and carried forward for resolution in later phases:
 | FND-06 | Cross-runtime smoke test execution (Claude/Codex/Gemini/OpenCode) | Detection code verified; actual smoke pending | Phase 1 | Phase 9 HRD-01 |
 | Localized READMEs | ko-KR / ja-JP / zh-CN / pt-BR rebranded to BRIEF | Deferred per Plan 06 | Phase 1 | Phase 9 |
 | Phase 1 residual drift | 63 npm-test failures: 19 missing-files (pr-branch.md/diagnose-issues.md/ui-brand.md) + 14 docs/ARCHITECTURE.md count drift + 30 source-behavior (MANAGED_HOOKS/CONV-07/read-guard) + 13 source-content (agents required_reading + commands frontmatter) | HALT-ACCEPTED 2026-04-18 after 4 gap-closure cycles | Phase 1 | Phase 9 HRD-05 |
+| Phase 04 UAT | 3 pending scenarios in 04-HUMAN-UAT.md (status: partial) — manual UAT items, environment-bearing | 2026-05-02 (v1.0 milestone close) | Phase 4 | v1.1 beta |
+| Phase 09 verification | 4 human_needed manual UAT items: real-runtime smoke (Codex/Gemini/OpenCode CLIs), pilot honesty meta-check, /brief-help UX read-test, backup branch preservation spot-check | 2026-05-02 (v1.0 milestone close per user accept) | Phase 9 | v1.1 beta |
+| Phase 09 fail count | 185 npm test failures vs ≤16 target — Plan 09-05 deletion-cascade per D-D02 (c)+(d) deferral | 2026-05-02 (v1.0 milestone close per user accept) | Phase 9 | v1.1 (10-15h estimate per RESIDUAL-FAILS-V1.md) |
+| Phase 09 orphan workflows | ~48 orphan workflow files in brief/workflows/ from Plan 05 56-cmd deletion cascade | 2026-05-02 (v1.0 milestone close per user accept) | Phase 9 | v1.1 |
 
 ## Session Continuity
 
