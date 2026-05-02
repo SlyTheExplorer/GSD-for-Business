@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: "Phase 8 complete (15/15 must-haves; 118/118 tests). Phase 9 discuss draft saved at .planning/phases/09-.../09-DISCUSS-DRAFT.md. Next: /clear → /brief-discuss-phase 9 OR /gsd-autonomous --from 9 — draft contains 4 gray area proposals."
+stopped_at: "v1.0 milestone audit complete (status: tech_debt; 55/55 reqs verified; v1 Launch Gate 3-prong PASS; 9/9 phases; 67/67 plans). Doc-sync done. Next: /gsd-complete-milestone v1.0 → /gsd-cleanup."
 last_updated: "2026-05-02T01:10:41.743Z"
 last_activity: 2026-05-02 -- Phase 9 marked complete
 progress:
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-18)
 
 **Core value:** A business planner can transform a fuzzy idea into well-researched, audience-correct, compliance-aware deliverables — without already knowing what they want when they start.
-**Current focus:** Phase 9 — Hardening — Cross-Runtime Smoke + Non-Developer Pilot
+**Current focus:** v1.0 milestone audit complete — pending /gsd-complete-milestone v1.0 archive
 
 ## Current Position
 
 Phase: 9 — COMPLETE
-Plan: 1 of 7
-Status: Phase 9 complete
-Last activity: 2026-05-02 -- Phase 9 marked complete
+Plan: 7 of 7
+Status: v1.0 milestone audit done (status: tech_debt accepted; 55/55 reqs verified; v1 Launch Gate 3-prong PASS)
+Last activity: 2026-05-02 -- v1.0 milestone audit + doc-sync complete
 
-Progress: [██████████] 100% Phase 1 (10 of 10 plans; HALT-ACCEPTED closure 2026-04-18). Overall v1.0: 1 of 9 phases complete.
+Progress: [██████████] 100% v1.0 — 9 of 9 phases complete; 67 of 67 plans complete; ready for /gsd-complete-milestone v1.0 archive.
 
 ## Performance Metrics
 
