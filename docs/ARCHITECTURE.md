@@ -124,7 +124,7 @@ Orchestration logic that commands reference. Contains the step-by-step process i
 - State update patterns
 - Error handling and recovery
 
-**Total workflows:** 70
+**Total workflows:** 69
 
 ### Agents (`agents/*.md`)
 
@@ -427,7 +427,7 @@ UI-SPEC.md (per phase) ───────────────────
 ├── brief/
 │   ├── bin/brief-tools.cjs           # CLI utility
 │   ├── bin/lib/*.cjs               # 19 domain modules
-│   ├── workflows/*.md              # 70 workflow definitions
+│   ├── workflows/*.md              # 69 workflow definitions
 │   ├── references/*.md             # 35 shared reference docs
 │   └── templates/                  # Planning artifact templates
 ├── agents/*.md                     # 26 agent definitions
