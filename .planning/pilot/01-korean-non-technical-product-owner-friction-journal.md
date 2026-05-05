@@ -91,3 +91,64 @@ should be carried forward into v1.1:
 3. `feedback_checkpoint_at_phase_boundaries.md` — present a Stop/Continue
    checkpoint after verify=ok on a multi-plan phase. Phase 9 has 6 plans;
    the executor must NOT auto-chain into v1.1 beta planning.
+
+---
+
+## Session 2 — Real-World Dogfood (2026-05-03 ~ 2026-05-06)
+
+**Project:** `~/brief-dogfood-001/` — Korean investment study group app via Toss mini-app
+**Pilot type:** vision-keeper applies BRIEF v1.0 to a non-meta fuzzy idea (BRIEF on BRIEF가 아닌 진짜 외부 케이스)
+**Result:** 5 product-killer decisions caught before any code written
+
+### Initial fuzzy idea (1 sentence)
+"토스 앱 내 미니앱 플랫폼에서 투자 스터디 모임을 구성할 수 있는 앱"
+
+### BRIEF가 catch한 product-killer 결정 5개
+
+| # | Catch | Phase | Evidence |
+|---|------|-------|---------|
+| 1 | 토스 종목 게시판 funnel 가설 falsified | DISCOVER R1 | 토스증권 ML 2026-02-13 보도자료 + Apps-in-Toss 정책 (자사 redirect 불가) — funnel 자체가 platform-level 차단 |
+| 2 | 토스 미니앱 입점 falsified | DISCOVER R3 | toss.im/apps-in-toss banlist에 "투자 자문, 리딩방, 유료 정보" 명시. 카테고리 기반 차단 — strict posture로 우회 불가 |
+| 3 | 자본시장법 §101의2 무료=면책 X | DISCOVER R2 | 2024-08-14 시행 + 카카오톡 운영정책 verbatim ("대가 수령 무관"). 10명 단톡방도 "특정인 발화 1번"=직격 |
+| 4 | AI nudge enforcement-aware UX hypothesis (H-07) 도출 | DESIGN | 사용자가 (2) 회색 corridor honest 인정 → product 정체성을 "안전 운영 인프라"로 reframe |
+| 5 | H-06 success threshold(100모임) vs BMC BEP(333-714 운영자) 3-7배 gap | DESIGN amend | 2-tier reframe: H-06A validation(100) + H-06B viability(400) + 12개월 runway transfusion 가설 |
+
+### BRIEF mechanic 작동 evidence
+
+| Mechanic | 작동 사례 |
+|---------|---------|
+| **Push Twice** | "토스 사용자=금융 관심자" 표면 답이 Dream State에서 자체 무너지고 "종목 게시판 모집글" 진짜 image 노출. 그 후 R1 검증으로 후자도 🔴 falsified — Pitfall #14 dogfooding-trap 직접 회피 |
+| **Language Precision** | "투자 스터디" → A/B/C/D/E 5분기 force-define → A+C로 좁아짐. "당근 스터디 모임의 투자 버전" anchor 도입 |
+| **Reframing as Clarification** | "스터디 모임은 리스크 없을 듯" intuition 검증 → (1)/(2)/(3)/(4) corridor table → 사용자가 (2) honest 선택 = product 정체성 lock |
+| **Mutable hypothesis layered** | H-01 funnel + H-04 입점 = falsified after DISCOVER, archived. 새 H-07/H-08/H-09/H-10 추가 (DESIGN amend가 hypothesis 정제하는 정상 흐름) |
+| **Cross-workstream consistency** | 4 critical 워크스트림 (BMC/COMP/RISK/TECH) 산출 후 8 axis 정합 board에서 4 tension 자동 surface → amend round 2로 모두 해결 |
+
+### Time investment vs estimated value caught
+
+- **Session time:** ~3 hours (DEFINE 1h + DISCOVER 30m + DESIGN 30m + amend 30m + checkpoints 30m)
+- **Avoided cost (estimated):** Toss 미니앱 SDK 학습 + MVP 개발 (4-8주) + 토스 입점 신청 + 거부 받은 후 pivot 시도 — **수주~수개월 인적 손실 + 수천만원 burn 회피**
+- **Counter-factual:** intuition대로 진행했다면 "MVP 완성 → 토스 입점 신청 → 거부 → 모집글 작성 → 토스 ML 차단 → 사용자 0 → product 사망" cascade
+
+### Friction observed (BRIEF improvement backlog)
+
+| 항목 | 관찰 | v1.1+ 후보 |
+|------|------|----------|
+| **DEFINE 5분기 push table 형식** | 비-개발자가 markdown table 읽고 정확한 분기 답 가능 | UAT 추가 검증 필요 (다른 비-개발자에게 같은 push 던져보기) |
+| **DESIGN amend round 2가 자연 발생** | 4 워크스트림 cross-check가 4 tension surface — 정상 흐름이지만 사용자가 "왜 한 번 더 amend?" 혼란 가능 | DESIGN phase docs에 "amend round 2 자연 발생 흐름" 명시 |
+| **Workstream 산출물 size** | bmc.md / risk.md / compliance.md 각 200-700 lines — 사용자가 한 번에 정독 부담 | amend 후 "1-page executive summary" view 자동 generation 검토 (v1.1) |
+| **Korean voice in deep specs** | 4 워크스트림 한국어 voice 자연스러움 — 다만 법률 용어/기술 용어 영문 paraphrase 형식 일관성 부족 | voice-fit lib에 "Korean tech doc style guide" 추가 |
+| **Quota usage** | DESIGN 4 parallel agents가 무거움. session 도중 재 dispatch 필요 가능 | DESIGN 워크스트림 mode "lightweight" (3-5K LOC 이하) 추가 검토 |
+
+### Validation of BRIEF v1 mission
+
+> *"A business planner can transform a fuzzy idea into well-researched, audience-correct, compliance-aware deliverables — without already knowing what they want when they start."*
+
+이 dogfood session에서 위 mission이 **명백히 실증됨**:
+- "토스 앱에 투자 스터디 모임" (1문장 fuzzy)
+- → enforcement-aware infrastructure (5 immutable + 10 mutable hypothesis)
+- → 4 critical research artifacts (provenance-tagged)
+- → 4 critical design workstreams (BMC + COMP + RISK + TECH-ARCH)
+- → 변호사 자문 P1-P3 우선순위
+- → external next steps clearly defined (변호사 / MVP / segment 인터뷰)
+
+**HRD-04 progress:** 본 session이 *외부 fuzzy idea + product reshape 실증* 첫 진짜 case. v1.1 beta에서 추가 2명 외부 pilot 시 BRIEF의 generalizability 검증.
